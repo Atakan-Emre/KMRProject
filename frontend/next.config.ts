@@ -10,7 +10,13 @@ const getBasePath = () => {
   }
 
   // GitHub Actions'tan gelen repository bilgisi
-  const repoName = process.env.GITHUB_REPOSITORY?.split("/")[1] || "KMRProject";
+  // GITHUB_REPOSITORY yoksa (lokal build) basePath boş olsun
+  const githubRepo = process.env.GITHUB_REPOSITORY;
+  if (!githubRepo) {
+    return "";
+  }
+  
+  const repoName = githubRepo.split("/")[1];
   const githubPagesPattern = /^[\w-]+\.github\.io$/;
   
   // Eğer repo adı username.github.io formatındaysa basePath boş

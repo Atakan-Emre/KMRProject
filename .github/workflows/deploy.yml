@@ -47,7 +47,11 @@ jobs:
             echo "Build failed: out directory not found"
             exit 1
           fi
-          echo "Build successful: $(ls -la out | head -10)"
+          echo "Build successful!"
+          echo "=== Static pages generated ==="
+          ls -la out/patients/ | head -20
+          echo "=== Total files ==="
+          find out -name "*.html" | wc -l
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
