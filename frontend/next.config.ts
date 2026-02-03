@@ -4,10 +4,12 @@ import type { NextConfig } from "next";
 // Eğer repo adı username.github.io formatındaysa basePath boş olmalı
 // Aksi halde /repo-name formatında olmalı
 const getBasePath = () => {
+  // Development modunda basePath boş
   if (process.env.NODE_ENV !== "production") {
     return "";
   }
 
+  // GitHub Actions'tan gelen repository bilgisi
   const repoName = process.env.GITHUB_REPOSITORY?.split("/")[1] || "KMRProject";
   const githubPagesPattern = /^[\w-]+\.github\.io$/;
   
@@ -30,6 +32,12 @@ const nextConfig: NextConfig = {
     unoptimized: true,
   },
   trailingSlash: true,
+  // GitHub Pages için optimize edilmiş ayarlar
+  distDir: "out",
+  // Static export için gerekli
+  reactStrictMode: true,
+  // Production build için optimize
+  swcMinify: true,
 };
 
 export default nextConfig;

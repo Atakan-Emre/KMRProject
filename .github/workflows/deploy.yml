@@ -19,7 +19,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -31,14 +31,23 @@ jobs:
 
       - name: Install dependencies
         working-directory: ./frontend
-        run: npm ci
+        run: npm ci --prefer-offline --no-audit
 
-      - name: Build
+      - name: Build Next.js application
         working-directory: ./frontend
         run: npm run build
         env:
           NODE_ENV: production
           GITHUB_REPOSITORY: ${{ github.repository }}
+
+      - name: Verify build output
+        working-directory: ./frontend
+        run: |
+          if [ ! -d "out" ]; then
+            echo "Build failed: out directory not found"
+            exit 1
+          fi
+          echo "Build successful: $(ls -la out | head -10)"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
