@@ -158,21 +158,39 @@ export function useLABCohortTrajectory() {
         if (!response.ok) {
           // Return empty trajectory if file doesn't exist (404) or other errors
           return {
+            metadata: {
+              type: "lab_cohort",
+              n_patients: 0,
+              n_time_points: 0,
+              model: "none",
+              created_at: new Date().toISOString()
+            },
             trajectory: [],
-            training: {
-              n_sequences: 0,
-              error: "insufficient_sequences"
+            summary: {
+              initial_kre_median: null,
+              final_kre_median: null,
+              initial_gfr_median: null,
+              final_gfr_median: null
             }
           } as LABCohortTrajectoryData;
         }
         return response.json() as Promise<LABCohortTrajectoryData>;
-      } catch (error) {
+      } catch {
         // Return empty trajectory if file doesn't exist or has insufficient data
         return {
+          metadata: {
+            type: "lab_cohort",
+            n_patients: 0,
+            n_time_points: 0,
+            model: "none",
+            created_at: new Date().toISOString()
+          },
           trajectory: [],
-          training: {
-            n_sequences: 0,
-            error: "insufficient_sequences"
+          summary: {
+            initial_kre_median: null,
+            final_kre_median: null,
+            initial_gfr_median: null,
+            final_gfr_median: null
           }
         } as LABCohortTrajectoryData;
       }
