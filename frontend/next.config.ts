@@ -42,6 +42,10 @@ const nextConfig: NextConfig = {
   distDir: "out",
   // Static export için gerekli
   reactStrictMode: true,
+  // Client-side'da basePath'e erişim için environment variable
+  env: {
+    NEXT_PUBLIC_BASE_PATH: basePath,
+  },
 };
 
 export default nextConfig;

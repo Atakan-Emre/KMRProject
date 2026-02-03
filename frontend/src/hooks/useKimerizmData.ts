@@ -8,11 +8,15 @@ import type {
   RiskLevel
 } from '@/types';
 
+// Next.js basePath'i al - GitHub Pages için gerekli
+const basePath = process.env.NEXT_PUBLIC_BASE_PATH || '';
+
 // Fetch helpers
 async function fetchJson<T>(url: string): Promise<T> {
-  const response = await fetch(url);
+  const fullUrl = `${basePath}${url}`;
+  const response = await fetch(fullUrl);
   if (!response.ok) {
-    throw new Error(`Failed to fetch: ${url}`);
+    throw new Error(`Failed to fetch: ${fullUrl}`);
   }
   return response.json();
 }
@@ -154,7 +158,7 @@ export function useLABCohortTrajectory() {
     queryKey: ['lab-cohort-trajectory'],
     queryFn: async () => {
       try {
-        const response = await fetch('/cohort_trajectory_lab.json');
+        const response = await fetch(`${basePath}/cohort_trajectory_lab.json`);
         if (!response.ok) {
           // Return empty trajectory if file doesn't exist (404) or other errors
           return {
