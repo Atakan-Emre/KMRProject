@@ -1,0 +1,23 @@
+{
+  "metadata": {
+    "created_at": "2026-02-03T22:35:38.715760",
+    "schema_version": "3.0"
+  },
+  "totals": {
+    "n_patients": 41,
+    "improved_proxy_count": 14,
+    "patients_with_anomalies": 14
+  },
+  "risk_distribution": {
+    "Normal": 16,
+    "Dikkat": 24,
+    "Kritik": 1,
+    "Çok Kritik": 0
+  },
+  "averages": {
+    "risk_score": 35.3,
+    "kmr_last": 0.4431,
+    "kre_last": 1.32,
+    "gfr_last": 67.1
+  }
+}

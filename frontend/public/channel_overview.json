@@ -1,0 +1,68 @@
+{
+  "metadata": {
+    "created_at": "2026-02-03T22:35:38.759257"
+  },
+  "metrics": [
+    "kmr",
+    "kre",
+    "gfr"
+  ],
+  "coverage": {
+    "kmr": {
+      "time_keys": [
+        "Day_1",
+        "Day_2",
+        "Day_3",
+        "Day_4",
+        "Day_5",
+        "Day_6",
+        "Day_7",
+        "Week_2",
+        "Week_3",
+        "Week_4",
+        "Month_2",
+        "Month_3",
+        "Month_4",
+        "Month_5",
+        "Month_6",
+        "Month_7",
+        "Month_8",
+        "Month_9",
+        "Month_10",
+        "Month_11",
+        "Month_12"
+      ],
+      "n_measurements": 370
+    },
+    "kre": {
+      "time_keys": [
+        "Day_7_KRE",
+        "Week_2_KRE",
+        "Week_3_KRE",
+        "Month_1_KRE",
+        "Month_2_KRE",
+        "Month_3_KRE",
+        "Month_4_KRE",
+        "Month_5_KRE",
+        "Month_6_KRE",
+        "Month_12_KRE"
+      ],
+      "n_measurements": 367
+    },
+    "gfr": {
+      "time_keys": [
+        "Day_7_GFR",
+        "Week_2_GFR",
+        "Week_3_GFR",
+        "Month_1_GFR",
+        "Month_2_GFR",
+        "Month_3_GFR",
+        "Month_4_GFR",
+        "Month_5_GFR",
+        "Month_6_GFR",
+        "Month_12_GFR"
+      ],
+      "n_measurements": 314
+    }
+  }
+}
