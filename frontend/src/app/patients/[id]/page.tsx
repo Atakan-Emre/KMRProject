@@ -1907,13 +1907,13 @@ export default function PatientDetailPage() {
                     <div 
                       className="px-2 py-0.5 rounded-full border text-[10px] font-medium flex items-center gap-1"
                       style={{ 
-                        backgroundColor: `${RISK_COLORS[(pinnedPoint?.riskLevel ?? patient?.last_status?.risk_level_last) as RiskLevel] || '#666'}20`,
-                        color: RISK_COLORS[(pinnedPoint?.riskLevel ?? patient?.last_status?.risk_level_last) as RiskLevel] || '#666',
-                        borderColor: RISK_COLORS[(pinnedPoint?.riskLevel ?? patient?.last_status?.risk_level_last) as RiskLevel] || '#666'
+                        backgroundColor: `${RISK_COLORS[((pinnedPoint?.riskLevel ?? patient?.last_status?.risk_level_last) as RiskLevel)] || '#666'}20`,
+                        color: RISK_COLORS[((pinnedPoint?.riskLevel ?? patient?.last_status?.risk_level_last) as RiskLevel)] || '#666',
+                        borderColor: RISK_COLORS[((pinnedPoint?.riskLevel ?? patient?.last_status?.risk_level_last) as RiskLevel)] || '#666'
                       }}
                     >
                       <span>Risk:</span>
-                      <span className="font-bold">{pinnedPoint?.riskLevel ?? patient?.last_status?.risk_level_last || '-'}</span>
+                      <span className="font-bold">{(pinnedPoint?.riskLevel ?? patient?.last_status?.risk_level_last) || '-'}</span>
                     </div>
                   </div>
                 </div>

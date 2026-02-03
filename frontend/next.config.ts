@@ -36,8 +36,6 @@ const nextConfig: NextConfig = {
   distDir: "out",
   // Static export için gerekli
   reactStrictMode: true,
-  // Production build için optimize
-  swcMinify: true,
 };
 
 export default nextConfig;
