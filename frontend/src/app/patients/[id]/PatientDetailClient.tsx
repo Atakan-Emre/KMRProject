@@ -8,7 +8,7 @@ import dynamic from "next/dynamic";
 import { ArrowLeft, ChevronDown } from "lucide-react";
 import Link from "next/link";
 import type { RiskLevel, TimelinePoint } from "@/types";
-import { formatGender, formatVitalStatus } from "@/utils/formatters";
+import { formatGender, formatVitalStatus, formatTimeKey } from "@/utils/formatters";
 
 // Unified time mapping - LAB_TIME_MAP → UNIFIED_TIME_MAP conversion
 // Backend time_mapping.py'ye göre: Month_11=21, Month_12=22
@@ -39,6 +39,11 @@ const UNIFIED_TIME_KEYS: Array<{key: string; order: number}> = [
   {key: "Month_9", order: 19}, {key: "Month_10", order: 20}, {key: "Month_11", order: 21},
   {key: "Month_12", order: 22}  // Backend time_mapping.py'ye göre Month_12=22
 ];
+
+function formatPercent(value: number | null | undefined, decimals: number): string {
+  if (value === null || value === undefined || Number.isNaN(value)) return "-";
+  return `%${value.toFixed(decimals)}`;
+}
 
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
@@ -180,6 +185,30 @@ export default function PatientDetailClient() {
   // Ref for plot click handling
   const plotRef = useRef<HTMLDivElement>(null);
 
+  const hasAnyAnomaly = (point: TimelinePoint | null | undefined): boolean =>
+    !!point && !!(point.kmr_anomaly_flag || point.kre_anomaly_flag || point.gfr_anomaly_flag);
+
+  const toPinnedPoint = (point: TimelinePoint | null | undefined): PinnedPointInfo => {
+    if (!point) return null;
+    return {
+      timeOrder: point.time_order,
+      timeKey: point.time_key,
+      kmr: point.kmr,
+      kre: point.kre,
+      gfr: point.gfr,
+      risk: point.risk_score,
+      riskLevel: point.risk_level,
+      kmrPred: point.kmr_pred,
+      krePred: point.kre_pred ?? null,
+      gfrPred: point.gfr_pred ?? null,
+      kreAnomalyScore: point.kre_anomaly_score ?? null,
+      gfrAnomalyScore: point.gfr_anomaly_score ?? null,
+      kreAnomalyFlag: point.kre_anomaly_flag ?? false,
+      gfrAnomalyFlag: point.gfr_anomaly_flag ?? false,
+      isAnomaly: hasAnyAnomaly(point),
+    };
+  };
+
   // Computed statistics - pinned order'a kadar hesapla
   const stats = useMemo(() => {
     if (!patient?.timeline || patient.timeline.length === 0) return null;
@@ -207,7 +236,7 @@ export default function PatientDetailClient() {
     }
 
     // Anomaly count
-    const anomalyCount = filteredTimeline.filter((t: TimelinePoint) => t.kmr_anomaly_flag).length;
+    const anomalyCount = filteredTimeline.filter((t: TimelinePoint) => hasAnyAnomaly(t)).length;
 
     // Volatility (CV)
     const mean = kmrValues.reduce((a, b) => a + b, 0) / kmrValues.length;
@@ -239,11 +268,33 @@ export default function PatientDetailClient() {
     if (!patient || !stats) return [];
     const recs: { type: 'success' | 'warning' | 'danger' | 'info'; text: string }[] = [];
     
-    // PinnedPoint varsa pinnedPoint değerlerini kullan, yoksa last_status
-    const currentKMR = pinnedPoint?.kmr ?? patient.last_status.kmr_last;
-    const currentKRE = pinnedPoint?.kre ?? stats.kreLast;
-    const currentGFR = pinnedPoint?.gfr ?? stats.gfrLast;
+    // PinnedPoint varsa sadece o noktanın değerlerini kullan (fallback yok)
+    const currentKMR = pinnedPoint ? pinnedPoint.kmr : patient.last_status.kmr_last;
+    const currentKRE = pinnedPoint ? pinnedPoint.kre : patient.last_status.kre_last;
+    const currentGFR = pinnedPoint ? pinnedPoint.gfr : patient.last_status.gfr_last;
     const currentRisk = pinnedPoint?.riskLevel ?? patient.last_status.risk_level_last;
+
+    if (pinnedPoint) {
+      if (currentKMR === null || currentKMR === undefined) {
+        recs.push({ type: 'info', text: `${formatTimeKey(pinnedPoint.timeKey)} noktasında KMR ölçümü yok` });
+      }
+      if (currentKRE === null || currentKRE === undefined) {
+        recs.push({ type: 'info', text: `${formatTimeKey(pinnedPoint.timeKey)} noktasında KRE ölçümü yok` });
+      }
+      if (currentGFR === null || currentGFR === undefined) {
+        recs.push({ type: 'info', text: `${formatTimeKey(pinnedPoint.timeKey)} noktasında GFR ölçümü yok` });
+      }
+      if (pinnedPoint.timeKey.startsWith("Day_") && pinnedPoint.timeOrder < 7 && (currentKRE == null || currentGFR == null)) {
+        recs.push({ type: 'info', text: 'LAB (KRE/GFR) ölçümleri Day 7 ile başlar' });
+      }
+      if (pinnedPoint.timeKey === "Week_4" && (currentKRE == null || currentGFR == null)) {
+        recs.push({ type: 'info', text: 'LAB takviminde Week 4 sonrası ölçüm noktası 1. Ay olarak etiketlenir' });
+      }
+    } else {
+      if (currentKMR === null || currentKMR === undefined) recs.push({ type: 'info', text: 'KMR verisi yok' });
+      if (currentKRE === null || currentKRE === undefined) recs.push({ type: 'info', text: 'KRE verisi yok' });
+      if (currentGFR === null || currentGFR === undefined) recs.push({ type: 'info', text: 'GFR verisi yok' });
+    }
     
     // KMR eşikleri
     if (currentKMR !== null && currentKMR !== undefined) {
@@ -724,7 +775,10 @@ export default function PatientDetailClient() {
         color: COLORS.kmr.line, 
         line: { color: '#fff', width: 2 } 
       },
-      text: timelineGrid.map(g => g.timeKey || ''),
+      text: timelineGrid.map(g => {
+        const base = formatTimeKey(g.timeKey || '');
+        return hasAnyAnomaly(g.timelinePoint) ? `${base} - ANOMALİ` : base;
+      }),
       hovertemplate: '<b>%{text}</b><br>KMR: %{y:.4f}%<extra></extra>',
       connectgaps: true,
       customdata: timelineGrid.map(g => g.timelinePoint ? ({
@@ -733,7 +787,7 @@ export default function PatientDetailClient() {
         krePred: g.timelinePoint.kre_pred, gfrPred: g.timelinePoint.gfr_pred,
         kreAnomalyScore: g.timelinePoint.kre_anomaly_score, gfrAnomalyScore: g.timelinePoint.gfr_anomaly_score,
         kreAnomalyFlag: g.timelinePoint.kre_anomaly_flag, gfrAnomalyFlag: g.timelinePoint.gfr_anomaly_flag,
-        isAnomaly: false
+        isAnomaly: hasAnyAnomaly(g.timelinePoint)
       }) : null),
       xaxis: 'x', yaxis: 'y'
     });
@@ -747,7 +801,7 @@ export default function PatientDetailClient() {
           y: anomalyPts.map(g => g.timelinePoint!.kmr),
           type: 'scatter', mode: 'markers', name: '⚠️ KMR Anomali (AI)',
           marker: { size: 12, color: COLORS.thresholds.critical, symbol: 'diamond', line: { color: '#fff', width: 2 } },
-          text: anomalyPts.map(g => `${g.timeKey} - ANOMALI`),
+          text: anomalyPts.map(g => `${formatTimeKey(g.timeKey)} - ANOMALİ`),
           hovertemplate: '<b>%{text}</b><br>KMR: %{y:.4f}%<extra></extra>',
           customdata: anomalyPts.map(g => ({
             timeOrder: g.timeOrder, timeKey: g.timeKey || '', kmr: g.timelinePoint!.kmr, kre: g.timelinePoint!.kre, gfr: g.timelinePoint!.gfr,
@@ -1630,7 +1684,7 @@ export default function PatientDetailClient() {
   // Tüm zaman noktalarını göster (Day_1'den Month_12'ye kadar)
   // timelineGrid zaten tüm zaman noktalarını içeriyor (1-22)
   const finalTickOrders = timelineGrid.map(g => g.timeOrder);
-  const finalTickTexts = timelineGrid.map(g => g.timeKey || `Order ${g.timeOrder}`);
+  const finalTickTexts = timelineGrid.map(g => g.timeKey ? formatTimeKey(g.timeKey) : `Sıra ${g.timeOrder}`);
 
   // Ana layout - sabit split görünüm + yan panel
   return (
@@ -1784,14 +1838,7 @@ export default function PatientDetailClient() {
                           const timeOrder = point.x;
                           const gridItem = timelineGrid.find(g => g.timeOrder === timeOrder);
                           if (gridItem?.timelinePoint) {
-                            const newPinned: PinnedPointInfo = {
-                              timeOrder: gridItem.timeOrder, timeKey: gridItem.timeKey || '', kmr: gridItem.timelinePoint.kmr, kre: gridItem.timelinePoint.kre,
-                              gfr: gridItem.timelinePoint.gfr, risk: gridItem.timelinePoint.risk_score, riskLevel: gridItem.timelinePoint.risk_level, 
-                              kmrPred: gridItem.timelinePoint.kmr_pred, krePred: gridItem.timelinePoint.kre_pred, gfrPred: gridItem.timelinePoint.gfr_pred,
-                              kreAnomalyScore: gridItem.timelinePoint.kre_anomaly_score, gfrAnomalyScore: gridItem.timelinePoint.gfr_anomaly_score,
-                              kreAnomalyFlag: gridItem.timelinePoint.kre_anomaly_flag, gfrAnomalyFlag: gridItem.timelinePoint.gfr_anomaly_flag,
-                              isAnomaly: gridItem.timelinePoint.kmr_anomaly_flag
-                            };
+                            const newPinned = toPinnedPoint(gridItem.timelinePoint);
                             setPinnedPoint(newPinned);
                             setPinnedPointHighlight(true);
                             setTimeout(() => setPinnedPointHighlight(false), 1000);
@@ -1877,18 +1924,18 @@ export default function PatientDetailClient() {
                     <div className="px-2 py-0.5 rounded-full bg-blue-50 text-blue-800 border border-blue-300 text-[10px] font-medium flex items-center gap-1">
                       <span>KMR:</span>
                       <span className="font-bold">
-                        {pinnedPoint?.kmr !== null && pinnedPoint?.kmr !== undefined 
-                          ? `${pinnedPoint.kmr.toFixed(3)}%`
+                        {pinnedPoint
+                          ? (pinnedPoint.kmr !== null && pinnedPoint.kmr !== undefined ? formatPercent(pinnedPoint.kmr, 3) : 'Ölçüm yok')
                           : patient?.last_status?.kmr_last !== null && patient?.last_status?.kmr_last !== undefined 
-                            ? `${patient.last_status.kmr_last.toFixed(3)}%` 
+                            ? formatPercent(patient.last_status.kmr_last, 3)
                             : '-'}
                       </span>
                     </div>
                     <div className="px-2 py-0.5 rounded-full bg-purple-50 text-purple-800 border border-purple-300 text-[10px] font-medium flex items-center gap-1">
                       <span>KRE:</span>
                       <span className="font-bold">
-                        {pinnedPoint?.kre !== null && pinnedPoint?.kre !== undefined 
-                          ? pinnedPoint.kre.toFixed(2)
+                        {pinnedPoint
+                          ? (pinnedPoint.kre !== null && pinnedPoint.kre !== undefined ? pinnedPoint.kre.toFixed(2) : 'Ölçüm yok')
                           : patient?.last_status?.kre_last !== null && patient?.last_status?.kre_last !== undefined 
                             ? patient.last_status.kre_last.toFixed(2) 
                             : '-'}
@@ -1897,8 +1944,8 @@ export default function PatientDetailClient() {
                     <div className="px-2 py-0.5 rounded-full bg-cyan-50 text-cyan-800 border border-cyan-300 text-[10px] font-medium flex items-center gap-1">
                       <span>GFR:</span>
                       <span className="font-bold">
-                        {pinnedPoint?.gfr !== null && pinnedPoint?.gfr !== undefined 
-                          ? pinnedPoint.gfr.toFixed(0)
+                        {pinnedPoint
+                          ? (pinnedPoint.gfr !== null && pinnedPoint.gfr !== undefined ? pinnedPoint.gfr.toFixed(0) : 'Ölçüm yok')
                           : patient?.last_status?.gfr_last !== null && patient?.last_status?.gfr_last !== undefined 
                             ? patient.last_status.gfr_last.toFixed(0) 
                             : '-'}
@@ -1926,21 +1973,21 @@ export default function PatientDetailClient() {
         </div>
 
         {/* Resizable panel - sağ taraf - snap breakpoint'leri ile, mobilde üstte */}
-        <div className="bg-slate-50 border-t-2 md:border-t-0 md:border-l-2 border-slate-300 shadow-2xl relative flex flex-col overflow-y-auto w-full md:w-[352px] lg:w-[380px] order-first md:order-last">
+        <div className="bg-slate-50 border-t-2 md:border-t-0 md:border-l-2 border-slate-300 shadow-2xl relative flex flex-col overflow-y-auto w-full md:w-[352px] lg:w-[380px] order-first md:order-last md:sticky md:top-0 md:h-[100svh]">
         {/* Panel header */}
         <div className="p-3 md:p-4 border-b-2 border-slate-300 bg-slate-50">
           <h3 className="text-sm uppercase tracking-wide font-bold text-slate-900 mb-1">
-            📊 Detaylı Analiz Paneli
+            📊 Detaylı Analiz
             {pinnedPoint && (
-              <span className="text-xs normal-case text-slate-600 ml-2">({pinnedPoint.timeKey})</span>
+              <span className="text-xs normal-case text-slate-600 ml-2">({formatTimeKey(pinnedPoint.timeKey)})</span>
             )}
             {!pinnedPoint && timeline.length > 0 && (
-              <span className="text-xs normal-case text-slate-600 ml-2">({timeline[timeline.length - 1]?.time_key || 'Son nokta'})</span>
+              <span className="text-xs normal-case text-slate-600 ml-2">({formatTimeKey(timeline[timeline.length - 1]?.time_key || 'Son nokta')})</span>
             )}
           </h3>
           {pinnedPoint ? (
             <p className="text-xs text-slate-600 flex items-center gap-1">
-              📍 Seçili: <span className="font-semibold">{pinnedPoint.timeKey}</span>
+              📍 Seçili: <span className="font-semibold">{formatTimeKey(pinnedPoint.timeKey)}</span>
             </p>
           ) : (
             <p className="text-xs text-slate-500">Grafik noktasına tıklayarak analiz görüntüleyin</p>
@@ -1952,18 +1999,18 @@ export default function PatientDetailClient() {
           <div className="bg-blue-50 rounded-lg p-2 text-center border-2 border-blue-300">
             <div className="text-xs uppercase tracking-wide text-blue-700 font-semibold mb-1">Son KMR</div>
             <div className="text-lg font-bold text-blue-900">
-              {pinnedPoint?.kmr !== null && pinnedPoint?.kmr !== undefined 
-                ? `${pinnedPoint.kmr.toFixed(3)}%`
-                : timeline.length > 0 
-                  ? timeline[timeline.length - 1].kmr?.toFixed(3) ?? '-' 
-                  : '-'}%
+              {pinnedPoint
+                ? (pinnedPoint.kmr !== null && pinnedPoint.kmr !== undefined ? formatPercent(pinnedPoint.kmr, 3) : 'Ölçüm yok')
+                : timeline.length > 0
+                  ? formatPercent(timeline[timeline.length - 1].kmr, 3)
+                  : '-'}
             </div>
           </div>
           <div className="bg-purple-50 rounded-lg p-2 text-center border-2 border-purple-300">
             <div className="text-xs uppercase tracking-wide text-purple-700 font-semibold mb-1">Son KRE</div>
             <div className="text-lg font-bold text-purple-900">
-              {pinnedPoint?.kre !== null && pinnedPoint?.kre !== undefined 
-                ? pinnedPoint.kre.toFixed(2)
+              {pinnedPoint
+                ? (pinnedPoint.kre !== null && pinnedPoint.kre !== undefined ? pinnedPoint.kre.toFixed(2) : 'Ölçüm yok')
                 : krePts.length > 0 
                   ? krePts[krePts.length - 1].kre?.toFixed(2) 
                   : '-'}
@@ -1972,8 +2019,8 @@ export default function PatientDetailClient() {
           <div className="bg-cyan-50 rounded-lg p-2 text-center border-2 border-cyan-300">
             <div className="text-xs uppercase tracking-wide text-cyan-700 font-semibold mb-1">Son GFR</div>
             <div className="text-lg font-bold text-cyan-900">
-              {pinnedPoint?.gfr !== null && pinnedPoint?.gfr !== undefined 
-                ? pinnedPoint.gfr.toFixed(0)
+              {pinnedPoint
+                ? (pinnedPoint.gfr !== null && pinnedPoint.gfr !== undefined ? pinnedPoint.gfr.toFixed(0) : 'Ölçüm yok')
                 : gfrPts.length > 0 
                   ? gfrPts[gfrPts.length - 1].gfr?.toFixed(0) 
                   : '-'}
@@ -2035,7 +2082,7 @@ export default function PatientDetailClient() {
                   <div className={`bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-3 md:p-4 shadow-md border-2 border-purple-300 transition-all duration-300 ${pinnedPointHighlight ? 'animate-pulse ring-2 ring-purple-400' : ''}`}>
                     <div className="flex items-center justify-between mb-2">
                       <h4 className="font-bold text-purple-800 text-sm flex items-center gap-2">
-                        📍 {pinnedPoint.timeKey} Analizi
+                        📍 {formatTimeKey(pinnedPoint.timeKey)} Analizi
                         {pinnedPoint.isAnomaly && <span className="text-red-500 text-xs bg-red-100 px-2 py-0.5 rounded">⚠️ ANOMALİ</span>}
                       </h4>
                       <Button variant="ghost" size="sm" onClick={() => setPinnedPoint(null)} className="h-6 w-6 p-0 text-purple-600 hover:bg-purple-100">✕</Button>
@@ -2047,20 +2094,16 @@ export default function PatientDetailClient() {
                       <div className="grid grid-cols-2 gap-1.5 text-xs">
                         <div className="flex justify-between">
                           <span className="text-slate-600">KMR:</span>
-                          <span className="font-bold text-blue-600">{pinnedPoint.kmr?.toFixed(3) ?? '-'}%</span>
+                          <span className="font-bold text-blue-600">{formatPercent(pinnedPoint.kmr, 3)}</span>
                         </div>
-                        {pinnedPoint.kre !== null && pinnedPoint.kre !== undefined && (
-                          <div className="flex justify-between">
-                            <span className="text-slate-600">KRE:</span>
-                            <span className="font-bold text-purple-600">{pinnedPoint.kre.toFixed(2)}</span>
-                          </div>
-                        )}
-                        {pinnedPoint.gfr !== null && pinnedPoint.gfr !== undefined && (
-                          <div className="flex justify-between">
-                            <span className="text-slate-600">GFR:</span>
-                            <span className="font-bold text-cyan-600">{pinnedPoint.gfr.toFixed(0)}</span>
-                          </div>
-                        )}
+                        <div className="flex justify-between">
+                          <span className="text-slate-600">KRE:</span>
+                          <span className="font-bold text-purple-600">{pinnedPoint.kre !== null && pinnedPoint.kre !== undefined ? pinnedPoint.kre.toFixed(2) : '-'}</span>
+                        </div>
+                        <div className="flex justify-between">
+                          <span className="text-slate-600">GFR:</span>
+                          <span className="font-bold text-cyan-600">{pinnedPoint.gfr !== null && pinnedPoint.gfr !== undefined ? pinnedPoint.gfr.toFixed(0) : '-'}</span>
+                        </div>
                         <div className="flex justify-between">
                           <span className="text-slate-600">Risk:</span>
                           <span className="font-bold" style={{ color: RISK_COLORS[pinnedPoint.riskLevel as RiskLevel] || '#666' }}>
@@ -2073,21 +2116,17 @@ export default function PatientDetailClient() {
                     {/* Current Values */}
                     <div className="grid grid-cols-2 gap-2 mb-2">
                       <div className="bg-white/80 rounded-lg p-2 text-center border border-blue-200">
-                        <div className="text-lg font-bold text-blue-600">{pinnedPoint.kmr?.toFixed(3) ?? '-'}%</div>
+                        <div className="text-lg font-bold text-blue-600">{formatPercent(pinnedPoint.kmr, 3)}</div>
                         <div className="text-xs text-slate-500">KMR</div>
                       </div>
-                      {pinnedPoint.kre !== null && pinnedPoint.kre !== undefined && (
-                        <div className="bg-white/80 rounded-lg p-2 text-center border border-purple-200">
-                          <div className="text-lg font-bold text-purple-600">{pinnedPoint.kre.toFixed(2)}</div>
-                          <div className="text-xs text-slate-500">KRE</div>
-                        </div>
-                      )}
-                      {pinnedPoint.gfr !== null && pinnedPoint.gfr !== undefined && (
-                        <div className="bg-white/80 rounded-lg p-2 text-center border border-cyan-200">
-                          <div className="text-lg font-bold text-cyan-600">{pinnedPoint.gfr.toFixed(0)}</div>
-                          <div className="text-xs text-slate-500">GFR</div>
-                        </div>
-                      )}
+                      <div className="bg-white/80 rounded-lg p-2 text-center border border-purple-200">
+                        <div className="text-lg font-bold text-purple-600">{pinnedPoint.kre !== null && pinnedPoint.kre !== undefined ? pinnedPoint.kre.toFixed(2) : '-'}</div>
+                        <div className="text-xs text-slate-500">KRE</div>
+                      </div>
+                      <div className="bg-white/80 rounded-lg p-2 text-center border border-cyan-200">
+                        <div className="text-lg font-bold text-cyan-600">{pinnedPoint.gfr !== null && pinnedPoint.gfr !== undefined ? pinnedPoint.gfr.toFixed(0) : '-'}</div>
+                        <div className="text-xs text-slate-500">GFR</div>
+                      </div>
                       {(() => {
                         // Klinik eşiklere göre risk_level override (yumuşatılmış, kademeli)
                         let overrideRiskLevel: RiskLevel = pinnedPoint.riskLevel as RiskLevel;
@@ -2155,7 +2194,7 @@ export default function PatientDetailClient() {
                       <div className="bg-indigo-50 rounded-lg border border-indigo-200 mb-2 p-3">
                         <h5 className="text-xs font-bold text-indigo-800 mb-2 flex items-center gap-1">
                           📊 Değişim Analizi
-                          <span className="text-[10px] font-normal text-indigo-600">({prevPoint.time_key} → {pinnedPoint.timeKey})</span>
+                          <span className="text-[10px] font-normal text-indigo-600">({formatTimeKey(prevPoint.time_key)} → {formatTimeKey(pinnedPoint.timeKey)})</span>
                         </h5>
                         <div className="space-y-1.5 text-xs">
                           {kmrDiff !== null && (
@@ -2291,8 +2330,7 @@ export default function PatientDetailClient() {
                     )}
 
                     {/* LAB Risk & Anomaly Warnings */}
-                    {(pinnedPoint.kre !== null || pinnedPoint.gfr !== null || pinnedPoint.kreAnomalyFlag || pinnedPoint.gfrAnomalyFlag) && (
-                      <div className="bg-purple-50 rounded-lg border border-purple-200 mb-2 overflow-hidden">
+                    <div className="bg-purple-50 rounded-lg border border-purple-200 mb-2 overflow-hidden">
                         <button 
                           onClick={() => dispatchExpanded({ type: 'TOGGLE', section: 'metrics' })}
                           className="w-full p-2 flex items-center justify-between text-xs text-purple-700 hover:bg-purple-100"
@@ -2303,48 +2341,48 @@ export default function PatientDetailClient() {
                         {expandedSections.metrics && (
                           <div className="px-3 pb-2 space-y-2 text-xs">
                             {/* KRE Status */}
-                            {pinnedPoint.kre !== null && (
-                              <div className="bg-white/80 rounded p-2 border border-purple-200">
+                            <div className="bg-white/80 rounded p-2 border border-purple-200">
                                 <div className="flex justify-between items-center mb-1">
                                   <span className="font-semibold text-purple-700">KRE:</span>
                                   <span className={`font-bold ${
+                                    pinnedPoint.kre === null || pinnedPoint.kre === undefined ? 'text-slate-500' :
                                     pinnedPoint.kre < 1.2 ? 'text-green-600' :
                                     pinnedPoint.kre > 4.5 ? 'text-red-600' :
                                     'text-orange-600'
                                   }`}>
-                                    {pinnedPoint.kre.toFixed(2)}
+                                    {pinnedPoint.kre !== null && pinnedPoint.kre !== undefined ? pinnedPoint.kre.toFixed(2) : '-'}
                                   </span>
                                 </div>
-                                {pinnedPoint.kre < 1.2 && <div className="text-green-700 text-xs">✅ Çok iyi</div>}
-                                {pinnedPoint.kre >= 1.2 && pinnedPoint.kre <= 4.5 && <div className="text-orange-700 text-xs">⚠️ İzlem gerekli</div>}
-                                {pinnedPoint.kre > 4.5 && <div className="text-red-700 text-xs font-bold">🚨 Çok kötü - Acil müdahale!</div>}
+                                {(pinnedPoint.kre === null || pinnedPoint.kre === undefined) && <div className="text-slate-600 text-xs">Bu noktada ölçüm yok</div>}
+                                {pinnedPoint.kre != null && pinnedPoint.kre < 1.2 && <div className="text-green-700 text-xs">✅ Çok iyi</div>}
+                                {pinnedPoint.kre != null && pinnedPoint.kre >= 1.2 && pinnedPoint.kre <= 4.5 && <div className="text-orange-700 text-xs">⚠️ İzlem gerekli</div>}
+                                {pinnedPoint.kre != null && pinnedPoint.kre > 4.5 && <div className="text-red-700 text-xs font-bold">🚨 Çok kötü - Acil müdahale!</div>}
                                 {pinnedPoint.kreAnomalyFlag && pinnedPoint.kreAnomalyScore !== null && pinnedPoint.kreAnomalyScore > 50 && (
                                   <div className="text-red-700 text-xs font-bold mt-1">⚠️ ANOMALİ (Skor: {pinnedPoint.kreAnomalyScore.toFixed(0)})</div>
                                 )}
-                              </div>
-                            )}
+                            </div>
                             
                             {/* GFR Status */}
-                            {pinnedPoint.gfr !== null && (
-                              <div className="bg-white/80 rounded p-2 border border-cyan-200">
+                            <div className="bg-white/80 rounded p-2 border border-cyan-200">
                                 <div className="flex justify-between items-center mb-1">
                                   <span className="font-semibold text-cyan-700">GFR:</span>
                                   <span className={`font-bold ${
+                                    pinnedPoint.gfr === null || pinnedPoint.gfr === undefined ? 'text-slate-500' :
                                     pinnedPoint.gfr >= 90 ? 'text-green-600' :
                                     pinnedPoint.gfr < 15 ? 'text-red-600' :
                                     'text-orange-600'
                                   }`}>
-                                    {pinnedPoint.gfr.toFixed(0)}
+                                    {pinnedPoint.gfr !== null && pinnedPoint.gfr !== undefined ? pinnedPoint.gfr.toFixed(0) : '-'}
                                   </span>
                                 </div>
-                                {pinnedPoint.gfr >= 90 && <div className="text-green-700 text-xs">✅ Çok iyi</div>}
-                                {pinnedPoint.gfr >= 15 && pinnedPoint.gfr < 90 && <div className="text-orange-700 text-xs">⚠️ İzlem gerekli</div>}
-                                {pinnedPoint.gfr < 15 && <div className="text-red-700 text-xs font-bold">🚨 Çok kötü - Acil müdahale!</div>}
+                                {(pinnedPoint.gfr === null || pinnedPoint.gfr === undefined) && <div className="text-slate-600 text-xs">Bu noktada ölçüm yok</div>}
+                                {pinnedPoint.gfr != null && pinnedPoint.gfr >= 90 && <div className="text-green-700 text-xs">✅ Çok iyi</div>}
+                                {pinnedPoint.gfr != null && pinnedPoint.gfr >= 15 && pinnedPoint.gfr < 90 && <div className="text-orange-700 text-xs">⚠️ İzlem gerekli</div>}
+                                {pinnedPoint.gfr != null && pinnedPoint.gfr < 15 && <div className="text-red-700 text-xs font-bold">🚨 Çok kötü - Acil müdahale!</div>}
                                 {pinnedPoint.gfrAnomalyFlag && pinnedPoint.gfrAnomalyScore !== null && pinnedPoint.gfrAnomalyScore > 50 && (
                                   <div className="text-red-700 text-xs font-bold mt-1">⚠️ ANOMALİ (Skor: {pinnedPoint.gfrAnomalyScore.toFixed(0)})</div>
                                 )}
-                              </div>
-                            )}
+                            </div>
                             
                             {/* Trend Warnings */}
                             {kreDiff !== null && kreDiff > 0.5 && (
@@ -2372,7 +2410,6 @@ export default function PatientDetailClient() {
                           </div>
                         )}
                       </div>
-                    )}
 
                     {/* Clinical Evaluation - Collapsible */}
                     <div className={`rounded-lg border-2 overflow-hidden mb-2 ${
@@ -2384,11 +2421,14 @@ export default function PatientDetailClient() {
                         onClick={() => dispatchExpanded({ type: 'TOGGLE', section: 'clinical' })}
                         className="w-full p-2 flex items-center justify-between text-xs hover:opacity-80"
                       >
-                        <span className="font-bold">💡 Klinik Öneriler</span>
+                        <span className="font-bold">💡 Nokta Bazlı Klinik Değerlendirme</span>
                         <ChevronDown className={`h-3 w-3 transition-transform ${expandedSections.clinical ? 'rotate-180' : ''}`} />
                       </button>
                       {expandedSections.clinical && (
                       <div className="px-3 pb-2 space-y-1 text-xs">
+                        {pinnedPoint.kmr == null && (
+                          <div>ℹ️ Bu noktada KMR ölçümü yok</div>
+                        )}
                         {pinnedPoint.kmr != null && pinnedPoint.kmr < 0.5 && (
                           <>
                             <div>✅ KMR normal sınırlarda</div>
@@ -2425,14 +2465,7 @@ export default function PatientDetailClient() {
                       <div className="flex gap-2">
                         <Button variant="outline" size="sm" disabled={!prevPoint} onClick={() => {
                           if (prevPoint) {
-                            const newPinned: PinnedPointInfo = {
-                              timeOrder: prevPoint.time_order, timeKey: prevPoint.time_key, kmr: prevPoint.kmr, kre: prevPoint.kre,
-                              gfr: prevPoint.gfr, risk: prevPoint.risk_score, riskLevel: prevPoint.risk_level, kmrPred: prevPoint.kmr_pred,
-                              krePred: prevPoint.kre_pred ?? null, gfrPred: prevPoint.gfr_pred ?? null,
-                              kreAnomalyScore: prevPoint.kre_anomaly_score ?? null, gfrAnomalyScore: prevPoint.gfr_anomaly_score ?? null,
-                              kreAnomalyFlag: prevPoint.kre_anomaly_flag ?? false, gfrAnomalyFlag: prevPoint.gfr_anomaly_flag ?? false,
-                              isAnomaly: prevPoint.kmr_anomaly_flag
-                            };
+                            const newPinned = toPinnedPoint(prevPoint);
                             setPinnedPoint(newPinned);
                             setPinnedPointHighlight(true);
                             setTimeout(() => setPinnedPointHighlight(false), 1000);
@@ -2440,14 +2473,7 @@ export default function PatientDetailClient() {
                         }} className="flex-1 text-xs border-slate-300">← Önceki</Button>
                         <Button variant="outline" size="sm" disabled={!nextPoint} onClick={() => {
                           if (nextPoint) {
-                            const newPinned: PinnedPointInfo = {
-                              timeOrder: nextPoint.time_order, timeKey: nextPoint.time_key, kmr: nextPoint.kmr, kre: nextPoint.kre,
-                              gfr: nextPoint.gfr, risk: nextPoint.risk_score, riskLevel: nextPoint.risk_level, kmrPred: nextPoint.kmr_pred,
-                              krePred: nextPoint.kre_pred ?? null, gfrPred: nextPoint.gfr_pred ?? null,
-                              kreAnomalyScore: nextPoint.kre_anomaly_score ?? null, gfrAnomalyScore: nextPoint.gfr_anomaly_score ?? null,
-                              kreAnomalyFlag: nextPoint.kre_anomaly_flag ?? false, gfrAnomalyFlag: nextPoint.gfr_anomaly_flag ?? false,
-                              isAnomaly: nextPoint.kmr_anomaly_flag
-                            };
+                            const newPinned = toPinnedPoint(nextPoint);
                             setPinnedPoint(newPinned);
                             setPinnedPointHighlight(true);
                             setTimeout(() => setPinnedPointHighlight(false), 1000);
@@ -2458,14 +2484,7 @@ export default function PatientDetailClient() {
                         <Button variant="outline" size="sm" onClick={() => {
                           const firstPoint = timeline[0];
                           if (firstPoint) {
-                            const newPinned: PinnedPointInfo = {
-                              timeOrder: firstPoint.time_order, timeKey: firstPoint.time_key, kmr: firstPoint.kmr, kre: firstPoint.kre,
-                              gfr: firstPoint.gfr, risk: firstPoint.risk_score, riskLevel: firstPoint.risk_level, kmrPred: firstPoint.kmr_pred,
-                              krePred: firstPoint.kre_pred ?? null, gfrPred: firstPoint.gfr_pred ?? null,
-                              kreAnomalyScore: firstPoint.kre_anomaly_score ?? null, gfrAnomalyScore: firstPoint.gfr_anomaly_score ?? null,
-                              kreAnomalyFlag: firstPoint.kre_anomaly_flag ?? false, gfrAnomalyFlag: firstPoint.gfr_anomaly_flag ?? false,
-                              isAnomaly: firstPoint.kmr_anomaly_flag
-                            };
+                            const newPinned = toPinnedPoint(firstPoint);
                             setPinnedPoint(newPinned);
                             setPinnedPointHighlight(true);
                             setTimeout(() => setPinnedPointHighlight(false), 1000);
@@ -2474,14 +2493,7 @@ export default function PatientDetailClient() {
                         <Button variant="outline" size="sm" onClick={() => {
                           const lastPoint = timeline[timeline.length - 1];
                           if (lastPoint) {
-                            const newPinned: PinnedPointInfo = {
-                              timeOrder: lastPoint.time_order, timeKey: lastPoint.time_key, kmr: lastPoint.kmr, kre: lastPoint.kre,
-                              gfr: lastPoint.gfr, risk: lastPoint.risk_score, riskLevel: lastPoint.risk_level, kmrPred: lastPoint.kmr_pred,
-                              krePred: lastPoint.kre_pred ?? null, gfrPred: lastPoint.gfr_pred ?? null,
-                              kreAnomalyScore: lastPoint.kre_anomaly_score ?? null, gfrAnomalyScore: lastPoint.gfr_anomaly_score ?? null,
-                              kreAnomalyFlag: lastPoint.kre_anomaly_flag ?? false, gfrAnomalyFlag: lastPoint.gfr_anomaly_flag ?? false,
-                              isAnomaly: lastPoint.kmr_anomaly_flag
-                            };
+                            const newPinned = toPinnedPoint(lastPoint);
                             setPinnedPoint(newPinned);
                             setPinnedPointHighlight(true);
                             setTimeout(() => setPinnedPointHighlight(false), 1000);
@@ -2493,14 +2505,7 @@ export default function PatientDetailClient() {
                             return max;
                           }, null);
                           if (maxRiskPoint) {
-                            const newPinned: PinnedPointInfo = {
-                              timeOrder: maxRiskPoint.time_order, timeKey: maxRiskPoint.time_key, kmr: maxRiskPoint.kmr, kre: maxRiskPoint.kre,
-                              gfr: maxRiskPoint.gfr, risk: maxRiskPoint.risk_score, riskLevel: maxRiskPoint.risk_level, kmrPred: maxRiskPoint.kmr_pred,
-                              krePred: maxRiskPoint.kre_pred ?? null, gfrPred: maxRiskPoint.gfr_pred ?? null,
-                              kreAnomalyScore: maxRiskPoint.kre_anomaly_score ?? null, gfrAnomalyScore: maxRiskPoint.gfr_anomaly_score ?? null,
-                              kreAnomalyFlag: maxRiskPoint.kre_anomaly_flag ?? false, gfrAnomalyFlag: maxRiskPoint.gfr_anomaly_flag ?? false,
-                              isAnomaly: maxRiskPoint.kmr_anomaly_flag
-                            };
+                            const newPinned = toPinnedPoint(maxRiskPoint);
                             setPinnedPoint(newPinned);
                             setPinnedPointHighlight(true);
                             setTimeout(() => setPinnedPointHighlight(false), 1000);
@@ -2522,7 +2527,7 @@ export default function PatientDetailClient() {
                 <h4 className="text-sm uppercase tracking-wide font-bold text-slate-900 mb-2 flex items-center gap-2">
                   📉 KMR İstatistikleri
                   {pinnedPoint && (
-                    <span className="text-xs normal-case text-slate-600 font-normal">({pinnedPoint.timeKey}&apos;a kadar)</span>
+                    <span className="text-xs normal-case text-slate-600 font-normal">({formatTimeKey(pinnedPoint.timeKey)}&apos;a kadar)</span>
                   )}
                 </h4>
                 <div className="space-y-2 text-xs">
@@ -2530,7 +2535,7 @@ export default function PatientDetailClient() {
                     <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
                       <span className="text-slate-700 font-medium">
                         Min / Max
-                        {pinnedPoint && <span className="text-[10px] text-slate-500 ml-1">({pinnedPoint.timeKey}&apos;a kadar)</span>}
+                        {pinnedPoint && <span className="text-[10px] text-slate-500 ml-1">({formatTimeKey(pinnedPoint.timeKey)}&apos;a kadar)</span>}
                       </span>
                       <span className="font-mono font-bold text-slate-900">{stats.kmrMin.toFixed(3)}% - {stats.kmrMax.toFixed(3)}%</span>
                     </div>
@@ -2539,7 +2544,7 @@ export default function PatientDetailClient() {
                     <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
                       <span className="text-slate-700 font-medium">
                         Ortalama
-                        {pinnedPoint && <span className="text-[10px] text-slate-500 ml-1">({pinnedPoint.timeKey}&apos;a kadar)</span>}
+                        {pinnedPoint && <span className="text-[10px] text-slate-500 ml-1">({formatTimeKey(pinnedPoint.timeKey)}&apos;a kadar)</span>}
                       </span>
                       <span className="font-mono font-bold text-slate-900">{stats.kmrMean.toFixed(4)}%</span>
                     </div>
@@ -2548,7 +2553,7 @@ export default function PatientDetailClient() {
                     <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
                       <span className="text-slate-700 font-medium">
                         Trend
-                        {pinnedPoint && <span className="text-[10px] text-slate-500 ml-1">({pinnedPoint.timeKey}&apos;a kadar)</span>}
+                        {pinnedPoint && <span className="text-[10px] text-slate-500 ml-1">({formatTimeKey(pinnedPoint.timeKey)}&apos;a kadar)</span>}
                       </span>
                       <span className={`font-mono font-bold flex items-center gap-1 ${stats.kmrTrend < 0 ? 'text-green-700' : 'text-red-700'}`}>
                         {stats.kmrTrend < 0 ? '↓' : '↑'} {stats.kmrTrend.toFixed(4)}
@@ -2560,7 +2565,7 @@ export default function PatientDetailClient() {
                     <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
                       <span className="text-slate-700 font-medium">
                         Volatilite (CV)
-                        {pinnedPoint && <span className="text-[10px] text-slate-500 ml-1">({pinnedPoint.timeKey}&apos;a kadar)</span>}
+                        {pinnedPoint && <span className="text-[10px] text-slate-500 ml-1">({formatTimeKey(pinnedPoint.timeKey)}&apos;a kadar)</span>}
                       </span>
                       <span className="font-mono font-bold text-slate-900">{(stats.kmrCV * 100).toFixed(1)}%</span>
                     </div>
@@ -2568,7 +2573,7 @@ export default function PatientDetailClient() {
                   <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
                     <span className="text-slate-700 font-medium">
                       Anomali Sayısı
-                      {pinnedPoint && <span className="text-[10px] text-slate-500 ml-1">({pinnedPoint.timeKey}&apos;a kadar)</span>}
+                      {pinnedPoint && <span className="text-[10px] text-slate-500 ml-1">({formatTimeKey(pinnedPoint.timeKey)}&apos;a kadar)</span>}
                     </span>
                     <span className={`font-mono font-bold ${stats.anomalyCount > 0 ? 'text-orange-700' : 'text-green-700'}`}>
                       {stats.anomalyCount} / {stats.totalPoints}

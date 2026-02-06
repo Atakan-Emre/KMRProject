@@ -95,7 +95,8 @@ export function formatDate(value: string | null | undefined, fallback: string = 
  * KMR değerini formatlar
  */
 export function formatKMR(value: number | null | undefined): string {
-  return formatNumber(value, 4, '-') + (value !== null && value !== undefined ? '%' : '');
+  if (value === null || value === undefined || isNaN(value)) return '-';
+  return `%${formatNumber(value, 4, '-')}`;
 }
 
 /**
@@ -142,4 +143,24 @@ export function formatImprovedStatus(improved: boolean | null | undefined): stri
 export function formatAnomalyStatus(hasAnomaly: boolean | null | undefined): string {
   if (hasAnomaly === null || hasAnomaly === undefined) return '-';
   return hasAnomaly ? 'Var' : 'Yok';
+}
+
+/**
+ * Time key değerlerini kullanıcı dostu Türkçe etikete çevirir.
+ * Örn: Day_6 -> 6. Gün, Week_4 -> 4. Hafta, Month_12 -> 12. Ay
+ */
+export function formatTimeKey(value: string | null | undefined): string {
+  if (!value) return '-';
+  const trimmed = value.trim();
+
+  const dayMatch = trimmed.match(/^Day_(\d+)$/i);
+  if (dayMatch) return `${dayMatch[1]}. Gün`;
+
+  const weekMatch = trimmed.match(/^Week_(\d+)$/i);
+  if (weekMatch) return `${weekMatch[1]}. Hafta`;
+
+  const monthMatch = trimmed.match(/^Month_(\d+)$/i);
+  if (monthMatch) return `${monthMatch[1]}. Ay`;
+
+  return trimmed;
 }

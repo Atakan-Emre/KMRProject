@@ -36,7 +36,7 @@
       "gfr_anomaly_flag": false,
       "kre_level_score": null,
       "gfr_level_score": null,
-      "lab_trend_score": 19.5,
+      "lab_trend_score": null,
       "risk_components": {
         "kmr_level": 36.4,
         "kmr_trend": 0,
@@ -44,9 +44,9 @@
         "kmr_ae": 25.5,
         "kmr_residual": 0.0,
         "lab_level": 0,
-        "lab_trend": 19.5
+        "lab_trend": 0
       },
-      "risk_score": 18.7,
+      "risk_score": 16.6,
       "risk_level": "Normal"
     },
     {
@@ -73,7 +73,7 @@
       "gfr_anomaly_flag": false,
       "kre_level_score": null,
       "gfr_level_score": null,
-      "lab_trend_score": 19.5,
+      "lab_trend_score": null,
       "risk_components": {
         "kmr_level": 51.9,
         "kmr_trend": 0,
@@ -81,9 +81,9 @@
         "kmr_ae": 52.6,
         "kmr_residual": 0.0,
         "lab_level": 0,
-        "lab_trend": 19.5
+        "lab_trend": 0
       },
-      "risk_score": 26.5,
+      "risk_score": 28.5,
       "risk_level": "Normal"
     },
     {
@@ -110,7 +110,7 @@
       "gfr_anomaly_flag": false,
       "kre_level_score": null,
       "gfr_level_score": null,
-      "lab_trend_score": 19.5,
+      "lab_trend_score": null,
       "risk_components": {
         "kmr_level": 30.3,
         "kmr_trend": 9.2,
@@ -118,9 +118,9 @@
         "kmr_ae": 15.9,
         "kmr_residual": 0.0,
         "lab_level": 0,
-        "lab_trend": 19.5
+        "lab_trend": 0
       },
-      "risk_score": 20.1,
+      "risk_score": 18.6,
       "risk_level": "Normal"
     },
     {
@@ -147,7 +147,7 @@
       "gfr_anomaly_flag": false,
       "kre_level_score": null,
       "gfr_level_score": null,
-      "lab_trend_score": 19.5,
+      "lab_trend_score": null,
       "risk_components": {
         "kmr_level": 0,
         "kmr_trend": 0,
@@ -155,9 +155,9 @@
         "kmr_ae": 0,
         "kmr_residual": 0,
         "lab_level": 0,
-        "lab_trend": 19.5
+        "lab_trend": 0
       },
-      "risk_score": 22.8,
+      "risk_score": 0,
       "risk_level": "Normal"
     },
     {
@@ -184,7 +184,7 @@
       "gfr_anomaly_flag": false,
       "kre_level_score": null,
       "gfr_level_score": null,
-      "lab_trend_score": 19.5,
+      "lab_trend_score": null,
       "risk_components": {
         "kmr_level": 0,
         "kmr_trend": 0,
@@ -192,9 +192,9 @@
         "kmr_ae": 0,
         "kmr_residual": 0,
         "lab_level": 0,
-        "lab_trend": 19.5
+        "lab_trend": 0
       },
-      "risk_score": 22.8,
+      "risk_score": 0,
       "risk_level": "Normal"
     },
     {
@@ -221,7 +221,7 @@
       "gfr_anomaly_flag": false,
       "kre_level_score": null,
       "gfr_level_score": null,
-      "lab_trend_score": 19.5,
+      "lab_trend_score": null,
       "risk_components": {
         "kmr_level": 0,
         "kmr_trend": 0,
@@ -229,9 +229,9 @@
         "kmr_ae": 0,
         "kmr_residual": 0,
         "lab_level": 0,
-        "lab_trend": 19.5
+        "lab_trend": 0
       },
-      "risk_score": 22.8,
+      "risk_score": 0,
       "risk_level": "Normal"
     },
     {
@@ -258,7 +258,7 @@
       "gfr_anomaly_flag": false,
       "kre_level_score": 10.0,
       "gfr_level_score": 14.3,
-      "lab_trend_score": 19.5,
+      "lab_trend_score": null,
       "risk_components": {
         "kmr_level": 20.0,
         "kmr_trend": 7.5,
@@ -266,9 +266,9 @@
         "kmr_ae": 0.0,
         "kmr_residual": 0.0,
         "lab_level": 12.1,
-        "lab_trend": 19.5
+        "lab_trend": 0
       },
-      "risk_score": 14.5,
+      "risk_score": 13.4,
       "risk_level": "Normal"
     },
     {
@@ -295,7 +295,7 @@
       "gfr_anomaly_flag": false,
       "kre_level_score": 8.9,
       "gfr_level_score": 9.1,
-      "lab_trend_score": 19.5,
+      "lab_trend_score": null,
       "risk_components": {
         "kmr_level": 6.5,
         "kmr_trend": 7.6,
@@ -303,9 +303,9 @@
         "kmr_ae": 10.6,
         "kmr_residual": 0.0,
         "lab_level": 9.0,
-        "lab_trend": 19.5
+        "lab_trend": 0
       },
-      "risk_score": 12.3,
+      "risk_score": 10.6,
       "risk_level": "Normal"
     },
     {
@@ -315,9 +315,9 @@
       "kmr": null,
       "kre": 1.04,
       "gfr": 102.0,
-      "kmr_pred": 0.0349,
-      "kmr_pred_lo": 0.0262,
-      "kmr_pred_hi": 0.0436,
+      "kmr_pred": 0.0646,
+      "kmr_pred_lo": 0.0485,
+      "kmr_pred_hi": 0.0808,
       "kre_pred": 1.04,
       "kre_pred_lo": 0.88,
       "kre_pred_hi": 1.2,
@@ -332,7 +332,7 @@
       "gfr_anomaly_flag": false,
       "kre_level_score": 8.7,
       "gfr_level_score": 8.8,
-      "lab_trend_score": 19.5,
+      "lab_trend_score": 17.2,
       "risk_components": {
         "kmr_level": 0,
         "kmr_trend": 0,
@@ -340,9 +340,9 @@
         "kmr_ae": 0,
         "kmr_residual": 0,
         "lab_level": 8.7,
-        "lab_trend": 19.5
+        "lab_trend": 17.2
       },
-      "risk_score": 12.2,
+      "risk_score": 11.3,
       "risk_level": "Normal"
     },
     {
@@ -352,9 +352,9 @@
       "kmr": 0.0832,
       "kre": null,
       "gfr": null,
-      "kmr_pred": 0.0349,
-      "kmr_pred_lo": 0.0297,
-      "kmr_pred_hi": 0.0401,
+      "kmr_pred": 0.0646,
+      "kmr_pred_lo": 0.0549,
+      "kmr_pred_hi": 0.0743,
       "kre_pred": null,
       "kre_pred_lo": null,
       "kre_pred_hi": null,
@@ -369,17 +369,17 @@
       "gfr_anomaly_flag": false,
       "kre_level_score": null,
       "gfr_level_score": null,
-      "lab_trend_score": 19.5,
+      "lab_trend_score": 17.2,
       "risk_components": {
         "kmr_level": 3.3,
         "kmr_trend": 7.5,
         "kmr_volatility": 97.8,
         "kmr_ae": 13.0,
-        "kmr_residual": 2.7,
+        "kmr_residual": 1.0,
         "lab_level": 0,
-        "lab_trend": 19.5
+        "lab_trend": 17.2
       },
-      "risk_score": 17.9,
+      "risk_score": 16.8,
       "risk_level": "Normal"
     },
     {
@@ -406,7 +406,7 @@
       "gfr_anomaly_flag": false,
       "kre_level_score": 8.9,
       "gfr_level_score": 9.1,
-      "lab_trend_score": 19.5,
+      "lab_trend_score": 18.7,
       "risk_components": {
         "kmr_level": 0,
         "kmr_trend": 0,
@@ -414,9 +414,9 @@
         "kmr_ae": 0,
         "kmr_residual": 0,
         "lab_level": 9.0,
-        "lab_trend": 19.5
+        "lab_trend": 18.7
       },
-      "risk_score": 11.9,
+      "risk_score": 11.7,
       "risk_level": "Normal"
     },
     {
@@ -426,9 +426,9 @@
       "kmr": 0.1338,
       "kre": 0.98,
       "gfr": 110.0,
-      "kmr_pred": 0.149,
-      "kmr_pred_lo": 0.1267,
-      "kmr_pred_hi": 0.1714,
+      "kmr_pred": 0.0845,
+      "kmr_pred_lo": 0.0718,
+      "kmr_pred_hi": 0.0971,
       "kre_pred": 0.98,
       "kre_pred_lo": 0.83,
       "kre_pred_hi": 1.13,
@@ -443,17 +443,17 @@
       "gfr_anomaly_flag": false,
       "kre_level_score": 8.2,
       "gfr_level_score": 8.0,
-      "lab_trend_score": 19.5,
+      "lab_trend_score": 18.6,
       "risk_components": {
         "kmr_level": 5.4,
         "kmr_trend": 18.9,
         "kmr_volatility": 92.4,
         "kmr_ae": 11.5,
-        "kmr_residual": 0.1,
+        "kmr_residual": 4.0,
         "lab_level": 8.1,
-        "lab_trend": 19.5
+        "lab_trend": 18.6
       },
-      "risk_score": 16.0,
+      "risk_score": 16.2,
       "risk_level": "Normal"
     },
     {
@@ -463,15 +463,15 @@
       "kmr": 0.1472,
       "kre": 1.16,
       "gfr": 90.0,
-      "kmr_pred": 0.0973,
-      "kmr_pred_lo": 0.0827,
-      "kmr_pred_hi": 0.1119,
-      "kre_pred": 1.12,
-      "kre_pred_lo": 0.95,
+      "kmr_pred": 0.0561,
+      "kmr_pred_lo": 0.0477,
+      "kmr_pred_hi": 0.0645,
+      "kre_pred": 1.13,
+      "kre_pred_lo": 0.96,
       "kre_pred_hi": 1.29,
-      "gfr_pred": 126.1,
-      "gfr_pred_lo": 113.5,
-      "gfr_pred_hi": 138.7,
+      "gfr_pred": 119.5,
+      "gfr_pred_lo": 107.5,
+      "gfr_pred_hi": 131.4,
       "kmr_anomaly_score": 11.04,
       "kmr_anomaly_flag": false,
       "kre_anomaly_score": 23.29,
@@ -480,17 +480,17 @@
       "gfr_anomaly_flag": false,
       "kre_level_score": 9.7,
       "gfr_level_score": 10.0,
-      "lab_trend_score": 19.5,
+      "lab_trend_score": 19.0,
       "risk_components": {
         "kmr_level": 5.9,
         "kmr_trend": 29.7,
         "kmr_volatility": 73.2,
         "kmr_ae": 11.0,
-        "kmr_residual": 0.1,
+        "kmr_residual": 2.8,
         "lab_level": 9.8,
-        "lab_trend": 19.5
+        "lab_trend": 19.0
       },
-      "risk_score": 16.9,
+      "risk_score": 17.1,
       "risk_level": "Normal"
     },
     {
@@ -500,15 +500,15 @@
       "kmr": 0.0959,
       "kre": 1.14,
       "gfr": 91.0,
-      "kmr_pred": 0.1505,
-      "kmr_pred_lo": 0.1279,
-      "kmr_pred_hi": 0.1731,
-      "kre_pred": 1.11,
-      "kre_pred_lo": 0.94,
-      "kre_pred_hi": 1.28,
-      "gfr_pred": 117.6,
-      "gfr_pred_lo": 105.8,
-      "gfr_pred_hi": 129.4,
+      "kmr_pred": 0.1333,
+      "kmr_pred_lo": 0.1133,
+      "kmr_pred_hi": 0.1533,
+      "kre_pred": 1.12,
+      "kre_pred_lo": 0.95,
+      "kre_pred_hi": 1.29,
+      "gfr_pred": 118.1,
+      "gfr_pred_lo": 106.3,
+      "gfr_pred_hi": 130.0,
       "kmr_anomaly_score": 12.64,
       "kmr_anomaly_flag": false,
       "kre_anomaly_score": 18.18,
@@ -517,17 +517,17 @@
       "gfr_anomaly_flag": false,
       "kre_level_score": 9.5,
       "gfr_level_score": 9.9,
-      "lab_trend_score": 19.5,
+      "lab_trend_score": 19.7,
       "risk_components": {
         "kmr_level": 3.8,
         "kmr_trend": 10.0,
         "kmr_volatility": 24.2,
         "kmr_ae": 12.6,
-        "kmr_residual": 10.2,
+        "kmr_residual": 8.8,
         "lab_level": 9.7,
-        "lab_trend": 19.5
+        "lab_trend": 19.7
       },
-      "risk_score": 11.0,
+      "risk_score": 10.9,
       "risk_level": "Normal"
     },
     {
@@ -537,15 +537,15 @@
       "kmr": 0.0209,
       "kre": 0.98,
       "gfr": 110.0,
-      "kmr_pred": 0.1692,
-      "kmr_pred_lo": 0.1439,
-      "kmr_pred_hi": 0.1946,
-      "kre_pred": 1.11,
+      "kmr_pred": 0.1545,
+      "kmr_pred_lo": 0.1313,
+      "kmr_pred_hi": 0.1776,
+      "kre_pred": 1.12,
       "kre_pred_lo": 0.95,
-      "kre_pred_hi": 1.28,
-      "gfr_pred": 119.3,
-      "gfr_pred_lo": 107.4,
-      "gfr_pred_hi": 131.2,
+      "kre_pred_hi": 1.29,
+      "gfr_pred": 119.6,
+      "gfr_pred_lo": 107.7,
+      "gfr_pred_hi": 131.6,
       "kmr_anomaly_score": 14.97,
       "kmr_anomaly_flag": false,
       "kre_anomaly_score": 22.72,
@@ -560,11 +560,11 @@
         "kmr_trend": 9.9,
         "kmr_volatility": 46.2,
         "kmr_ae": 15.0,
-        "kmr_residual": 3.4,
+        "kmr_residual": 4.6,
         "lab_level": 8.1,
         "lab_trend": 19.5
       },
-      "risk_score": 11.1,
+      "risk_score": 11.3,
       "risk_level": "Normal"
     },
     {
@@ -574,15 +574,15 @@
       "kmr": 0.208,
       "kre": 0.98,
       "gfr": 109.0,
-      "kmr_pred": 0.1926,
-      "kmr_pred_lo": 0.1637,
-      "kmr_pred_hi": 0.2215,
-      "kre_pred": 1.11,
+      "kmr_pred": 0.2035,
+      "kmr_pred_lo": 0.173,
+      "kmr_pred_hi": 0.234,
+      "kre_pred": 1.12,
       "kre_pred_lo": 0.95,
       "kre_pred_hi": 1.28,
-      "gfr_pred": 120.6,
-      "gfr_pred_lo": 108.5,
-      "gfr_pred_hi": 132.7,
+      "gfr_pred": 118.7,
+      "gfr_pred_lo": 106.8,
+      "gfr_pred_hi": 130.5,
       "kmr_anomaly_score": 9.15,
       "kmr_anomaly_flag": false,
       "kre_anomaly_score": 22.72,
@@ -597,11 +597,11 @@
         "kmr_trend": 20.0,
         "kmr_volatility": 51.0,
         "kmr_ae": 9.2,
-        "kmr_residual": 4.6,
+        "kmr_residual": 5.6,
         "lab_level": 8.1,
         "lab_trend": 19.5
       },
-      "risk_score": 14.3,
+      "risk_score": 14.4,
       "risk_level": "Normal"
     },
     {
@@ -611,9 +611,9 @@
       "kmr": 0.142,
       "kre": null,
       "gfr": null,
-      "kmr_pred": 0.1996,
-      "kmr_pred_lo": 0.1497,
-      "kmr_pred_hi": 0.2495,
+      "kmr_pred": 0.1991,
+      "kmr_pred_lo": 0.1494,
+      "kmr_pred_hi": 0.2489,
       "kre_pred": null,
       "kre_pred_lo": null,
       "kre_pred_hi": null,
@@ -648,9 +648,9 @@
       "kmr": null,
       "kre": null,
       "gfr": null,
-      "kmr_pred": 0.1996,
-      "kmr_pred_lo": 0.1497,
-      "kmr_pred_hi": 0.2495,
+      "kmr_pred": 0.1991,
+      "kmr_pred_lo": 0.1494,
+      "kmr_pred_hi": 0.2489,
       "kre_pred": null,
       "kre_pred_lo": null,
       "kre_pred_hi": null,
@@ -685,9 +685,9 @@
       "kmr": null,
       "kre": null,
       "gfr": null,
-      "kmr_pred": 0.1996,
-      "kmr_pred_lo": 0.1497,
-      "kmr_pred_hi": 0.2495,
+      "kmr_pred": 0.1991,
+      "kmr_pred_lo": 0.1494,
+      "kmr_pred_hi": 0.2489,
       "kre_pred": null,
       "kre_pred_lo": null,
       "kre_pred_hi": null,
@@ -722,9 +722,9 @@
       "kmr": null,
       "kre": null,
       "gfr": null,
-      "kmr_pred": 0.1996,
-      "kmr_pred_lo": 0.1497,
-      "kmr_pred_hi": 0.2495,
+      "kmr_pred": 0.1991,
+      "kmr_pred_lo": 0.1494,
+      "kmr_pred_hi": 0.2489,
       "kre_pred": null,
       "kre_pred_lo": null,
       "kre_pred_hi": null,
@@ -759,9 +759,9 @@
       "kmr": null,
       "kre": null,
       "gfr": null,
-      "kmr_pred": 0.1996,
-      "kmr_pred_lo": 0.1497,
-      "kmr_pred_hi": 0.2495,
+      "kmr_pred": 0.1991,
+      "kmr_pred_lo": 0.1494,
+      "kmr_pred_hi": 0.2489,
       "kre_pred": null,
       "kre_pred_lo": null,
       "kre_pred_hi": null,
@@ -796,15 +796,15 @@
       "kmr": null,
       "kre": null,
       "gfr": null,
-      "kmr_pred": 0.1996,
-      "kmr_pred_lo": 0.1497,
-      "kmr_pred_hi": 0.2495,
-      "kre_pred": 1.11,
+      "kmr_pred": 0.1991,
+      "kmr_pred_lo": 0.1494,
+      "kmr_pred_hi": 0.2489,
+      "kre_pred": 1.1,
       "kre_pred_lo": 0.83,
       "kre_pred_hi": 1.38,
-      "gfr_pred": 116.6,
-      "gfr_pred_lo": 99.1,
-      "gfr_pred_hi": 134.1,
+      "gfr_pred": 114.4,
+      "gfr_pred_lo": 97.3,
+      "gfr_pred_hi": 131.6,
       "kmr_anomaly_score": 0,
       "kmr_anomaly_flag": false,
       "kre_anomaly_score": null,
@@ -836,7 +836,7 @@
     "last_kmr_order": 17,
     "last_kre_order": 16,
     "last_gfr_order": 16,
-    "risk_last": 26.5,
+    "risk_last": 28.5,
     "risk_level_last": "Normal"
   }
 }

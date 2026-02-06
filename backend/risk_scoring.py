@@ -489,22 +489,13 @@ class RiskScorer:
         
         sorted_time_keys = sorted(all_time_keys, key=get_order)
         
-        # Collect all values for trend calculation
-        all_kre = [lab_lookup.get(tk, {}).get("kre") for tk in sorted_time_keys]
-        all_gfr = [lab_lookup.get(tk, {}).get("gfr") for tk in sorted_time_keys]
-        all_kmr = [kmr_lookup.get(tk, {}).get("kmr") for tk in sorted_time_keys]
-        
-        # Calculate LAB trends
-        kre_trend, gfr_trend, lab_trend = self.calc_lab_trend_score(
-            [v for v in all_kre if v is not None],
-            [v for v in all_gfr if v is not None]
-        )
-        
         results = []
         consecutive_up = 0
         slopes = []
         prev_kmr = None
         kmr_history = []
+        kre_history = []
+        gfr_history = []
         
         for time_key in sorted_time_keys:
             # Get time info from UNIFIED_TIME_MAP
@@ -519,6 +510,13 @@ class RiskScorer:
             lab_data = lab_lookup.get(time_key, {})
             kre_val = lab_data.get("kre")
             gfr_val = lab_data.get("gfr")
+
+            # LAB trend must be point-in-time (no future leakage)
+            if kre_val is not None:
+                kre_history.append(kre_val)
+            if gfr_val is not None:
+                gfr_history.append(gfr_val)
+            _, _, lab_trend = self.calc_lab_trend_score(kre_history, gfr_history)
             
             # Get KMR prediction and anomaly data (by time_order first, then time_key)
             kmr_pred = kmr_pred_lookup.get(time_order) or kmr_pred_lookup.get(time_key, {})

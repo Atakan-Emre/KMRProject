@@ -11,6 +11,15 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import Link from "next/link";
 import { Search, TrendingUp, TrendingDown, AlertTriangle, CheckCircle2 } from "lucide-react";
 
+function normalizeTurkishText(value: string): string {
+  return value
+    .toLocaleLowerCase("tr-TR")
+    .replace(/ı/g, "i")
+    .replace(/İ/g, "i")
+    .normalize("NFKD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
 export default function PatientsPage() {
   const { patients, isLoading, error } = useDashboardData();
   const [searchTerm, setSearchTerm] = useState("");
@@ -54,8 +63,9 @@ export default function PatientsPage() {
   
   // Arama filtresi
   if (searchTerm) {
+    const normalizedSearch = normalizeTurkishText(searchTerm);
     filteredPatients = filteredPatients.filter(p => 
-      p.patient_code.toLowerCase().includes(searchTerm.toLowerCase())
+      normalizeTurkishText(p.patient_code).includes(normalizedSearch)
     );
   }
   
@@ -209,7 +219,17 @@ export default function PatientsPage() {
                     </tr>
                   </thead>
                   <tbody>
-                    {filteredPatients.map((patient) => (
+                    {filteredPatients.map((patient) => {
+                      const unresolvedAnyAnomaly =
+                        patient.has_anomaly &&
+                        !patient.kmr_has_anomaly &&
+                        !patient.kre_has_anomaly &&
+                        !patient.gfr_has_anomaly;
+                      const kmrAnomaly = patient.kmr_has_anomaly || unresolvedAnyAnomaly;
+                      const kreAnomaly = patient.kre_has_anomaly;
+                      const gfrAnomaly = patient.gfr_has_anomaly;
+
+                      return (
                       <tr key={patient.patient_code} className="bg-white border-b hover:bg-muted/50">
                     <th scope="row" className="px-3 py-2 font-medium">
                       <div className="flex items-center gap-2">
@@ -288,11 +308,11 @@ export default function PatientsPage() {
                     </td>
                     <td className="px-3 py-2">
                       <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ${
-                        patient.kmr_has_anomaly
+                        kmrAnomaly
                           ? "bg-orange-100 text-orange-700 ring-orange-200"
                           : "bg-emerald-100 text-emerald-700 ring-emerald-200"
                       }`}>
-                        {patient.kmr_has_anomaly ? (
+                        {kmrAnomaly ? (
                           <>
                             <AlertTriangle className="h-3.5 w-3.5" />
                             <span>Var</span>
@@ -307,11 +327,11 @@ export default function PatientsPage() {
                     </td>
                     <td className="px-3 py-2">
                       <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ${
-                        patient.kre_has_anomaly
+                        kreAnomaly
                           ? "bg-orange-100 text-orange-700 ring-orange-200"
                           : "bg-emerald-100 text-emerald-700 ring-emerald-200"
                       }`}>
-                        {patient.kre_has_anomaly ? (
+                        {kreAnomaly ? (
                           <>
                             <AlertTriangle className="h-3.5 w-3.5" />
                             <span>Var</span>
@@ -326,11 +346,11 @@ export default function PatientsPage() {
                     </td>
                     <td className="px-3 py-2">
                       <span className={`inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-semibold ring-1 ${
-                        patient.gfr_has_anomaly
+                        gfrAnomaly
                           ? "bg-orange-100 text-orange-700 ring-orange-200"
                           : "bg-emerald-100 text-emerald-700 ring-emerald-200"
                       }`}>
-                        {patient.gfr_has_anomaly ? (
+                        {gfrAnomaly ? (
                           <>
                             <AlertTriangle className="h-3.5 w-3.5" />
                             <span>Var</span>
@@ -352,7 +372,7 @@ export default function PatientsPage() {
                       </Link>
                     </td>
                       </tr>
-                    ))}
+                    )})}
                   </tbody>
                 </table>
             

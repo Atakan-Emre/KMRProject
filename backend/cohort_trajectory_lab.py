@@ -34,13 +34,14 @@ class LABCohortTrajectoryAnalyzer:
     def _get_improved_lab_patients(self, lab_long: pd.DataFrame, improved_patients: List[str]) -> List[str]:
         """
         Identify improved patients based on LAB criteria:
-        - KRE < 1.2 and/or GFR >= 60 at later time points (Month_9..Month_12)
-        - Or use all improved_patients if they have sufficient LAB data (≥3 measurements)
+        - KRE < 1.2 and/or GFR >= 60 at clinically late time points
+        - Requires at least 3 LAB measurements for model stability
         """
         improved_lab_patients = []
-        
-        # Time points for "improved" check (Month_9 onwards per user requirement)
-        improved_time_keys = ["Month_9", "Month_10", "Month_11", "Month_12"]
+
+        # Dataset mostly contains Month_6 and Month_12 for late LAB controls.
+        # Keep Month_9..Month_11 for forward compatibility if present.
+        late_time_keys = ["Month_6", "Month_9", "Month_10", "Month_11", "Month_12"]
         
         for patient in improved_patients:
             patient_data = lab_long[lab_long["patient_code"] == patient]
@@ -55,30 +56,19 @@ class LABCohortTrajectoryAnalyzer:
             if kre_count < 3 and gfr_count < 3:
                 continue
             
-            # Check if patient has improved LAB profile at later time points
-            is_improved = False
-            
-            for time_key in improved_time_keys:
-                # Match time_key exactly (no contains, exact match)
-                time_data = patient_data[patient_data["time_key"] == time_key]
-                
-                if len(time_data) > 0:
-                    kre_values = time_data["kre"].dropna()
-                    gfr_values = time_data["gfr"].dropna()
-                    
-                    # KRE < 1.2 is good
-                    if len(kre_values) > 0 and any(kre_values < 1.2):
-                        is_improved = True
-                        break
-                    
-                    # GFR >= 60 is good
-                    if len(gfr_values) > 0 and any(gfr_values >= 60):
-                        is_improved = True
-                        break
-            
-            # If no specific improvement found but has sufficient data, include anyway
-            # (relaxed criteria: improved_patients with ≥3 LAB measurements)
-            if is_improved or (kre_count >= 3 or gfr_count >= 3):
+            # Check if patient has improved LAB profile at clinically late controls
+            late_data = patient_data[patient_data["time_key"].isin(late_time_keys)]
+            if len(late_data) == 0:
+                continue
+
+            kre_values = late_data["kre"].dropna()
+            gfr_values = late_data["gfr"].dropna()
+            is_improved = (
+                (len(kre_values) > 0 and bool((kre_values < 1.2).any())) or
+                (len(gfr_values) > 0 and bool((gfr_values >= 60).any()))
+            )
+
+            if is_improved:
                 improved_lab_patients.append(patient)
         
         return improved_lab_patients

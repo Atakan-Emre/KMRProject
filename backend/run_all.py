@@ -4,7 +4,9 @@ Run All - Main pipeline script for Kimerizm Tracking System
 Executes all steps: Excel → Models → Risk Scoring → JSON Export
 """
 import sys
-import os
+import json
+import shutil
+import tempfile
 from pathlib import Path
 
 # Add parent to path for imports
@@ -20,7 +22,17 @@ from backend.risk_scoring import RiskScorer
 from backend.reference_band import ReferenceBandCalculator
 from backend.cohort_trajectory import analyze_improved_cohort
 from backend.cohort_trajectory_lab import analyze_improved_lab_cohort
-from backend.export_json import JSONExporter
+from backend.export_json import JSONExporter, sanitize_for_json
+
+
+GENERATED_FILES = [
+    "reference_band.json",
+    "cohort_trajectory.json",
+    "cohort_trajectory_lab.json",
+    "data_summary.json",
+    "patient_features.json",
+    "channel_overview.json",
+]
 
 
 def clean_training_data():
@@ -63,14 +75,59 @@ def clean_training_data():
     return removed_count
 
 
+def publish_staged_output(staging_output: Path) -> None:
+    """
+    Publish staged JSON outputs into frontend/public.
+    Data is written to temp names first, then promoted to avoid data loss on partial runs.
+    """
+    FRONTEND_PUBLIC.mkdir(parents=True, exist_ok=True)
+
+    missing = [name for name in GENERATED_FILES if not (staging_output / name).exists()]
+    if missing:
+        raise RuntimeError(f"Missing staged files: {', '.join(missing)}")
+
+    staged_patients_dir = staging_output / "patients"
+    if not staged_patients_dir.exists():
+        raise RuntimeError("Missing staged patients directory")
+
+    temp_file_pairs = []
+    for filename in GENERATED_FILES:
+        src = staging_output / filename
+        temp_dst = FRONTEND_PUBLIC / f".{filename}.new"
+        final_dst = FRONTEND_PUBLIC / filename
+
+        if temp_dst.exists():
+            temp_dst.unlink()
+        shutil.move(str(src), str(temp_dst))
+        temp_file_pairs.append((temp_dst, final_dst))
+
+    patients_new = FRONTEND_PUBLIC / ".patients.new"
+    patients_old = FRONTEND_PUBLIC / ".patients.old"
+
+    if patients_new.exists():
+        shutil.rmtree(patients_new, ignore_errors=True)
+    patients_new.mkdir(parents=True, exist_ok=True)
+
+    for src in staged_patients_dir.glob("*.json"):
+        shutil.move(str(src), str(patients_new / src.name))
+
+    for temp_dst, final_dst in temp_file_pairs:
+        temp_dst.replace(final_dst)
+
+    if patients_old.exists():
+        shutil.rmtree(patients_old, ignore_errors=True)
+    if PATIENTS_DIR.exists():
+        PATIENTS_DIR.replace(patients_old)
+    patients_new.replace(PATIENTS_DIR)
+    if patients_old.exists():
+        shutil.rmtree(patients_old, ignore_errors=True)
+
+
 def run_pipeline():
     """Execute full data processing pipeline"""
     print("=" * 60)
     print("Kimerizm Takip Sistemi - Data Pipeline v3.0")
     print("=" * 60)
-    
-    # Step 0: Clean existing data
-    clean_training_data()
     
     # Step 1: Load data from Excel
     print("Step 1: Loading Excel data...")
@@ -162,45 +219,87 @@ def run_pipeline():
     print("\nStep 5c: Analyzing improved LAB cohort trajectory...")
     lab_cohort_trajectory = analyze_improved_lab_cohort(lab_long, improved_patients)
     
-    # Step 6: Export JSON files
-    print("\nStep 6: Exporting JSON files...")
-    exporter = JSONExporter()
-    
-    # Export patient files and get last status
-    patient_risks = exporter.bulk_export_patients(
-        meta_df, kmr_long, lab_long, timelines
-    )
-    
-    # Export reference band
-    exporter.export_reference_band(reference_bands)
-    
-    # Export cohort trajectory
-    if "error" not in cohort_trajectory:
-        exporter.export_cohort_trajectory(cohort_trajectory)
-    
-    # Export LAB cohort trajectory
-    if lab_cohort_trajectory and isinstance(lab_cohort_trajectory, dict) and "error" not in lab_cohort_trajectory:
-        try:
-            filepath = exporter.output_dir / "cohort_trajectory_lab.json"
-            with open(filepath, 'w', encoding='utf-8') as f:
-                import json
-                from backend.export_json import sanitize_for_json
+    # Step 6: Export JSON files (stage first, then publish atomically)
+    print("\nStep 6: Exporting JSON files to staging area...")
+    staging_root = Path(tempfile.mkdtemp(prefix="kmr_export_"))
+    staging_output = staging_root / "public"
+
+    try:
+        exporter = JSONExporter(output_dir=staging_output)
+
+        # Export patient files and get last status
+        patient_risks = exporter.bulk_export_patients(
+            meta_df, kmr_long, lab_long, timelines
+        )
+
+        # Export reference band
+        exporter.export_reference_band(reference_bands)
+
+        # Export cohort trajectory
+        if "error" not in cohort_trajectory:
+            exporter.export_cohort_trajectory(cohort_trajectory)
+        else:
+            exporter.export_cohort_trajectory({
+                "metadata": {
+                    "type": "improved_cohort_trajectory",
+                    "n_patients": 0,
+                    "n_time_points": 0,
+                    "model": "none",
+                    "created_at": None
+                },
+                "trajectory": [],
+                "summary": {
+                    "initial_kmr_median": None,
+                    "final_kmr_median": None,
+                    "reduction_percent": None,
+                    "time_to_stable": None
+                },
+                "error": cohort_trajectory.get("error", "insufficient_data")
+            })
+
+        # Export LAB cohort trajectory
+        lab_cohort_path = exporter.output_dir / "cohort_trajectory_lab.json"
+        if lab_cohort_trajectory and isinstance(lab_cohort_trajectory, dict) and "error" not in lab_cohort_trajectory:
+            with open(lab_cohort_path, "w", encoding="utf-8") as f:
                 json.dump(sanitize_for_json(lab_cohort_trajectory), f, ensure_ascii=False, indent=2)
-            print(f"[OK] Exported: {filepath}")
-        except Exception as e:
-            print(f"[WARNING] Error exporting LAB cohort trajectory: {e}")
-    else:
-        error_msg = lab_cohort_trajectory.get('error', 'unknown error') if isinstance(lab_cohort_trajectory, dict) else 'invalid format'
-        print(f"[WARNING] LAB cohort trajectory not exported: {error_msg}")
-    
-    # Export summary
-    exporter.export_data_summary(meta_df, patient_risks)
-    
-    # Export patient features
-    exporter.export_patient_features(meta_df, patient_risks, kmr_long, lab_long, timelines)
-    
-    # Export channel overview
-    exporter.export_channel_overview(kmr_long, lab_long)
+            print(f"[OK] Exported: {lab_cohort_path}")
+        else:
+            # Keep file present for deterministic frontend fetch behavior
+            payload = {
+                "metadata": {
+                    "type": "improved_cohort_trajectory_lab",
+                    "n_patients": 0,
+                    "n_time_points": 0,
+                    "model": "none",
+                    "created_at": None
+                },
+                "trajectory": [],
+                "summary": {
+                    "initial_kre_median": None,
+                    "final_kre_median": None,
+                    "initial_gfr_median": None,
+                    "final_gfr_median": None
+                },
+                "error": "insufficient_data"
+            }
+            with open(lab_cohort_path, "w", encoding="utf-8") as f:
+                json.dump(payload, f, ensure_ascii=False, indent=2)
+            error_msg = lab_cohort_trajectory.get("error", "unknown error") if isinstance(lab_cohort_trajectory, dict) else "invalid format"
+            print(f"[WARNING] LAB cohort trajectory fallback exported: {error_msg}")
+
+        # Export summary
+        exporter.export_data_summary(meta_df, patient_risks)
+
+        # Export patient features
+        exporter.export_patient_features(meta_df, patient_risks, kmr_long, lab_long, timelines)
+
+        # Export channel overview
+        exporter.export_channel_overview(kmr_long, lab_long)
+
+        print("   Publishing staged outputs...")
+        publish_staged_output(staging_output)
+    finally:
+        shutil.rmtree(staging_root, ignore_errors=True)
     
     # Done
     print("\n" + "=" * 60)
