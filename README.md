@@ -488,7 +488,6 @@ Ana sayfalar:
 - `/patients` liste
 - `/patients/[id]` detay
 - `/reports` rapor indirimi
-- `/model-evaluation` model ekranı
 
 Rapor sayfası:
 

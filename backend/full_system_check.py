@@ -24,6 +24,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from backend.config import FRONTEND_PUBLIC  # noqa: E402
+from backend.config import ALARM_THRESHOLDS, CLINICAL_THRESHOLDS, RISK_WEIGHTS  # noqa: E402
 from backend.io_excel import (  # noqa: E402
     calculate_improved_proxy,
     extract_meta,
@@ -42,6 +43,7 @@ REQUIRED_JSON_FILES = [
     "data_summary.json",
     "patient_features.json",
     "channel_overview.json",
+    "system_config.json",
     "doctor_performance_report.json",
 ]
 
@@ -238,6 +240,7 @@ def main() -> int:
     data_summary = load_json_file(FRONTEND_PUBLIC / "data_summary.json")
     patient_features = load_json_file(FRONTEND_PUBLIC / "patient_features.json")
     channel_overview = load_json_file(FRONTEND_PUBLIC / "channel_overview.json")
+    system_config = load_json_file(FRONTEND_PUBLIC / "system_config.json")
     doctor_performance_report = load_json_file(FRONTEND_PUBLIC / "doctor_performance_report.json")
 
     validate_no_nonfinite(reference_band, checker, "reference_band.json")
@@ -246,6 +249,7 @@ def main() -> int:
     validate_no_nonfinite(data_summary, checker, "data_summary.json")
     validate_no_nonfinite(patient_features, checker, "patient_features.json")
     validate_no_nonfinite(channel_overview, checker, "channel_overview.json")
+    validate_no_nonfinite(system_config, checker, "system_config.json")
     validate_no_nonfinite(doctor_performance_report, checker, "doctor_performance_report.json")
 
     features = patient_features.get("patients", [])
@@ -441,6 +445,12 @@ def main() -> int:
         checker.check(isinstance(payload.get("metadata"), dict), f"{name}: metadata missing/invalid")
         checker.check(isinstance(payload.get("trajectory"), list), f"{name}: trajectory missing/invalid")
         checker.check(isinstance(payload.get("summary"), dict), f"{name}: summary missing/invalid")
+
+    # System config checks
+    checker.check(isinstance(system_config.get("metadata"), dict), "system_config: metadata missing/invalid")
+    checker.check(system_config.get("risk_weights") == RISK_WEIGHTS, "system_config.risk_weights mismatch")
+    checker.check(system_config.get("alarm_thresholds") == ALARM_THRESHOLDS, "system_config.alarm_thresholds mismatch")
+    checker.check(system_config.get("clinical_thresholds") == CLINICAL_THRESHOLDS, "system_config.clinical_thresholds mismatch")
 
     # Doctor performance report checks
     checker.check(isinstance(doctor_performance_report.get("metadata"), dict), "doctor_performance_report: metadata missing/invalid")

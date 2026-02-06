@@ -3,7 +3,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { useDashboardData, RISK_COLORS, getRiskColor, useCohortTrajectory } from "@/hooks/useKimerizmData";
+import {
+  useDashboardData,
+  RISK_COLORS,
+  getRiskColor,
+  useCohortTrajectory,
+  useChannelOverview,
+} from "@/hooks/useKimerizmData";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import { useState } from "react";
@@ -15,9 +21,30 @@ const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 export default function Dashboard() {
   const { patients, kpis, riskDistribution, isLoading, error } = useDashboardData();
   const { data: cohortTrajectory } = useCohortTrajectory();
+  const { data: channelOverview } = useChannelOverview();
   const [selectedRiskLevel, setSelectedRiskLevel] = useState<RiskLevel | null>(null);
-  const [showAllPatients, setShowAllPatients] = useState(false);
 
+  const kmrMeasurements =
+    channelOverview?.coverage?.kmr?.n_measurements ??
+    patients.reduce((sum, p) => sum + (p.n_kmr_points || 0), 0);
+  const kreMeasurements =
+    channelOverview?.coverage?.kre?.n_measurements ??
+    patients.reduce((sum, p) => sum + (p.n_kre_points || 0), 0);
+  const gfrMeasurements =
+    channelOverview?.coverage?.gfr?.n_measurements ??
+    patients.reduce((sum, p) => sum + (p.n_gfr_points || 0), 0);
+  const totalMeasurements = kmrMeasurements + kreMeasurements + gfrMeasurements;
+
+  const safeFixed = (value: number | null | undefined, digits: number): string =>
+    typeof value === "number" && Number.isFinite(value) ? value.toFixed(digits) : "-";
+  const safePercent = (value: number | null | undefined, digits: number): string =>
+    typeof value === "number" && Number.isFinite(value) ? `%${value.toFixed(digits)}` : "-";
+
+  const hasTrajectory = Array.isArray(cohortTrajectory?.trajectory) && cohortTrajectory.trajectory.length > 0;
+
+  const patientsWithAgeKmr = patients.filter(
+    (p) => p.age !== null && p.age !== undefined && p.last_kmr !== null && p.last_kmr !== undefined,
+  );
   // Demografik hesaplamalar - normalizeGender ile tüm varyasyonları standartlaştır
   const malePatients = patients.filter(p => normalizeGender(p.gender) === 'Erkek');
   const femalePatients = patients.filter(p => normalizeGender(p.gender) === 'Kadın');
@@ -87,11 +114,9 @@ export default function Dashboard() {
             Non invasive screening of transplatation health (NISTH)
           </p>
         </div>
-        <div className="flex gap-3">
-          <Link href="/model-evaluation">
-            <Button variant="outline">🤖 Model Değerlendirmesi</Button>
-          </Link>
-        </div>
+        <Link href="/patients">
+          <Button>Hastalara Git</Button>
+        </Link>
       </div>
 
       {/* Disclaimer */}
@@ -113,7 +138,7 @@ export default function Dashboard() {
 
         <Card>
           <CardHeader className="pb-2">
-            <CardTitle className="text-sm font-medium">İyileşmiş Kohort</CardTitle>
+            <CardTitle className="text-sm font-medium">İyileşmiş Hasta</CardTitle>
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold text-green-600">{kpis.improvedCount}</div>
@@ -156,10 +181,8 @@ export default function Dashboard() {
       <Tabs defaultValue="overview" className="space-y-4">
         <TabsList>
           <TabsTrigger value="overview">Genel Bakış</TabsTrigger>
-          <TabsTrigger value="patients">Hasta Listesi</TabsTrigger>
           <TabsTrigger value="demographics">Demografik</TabsTrigger>
-          <TabsTrigger value="cohort">Kohort Seyri (AI)</TabsTrigger>
-          <TabsTrigger value="analytics">İleri Analitik</TabsTrigger>
+          <TabsTrigger value="cohort">Hasta Seyri (AI)</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -264,7 +287,7 @@ export default function Dashboard() {
                     <div className="w-2 h-2 rounded-full bg-green-500" />
                     <div>
                       <p className="text-sm font-medium">Referans bandı güncellendi</p>
-                      <p className="text-xs text-muted-foreground">{kpis.improvedCount} iyileşmiş kohort hastası</p>
+                      <p className="text-xs text-muted-foreground">{kpis.improvedCount} iyileşmiş hasta</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-3">
@@ -306,73 +329,29 @@ export default function Dashboard() {
                   <div className="flex items-center justify-between">
                     <span className="text-sm">Son Analiz</span>
                     <span className="text-sm text-muted-foreground">
-                      {new Date(kpis.lastAnalysis).toLocaleDateString('tr-TR')}
+                      {new Date(kpis.lastAnalysis).toLocaleString('tr-TR')}
                     </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">KMR Ölçüm</span>
+                    <span className="text-sm text-muted-foreground">{kmrMeasurements}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">KRE Ölçüm</span>
+                    <span className="text-sm text-muted-foreground">{kreMeasurements}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">GFR Ölçüm</span>
+                    <span className="text-sm text-muted-foreground">{gfrMeasurements}</span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Toplam Ölçüm</span>
+                    <span className="text-sm text-muted-foreground">{totalMeasurements}</span>
                   </div>
                 </div>
               </CardContent>
             </Card>
           </div>
-        </TabsContent>
-
-        <TabsContent value="patients" className="space-y-4">
-          <Card>
-            <CardHeader>
-              <CardTitle>Hasta Listesi</CardTitle>
-              <CardDescription>Tüm hastaların KMR, KRE, GFR ve risk durumu</CardDescription>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {(showAllPatients ? patients : patients.slice(0, 15)).map(p => (
-                  <div key={p.patient_code} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <div className="w-3 h-3 rounded-full" style={{ backgroundColor: getRiskColor(p.risk_level) }} />
-                        <span className="font-medium">Hasta {p.patient_code}</span>
-                        {p.improved_proxy && <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">İyileşmiş</span>}
-                      </div>
-                      <div className="text-sm text-muted-foreground mt-1">
-                        {p.gender} • {p.age} yaş • {p.n_kmr_points} KMR, {p.n_kre_points} KRE, {p.n_gfr_points} GFR ölçüm
-                      </div>
-                    </div>
-                    <div className="text-right">
-                      <div className="grid grid-cols-3 gap-4 text-sm">
-                        <div>
-                          <div className="text-muted-foreground text-xs">KMR</div>
-                          <div className="font-medium">{p.last_kmr?.toFixed(3) ?? '-'}%</div>
-                        </div>
-                        <div>
-                          <div className="text-muted-foreground text-xs">KRE</div>
-                          <div className="font-medium">{p.last_kre?.toFixed(2) ?? '-'}</div>
-                        </div>
-                        <div>
-                          <div className="text-muted-foreground text-xs">GFR</div>
-                          <div className="font-medium">{p.last_gfr?.toFixed(0) ?? '-'}</div>
-                        </div>
-                      </div>
-                      <div className="mt-1">
-                        <span className="inline-flex items-center px-2 py-1 text-xs font-medium rounded-full text-white"
-                          style={{ backgroundColor: getRiskColor(p.risk_level) }}>
-                          {p.risk_level} ({p.risk_score.toFixed(0)})
-                        </span>
-                      </div>
-                    </div>
-                    <Link href={`/patients/${p.patient_code}`}>
-                      <Button variant="outline" size="sm">Detay →</Button>
-                    </Link>
-                  </div>
-                ))}
-                
-                {patients.length > 15 && (
-                  <div className="text-center pt-4">
-                    <Button variant="outline" onClick={() => setShowAllPatients(!showAllPatients)}>
-                      {showAllPatients ? 'Daha Az Göster' : `Tümünü Gör (${patients.length} hasta)`}
-                    </Button>
-                  </div>
-                )}
-              </div>
-            </CardContent>
-          </Card>
         </TabsContent>
 
         {/* Demographics Tab */}
@@ -506,18 +485,18 @@ export default function Dashboard() {
                 <div className="h-64">
                   <Plot
                     data={[{
-                      x: patients.filter(p => p.age && p.last_kmr).map(p => p.age),
-                      y: patients.filter(p => p.age && p.last_kmr).map(p => p.last_kmr),
+                      x: patientsWithAgeKmr.map((p) => p.age),
+                      y: patientsWithAgeKmr.map((p) => p.last_kmr),
                       mode: 'markers',
                       type: 'scatter',
                       marker: {
                         size: 10,
-                        color: patients.filter(p => p.age && p.last_kmr).map(p => 
+                        color: patientsWithAgeKmr.map(p => 
                           normalizeGender(p.gender) === 'Erkek' ? '#3b82f6' : normalizeGender(p.gender) === 'Kadın' ? '#ec4899' : '#9ca3af'
                         ),
                         opacity: 0.7
                       },
-                      text: patients.filter(p => p.age && p.last_kmr).map(p => p.patient_code),
+                      text: patientsWithAgeKmr.map((p) => p.patient_code),
                       hovertemplate: '<b>%{text}</b><br>Yaş: %{x}<br>KMR: %{y:.3f}%<extra></extra>'
                     }]}
                     layout={{
@@ -575,17 +554,17 @@ export default function Dashboard() {
 
         {/* Cohort Trajectory Tab */}
         <TabsContent value="cohort" className="space-y-6">
-          {cohortTrajectory ? (
+          {cohortTrajectory && hasTrajectory ? (
             <>
               {/* Summary Cards */}
               <div className="grid gap-4 md:grid-cols-4">
                 <Card className="bg-gradient-to-br from-green-50 to-green-100">
                   <CardHeader className="pb-2">
-                    <CardTitle className="text-sm">İyileşmiş Kohort</CardTitle>
+                    <CardTitle className="text-sm">İyileşmiş Hasta</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-green-700">{cohortTrajectory.metadata.n_patients}</div>
-                    <p className="text-xs text-green-600">9+ ay takipli hasta</p>
+                    <div className="text-2xl font-bold text-green-700">{cohortTrajectory?.metadata?.n_patients ?? 0}</div>
+                    <p className="text-xs text-green-600">Referans hasta grubu</p>
                   </CardContent>
                 </Card>
                 <Card className="bg-gradient-to-br from-blue-50 to-blue-100">
@@ -593,7 +572,7 @@ export default function Dashboard() {
                     <CardTitle className="text-sm">Başlangıç KMR</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-blue-700">{cohortTrajectory.summary.initial_kmr_median.toFixed(2)}%</div>
+                    <div className="text-2xl font-bold text-blue-700">{safeFixed(cohortTrajectory?.summary?.initial_kmr_median, 2)}%</div>
                     <p className="text-xs text-blue-600">Median Day_1</p>
                   </CardContent>
                 </Card>
@@ -602,7 +581,7 @@ export default function Dashboard() {
                     <CardTitle className="text-sm">Son KMR</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-purple-700">{cohortTrajectory.summary.final_kmr_median.toFixed(3)}%</div>
+                    <div className="text-2xl font-bold text-purple-700">{safeFixed(cohortTrajectory?.summary?.final_kmr_median, 3)}%</div>
                     <p className="text-xs text-purple-600">Median Month_12</p>
                   </CardContent>
                 </Card>
@@ -611,8 +590,8 @@ export default function Dashboard() {
                     <CardTitle className="text-sm">Toplam Düşüş</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-orange-700">%{cohortTrajectory.summary.reduction_percent.toFixed(1)}</div>
-                    <p className="text-xs text-orange-600">Stabil: {cohortTrajectory.summary.time_to_stable || '-'}</p>
+                    <div className="text-2xl font-bold text-orange-700">{safePercent(cohortTrajectory?.summary?.reduction_percent, 1)}</div>
+                    <p className="text-xs text-orange-600">Stabil: {cohortTrajectory?.summary?.time_to_stable || '-'}</p>
                   </CardContent>
                 </Card>
               </div>
@@ -620,9 +599,9 @@ export default function Dashboard() {
               {/* Main Trajectory Chart */}
               <Card>
                 <CardHeader>
-                  <CardTitle>🧠 İyileşmiş Kohort KMR Seyri</CardTitle>
+                  <CardTitle>🧠 İyileşmiş Hasta KMR Seyri</CardTitle>
                   <CardDescription>
-                    {cohortTrajectory.metadata.n_patients} hastanın <strong>LSTM + VAE (Variational Autoencoder)</strong> modelleri ile hesaplanan beklenen seyri
+                    {cohortTrajectory?.metadata?.n_patients ?? 0} hastanın <strong>LSTM + VAE (Variational Autoencoder)</strong> modelleri ile hesaplanan beklenen seyri
                   </CardDescription>
                 </CardHeader>
                 <CardContent>
@@ -668,7 +647,7 @@ export default function Dashboard() {
                           x: cohortTrajectory.trajectory.map(t => t.time_key),
                           y: cohortTrajectory.trajectory.map(t => t.cohort_median),
                           mode: 'lines+markers',
-                          name: 'Gerçek Kohort Medyan',
+                          name: 'Gerçek Hasta Medyan',
                           line: { color: '#22c55e', width: 2, dash: 'dash' },
                           marker: { size: 6 },
                           type: 'scatter'
@@ -695,7 +674,7 @@ export default function Dashboard() {
                   </div>
                   <div className="mt-4 text-sm text-muted-foreground">
                     <p>🔵 <strong>AI Tahmini (LSTM):</strong> Yapay zeka modelinin öğrendiği tipik iyileşme eğrisi</p>
-                    <p>🟢 <strong>Gerçek Kohort Medyan:</strong> İyileşmiş hastaların gerçek medyan değerleri</p>
+                    <p>🟢 <strong>Gerçek Hasta Medyan:</strong> İyileşmiş hastaların gerçek medyan değerleri</p>
                     <p>Gölgeli alanlar güven aralıklarını gösterir (açık mavi: P10-P90, yeşil: IQR)</p>
                   </div>
                 </CardContent>
@@ -769,162 +748,14 @@ export default function Dashboard() {
           ) : (
             <Card>
               <CardContent className="flex items-center justify-center h-64">
-                <p className="text-muted-foreground">Kohort trajectory verisi yükleniyor...</p>
+                <p className="text-muted-foreground">
+                  {cohortTrajectory ? "Hasta seyri verisi bulunamadı." : "Hasta seyri verisi yükleniyor..."}
+                </p>
               </CardContent>
             </Card>
           )}
         </TabsContent>
 
-        <TabsContent value="analytics" className="space-y-6">
-          <div className="grid gap-6 md:grid-cols-2">
-            {/* KMR Distribution */}
-            <Card>
-              <CardHeader>
-                <CardTitle>KMR Değer Dağılımı</CardTitle>
-                <CardDescription>Son kimerizm ölçümlerinin histogram dağılımı</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-72">
-                  <Plot
-                    data={[{
-                      x: patients.map(p => p.last_kmr).filter(v => v !== null),
-                      type: 'histogram',
-                      nbinsx: 15,
-                      marker: { color: '#3b82f6', opacity: 0.8 }
-                    }]}
-                    layout={{
-                      xaxis: { title: 'Son KMR Değeri (%)' },
-                      yaxis: { title: 'Hasta Sayısı' },
-                      margin: { t: 20, b: 50, l: 50, r: 20 },
-                      paper_bgcolor: 'rgba(0,0,0,0)',
-                      shapes: [
-                        { type: 'line', x0: 0.5, x1: 0.5, y0: 0, y1: 1, yref: 'paper', line: { color: '#f59e0b', width: 2, dash: 'dash' } },
-                        { type: 'line', x0: 2.0, x1: 2.0, y0: 0, y1: 1, yref: 'paper', line: { color: '#ef4444', width: 2, dash: 'dash' } }
-                      ]
-                    }}
-                    config={{ responsive: true, displayModeBar: false }}
-                    className="w-full h-full"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* KMR vs Risk Scatter */}
-            <Card>
-              <CardHeader>
-                <CardTitle>KMR - Risk İlişkisi</CardTitle>
-                <CardDescription>Son KMR değeri ile risk skoru korelasyonu</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-72">
-                  <Plot
-                    data={[{
-                      x: patients.map(p => p.last_kmr).filter(v => v !== null),
-                      y: patients.filter(p => p.last_kmr !== null).map(p => p.risk_score),
-                      mode: 'markers',
-                      type: 'scatter',
-                      marker: {
-                        size: 10,
-                        color: patients.filter(p => p.last_kmr !== null).map(p => getRiskColor(p.risk_level)),
-                        opacity: 0.7
-                      },
-                      text: patients.filter(p => p.last_kmr !== null).map(p => p.patient_code),
-                      hovertemplate: '<b>Hasta %{text}</b><br>KMR: %{x:.3f}%<br>Risk: %{y:.1f}<extra></extra>'
-                    }]}
-                    layout={{
-                      xaxis: { title: 'Son KMR (%)', type: 'log' },
-                      yaxis: { title: 'Risk Skoru', range: [0, 100] },
-                      margin: { t: 20, b: 50, l: 50, r: 20 },
-                      paper_bgcolor: 'rgba(0,0,0,0)'
-                    }}
-                    config={{ responsive: true, displayModeBar: false }}
-                    className="w-full h-full"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* KRE vs GFR Scatter */}
-            <Card>
-              <CardHeader>
-                <CardTitle>KRE - GFR İlişkisi</CardTitle>
-                <CardDescription>Kreatinin ve GFR değerleri (renk = risk seviyesi)</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-72">
-                  <Plot
-                    data={[{
-                      x: patients.filter(p => p.last_kre && p.last_gfr).map(p => p.last_kre),
-                      y: patients.filter(p => p.last_kre && p.last_gfr).map(p => p.last_gfr),
-                      mode: 'markers',
-                      type: 'scatter',
-                      marker: {
-                        size: 12,
-                        color: patients.filter(p => p.last_kre && p.last_gfr).map(p => getRiskColor(p.risk_level)),
-                        opacity: 0.7
-                      },
-                      text: patients.filter(p => p.last_kre && p.last_gfr).map(p => p.patient_code),
-                      hovertemplate: '<b>Hasta %{text}</b><br>KRE: %{x:.2f}<br>GFR: %{y:.0f}<extra></extra>'
-                    }]}
-                    layout={{
-                      xaxis: { title: 'Kreatinin (KRE)' },
-                      yaxis: { title: 'GFR' },
-                      margin: { t: 20, b: 50, l: 50, r: 20 },
-                      paper_bgcolor: 'rgba(0,0,0,0)',
-                      shapes: [
-                        { type: 'line', x0: 1.2, x1: 1.2, y0: 0, y1: 150, line: { color: '#22c55e', width: 2, dash: 'dot' } },
-                        { type: 'line', x0: 4.5, x1: 4.5, y0: 0, y1: 150, line: { color: '#ef4444', width: 2, dash: 'dot' } },
-                        { type: 'line', x0: 0, x1: 6, y0: 90, y1: 90, line: { color: '#22c55e', width: 2, dash: 'dot' } },
-                        { type: 'line', x0: 0, x1: 6, y0: 15, y1: 15, line: { color: '#ef4444', width: 2, dash: 'dot' } }
-                      ]
-                    }}
-                    config={{ responsive: true, displayModeBar: false }}
-                    className="w-full h-full"
-                  />
-                </div>
-                <div className="mt-2 text-xs text-muted-foreground">
-                  <p>KRE: &lt;1.2 iyi (yeşil çizgi), &gt;4.5 kötü (kırmızı çizgi)</p>
-                  <p>GFR: &gt;90 iyi, &lt;15 kötü</p>
-                </div>
-              </CardContent>
-            </Card>
-
-            {/* Risk Component Breakdown */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Risk Bileşen Ağırlıkları</CardTitle>
-                <CardDescription>Ensemble risk skorlama sistemi</CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="h-72">
-                  <Plot
-                    data={[{
-                      x: ['KMR Seviye', 'KMR Trend', 'KMR Volatilite', 'KMR AE', 'KMR Residual', 'LAB'],
-                      y: [35, 25, 10, 15, 15, 25],
-                      type: 'bar',
-                      marker: { 
-                        color: ['#3b82f6', '#10b981', '#f59e0b', '#8b5cf6', '#ef4444', '#06b6d4']
-                      },
-                      text: ['35%', '25%', '10%', '15%', '15%', '25%'],
-                      textposition: 'auto'
-                    }]}
-                    layout={{
-                      xaxis: { title: 'Risk Bileşeni' },
-                      yaxis: { title: 'Ağırlık (%)' },
-                      margin: { t: 20, b: 80, l: 50, r: 20 },
-                      paper_bgcolor: 'rgba(0,0,0,0)'
-                    }}
-                    config={{ responsive: true, displayModeBar: false }}
-                    className="w-full h-full"
-                  />
-                </div>
-                <div className="mt-2 text-xs text-muted-foreground">
-                  Overall = 75% KMR Risk + 25% LAB Risk
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-        </TabsContent>
       </Tabs>
     </div>
   );

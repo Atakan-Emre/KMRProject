@@ -10,7 +10,13 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 
-from .config import FRONTEND_PUBLIC, PATIENTS_DIR
+from .config import (
+    FRONTEND_PUBLIC,
+    PATIENTS_DIR,
+    RISK_WEIGHTS,
+    ALARM_THRESHOLDS,
+    CLINICAL_THRESHOLDS,
+)
 
 
 def sanitize_for_json(obj: Any) -> Any:
@@ -128,11 +134,16 @@ class JSONExporter:
             json.dump(sanitize_for_json(trajectory_data), f, ensure_ascii=False, indent=2)
         print(f"✅ Exported: {filepath}")
     
-    def export_data_summary(self, meta_df: pd.DataFrame, 
-                           patient_risks: Dict[str, dict]) -> None:
+    def export_data_summary(
+        self,
+        meta_df: pd.DataFrame,
+        patient_risks: Dict[str, dict],
+        timelines: Optional[Dict[str, List[dict]]] = None,
+    ) -> None:
         """Export data summary JSON with dashboard KPIs"""
         total_patients = len(meta_df)
         improved_count = meta_df["improved_proxy"].sum()
+        timelines = timelines or {}
         
         # Risk distribution
         risk_levels = {"Normal": 0, "Dikkat": 0, "Kritik": 0, "Çok Kritik": 0}
@@ -147,7 +158,13 @@ class JSONExporter:
             if level in risk_levels:
                 risk_levels[level] += 1
             
-            if data.get("has_anomaly", False):
+            timeline = timelines.get(patient, [])
+            if timeline:
+                has_anomaly = _timeline_anomaly_flags(timeline)["has_anomaly"]
+            else:
+                has_anomaly = bool(data.get("has_anomaly", False))
+
+            if has_anomaly:
                 anomaly_count += 1
             
             risk_scores.append(data.get("risk_last", 0))
@@ -301,7 +318,15 @@ class JSONExporter:
                         if found_time_key:
                             last_gfr_time_key = found_time_key
 
-            anomaly_flags = _timeline_anomaly_flags(timeline)
+            if timeline:
+                anomaly_flags = _timeline_anomaly_flags(timeline)
+            else:
+                anomaly_flags = {
+                    "has_anomaly": bool(risk_data.get("has_anomaly", False)),
+                    "kmr_has_anomaly": bool(risk_data.get("kmr_has_anomaly", False)),
+                    "kre_has_anomaly": bool(risk_data.get("kre_has_anomaly", False)),
+                    "gfr_has_anomaly": bool(risk_data.get("gfr_has_anomaly", False)),
+                }
             
             features.append({
                 "patient_code": patient,
@@ -332,11 +357,11 @@ class JSONExporter:
                 
                 "risk_score": risk_data.get("risk_last", 0),
                 "risk_level": risk_data.get("risk_level_last", "Normal"),
-                "has_anomaly": bool(risk_data.get("has_anomaly", anomaly_flags["has_anomaly"])),
-                # Anomali bayrakları - AI + klinik eşik ihlali birleşik
-                "kmr_has_anomaly": bool(risk_data.get("kmr_has_anomaly", anomaly_flags["kmr_has_anomaly"])),
-                "kre_has_anomaly": bool(risk_data.get("kre_has_anomaly", anomaly_flags["kre_has_anomaly"])),
-                "gfr_has_anomaly": bool(risk_data.get("gfr_has_anomaly", anomaly_flags["gfr_has_anomaly"]))
+                "has_anomaly": bool(anomaly_flags["has_anomaly"]),
+                # Anomali bayrakları timeline ile birebir eşleştirilir.
+                "kmr_has_anomaly": bool(anomaly_flags["kmr_has_anomaly"]),
+                "kre_has_anomaly": bool(anomaly_flags["kre_has_anomaly"]),
+                "gfr_has_anomaly": bool(anomaly_flags["gfr_has_anomaly"])
             })
         
         filepath = self.output_dir / "patient_features.json"
@@ -377,6 +402,22 @@ class JSONExporter:
         filepath = self.output_dir / "channel_overview.json"
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(sanitize_for_json(overview), f, ensure_ascii=False, indent=2)
+        print(f"✅ Exported: {filepath}")
+
+    def export_system_config(self) -> None:
+        """Export backend configuration values used by scoring to frontend."""
+        payload = {
+            "metadata": {
+                "created_at": datetime.now().isoformat(),
+                "schema_version": "1.0",
+            },
+            "risk_weights": RISK_WEIGHTS,
+            "alarm_thresholds": ALARM_THRESHOLDS,
+            "clinical_thresholds": CLINICAL_THRESHOLDS,
+        }
+        filepath = self.output_dir / "system_config.json"
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(sanitize_for_json(payload), f, ensure_ascii=False, indent=2)
         print(f"✅ Exported: {filepath}")
     
     def _get_order(self, time_key: str) -> int:
@@ -540,6 +581,7 @@ class JSONExporter:
             patient = str(row["patient_code"])
             timeline = timelines.get(patient, [])
             risk_data = patient_risks.get(patient, {})
+            anomaly_flags = _timeline_anomaly_flags(timeline)
 
             kmr_perf = self._compute_metric_performance(
                 timeline,
@@ -578,10 +620,10 @@ class JSONExporter:
                     "improved_proxy": bool(row.get("improved_proxy", False)),
                     "risk_level": risk_data.get("risk_level_last", "Normal"),
                     "risk_score": round(float(risk_data.get("risk_last", 0.0)), 2),
-                    "has_anomaly": bool(risk_data.get("has_anomaly", False)),
-                    "kmr_has_anomaly": bool(risk_data.get("kmr_has_anomaly", False)),
-                    "kre_has_anomaly": bool(risk_data.get("kre_has_anomaly", False)),
-                    "gfr_has_anomaly": bool(risk_data.get("gfr_has_anomaly", False)),
+                    "has_anomaly": bool(anomaly_flags["has_anomaly"]),
+                    "kmr_has_anomaly": bool(anomaly_flags["kmr_has_anomaly"]),
+                    "kre_has_anomaly": bool(anomaly_flags["kre_has_anomaly"]),
+                    "gfr_has_anomaly": bool(anomaly_flags["gfr_has_anomaly"]),
                     "kmr": kmr_perf,
                     "kre": kre_perf,
                     "gfr": gfr_perf,

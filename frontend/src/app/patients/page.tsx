@@ -220,14 +220,9 @@ export default function PatientsPage() {
                   </thead>
                   <tbody>
                     {filteredPatients.map((patient) => {
-                      const unresolvedAnyAnomaly =
-                        patient.has_anomaly &&
-                        !patient.kmr_has_anomaly &&
-                        !patient.kre_has_anomaly &&
-                        !patient.gfr_has_anomaly;
-                      const kmrAnomaly = patient.kmr_has_anomaly || unresolvedAnyAnomaly;
-                      const kreAnomaly = patient.kre_has_anomaly;
-                      const gfrAnomaly = patient.gfr_has_anomaly;
+                      const kmrAnomaly = Boolean(patient.kmr_has_anomaly);
+                      const kreAnomaly = Boolean(patient.kre_has_anomaly);
+                      const gfrAnomaly = Boolean(patient.gfr_has_anomaly);
 
                       return (
                       <tr key={patient.patient_code} className="bg-white border-b hover:bg-muted/50">

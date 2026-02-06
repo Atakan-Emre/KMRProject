@@ -72,6 +72,96 @@ export function useChannelOverview() {
   });
 }
 
+export interface SystemConfigData {
+  metadata: {
+    created_at: string;
+    schema_version: string;
+  };
+  risk_weights: {
+    kmr_level: number;
+    kmr_trend: number;
+    kmr_volatility: number;
+    kmr_ae: number;
+    kmr_residual: number;
+    lab_level_weight: number;
+    lab_trend_weight: number;
+    kmr_weight: number;
+    lab_weight: number;
+  };
+  alarm_thresholds: {
+    dikkat: number;
+    kritik: number;
+    cok_kritik: number;
+  };
+  clinical_thresholds: {
+    kmr: {
+      normal_upper: number;
+      dikkat_upper: number;
+      kritik_upper: number;
+    };
+    kre: {
+      very_good_lt: number;
+      very_bad_gt: number;
+    };
+    gfr: {
+      very_good_ge: number;
+      very_bad_le: number;
+    };
+  };
+}
+
+export function useSystemConfig() {
+  return useQuery({
+    queryKey: ['system-config'],
+    queryFn: async () => {
+      const response = await fetch(`${basePath}/system_config.json`);
+      if (!response.ok) {
+        // Fallback to built-in defaults if file is missing.
+        return {
+          metadata: {
+            created_at: new Date().toISOString(),
+            schema_version: "fallback",
+          },
+          risk_weights: {
+            kmr_level: 0.35,
+            kmr_trend: 0.25,
+            kmr_volatility: 0.10,
+            kmr_ae: 0.15,
+            kmr_residual: 0.15,
+            lab_level_weight: 0.6,
+            lab_trend_weight: 0.4,
+            kmr_weight: 0.65,
+            lab_weight: 0.35,
+          },
+          alarm_thresholds: {
+            dikkat: 30,
+            kritik: 60,
+            cok_kritik: 80,
+          },
+          clinical_thresholds: {
+            kmr: {
+              normal_upper: 0.5,
+              dikkat_upper: 2.0,
+              kritik_upper: 5.0,
+            },
+            kre: {
+              very_good_lt: 1.2,
+              very_bad_gt: 4.5,
+            },
+            gfr: {
+              very_good_ge: 90,
+              very_bad_le: 15,
+            },
+          },
+        } as SystemConfigData;
+      }
+      return response.json() as Promise<SystemConfigData>;
+    },
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  });
+}
+
 // Kohort trajectory hook'u (iyileşmiş hastalar LSTM/VAE analizi)
 export interface CohortTrajectoryPoint {
   time_key: string;

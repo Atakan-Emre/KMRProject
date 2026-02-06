@@ -31,7 +31,6 @@ python3 backend/run_all.py
 - `/patients` : Hasta listesi (arama, filtre, sıralama)
 - `/patients/[id]` : Hasta detay (KMR/KRE/GFR/risk timeline)
 - `/reports` : Rapor indirme (CSV/PDF + doktor performans raporu)
-- `/model-evaluation` : Model değerlendirme ekranı
 
 ## Veri Kaynakları
 

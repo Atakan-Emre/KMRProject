@@ -4,14 +4,14 @@
     "n_patients": 10,
     "n_time_points": 21,
     "model": "LSTM + Autoencoder",
-    "created_at": "2026-02-07T00:36:06.945731"
+    "created_at": "2026-02-07T01:12:28.847811"
   },
   "trajectory": [
     {
       "time_key": "Day_1",
       "time_order": 1,
       "pseudo_days": 1,
-      "expected_kmr": 6.6814,
+      "expected_kmr": 6.0949,
       "cohort_mean": 9.667,
       "cohort_median": 5.445,
       "cohort_std": 12.4823,
@@ -19,13 +19,13 @@
       "bound_upper": 16.2742,
       "iqr_lower": 4.025,
       "iqr_upper": 7.5174,
-      "ae_error": 1.8007
+      "ae_error": 2.0172
     },
     {
       "time_key": "Day_2",
       "time_order": 2,
       "pseudo_days": 2,
-      "expected_kmr": 8.7499,
+      "expected_kmr": 8.7863,
       "cohort_mean": 6.6742,
       "cohort_median": 5.2498,
       "cohort_std": 7.9815,
@@ -33,13 +33,13 @@
       "bound_upper": 15.7067,
       "iqr_lower": 0.4914,
       "iqr_upper": 6.9111,
-      "ae_error": 1.2517
+      "ae_error": 1.5652
     },
     {
       "time_key": "Day_3",
       "time_order": 3,
       "pseudo_days": 3,
-      "expected_kmr": 4.4452,
+      "expected_kmr": 5.3993,
       "cohort_mean": 3.5978,
       "cohort_median": 1.3734,
       "cohort_std": 5.3344,
@@ -47,13 +47,13 @@
       "bound_upper": 6.4804,
       "iqr_lower": 0.4469,
       "iqr_upper": 4.4361,
-      "ae_error": 0.6189
+      "ae_error": 1.6905
     },
     {
       "time_key": "Day_4",
       "time_order": 4,
       "pseudo_days": 4,
-      "expected_kmr": 3.3836,
+      "expected_kmr": 3.8672,
       "cohort_mean": 3.2455,
       "cohort_median": 2.1445,
       "cohort_std": 3.4246,
@@ -61,13 +61,13 @@
       "bound_upper": 7.5714,
       "iqr_lower": 0.2094,
       "iqr_upper": 5.6095,
-      "ae_error": 1.3115
+      "ae_error": 1.5707
     },
     {
       "time_key": "Day_5",
       "time_order": 5,
       "pseudo_days": 5,
-      "expected_kmr": 1.8347,
+      "expected_kmr": 2.0117,
       "cohort_mean": 1.3721,
       "cohort_median": 0.432,
       "cohort_std": 1.9511,
@@ -75,13 +75,13 @@
       "bound_upper": 3.057,
       "iqr_lower": 0.0568,
       "iqr_upper": 1.8311,
-      "ae_error": 0.9117
+      "ae_error": 1.2666
     },
     {
       "time_key": "Day_6",
       "time_order": 6,
       "pseudo_days": 6,
-      "expected_kmr": 0.9548,
+      "expected_kmr": 1.1854,
       "cohort_mean": 0.804,
       "cohort_median": 0.1294,
       "cohort_std": 1.0141,
@@ -89,13 +89,13 @@
       "bound_upper": 2.5136,
       "iqr_lower": 0.0511,
       "iqr_upper": 1.3251,
-      "ae_error": 0.6292
+      "ae_error": 0.7166
     },
     {
       "time_key": "Day_7",
       "time_order": 7,
       "pseudo_days": 7,
-      "expected_kmr": 1.1791,
+      "expected_kmr": 1.3588,
       "cohort_mean": 1.3344,
       "cohort_median": 0.0557,
       "cohort_std": 3.1016,
@@ -103,13 +103,13 @@
       "bound_upper": 2.934,
       "iqr_lower": 0.02,
       "iqr_upper": 0.3786,
-      "ae_error": 1.1863
+      "ae_error": 1.0913
     },
     {
       "time_key": "Week_2",
       "time_order": 8,
       "pseudo_days": 14,
-      "expected_kmr": 1.8719,
+      "expected_kmr": 2.0933,
       "cohort_mean": 1.6497,
       "cohort_median": 0.1584,
       "cohort_std": 2.9472,
@@ -117,13 +117,13 @@
       "bound_upper": 4.855,
       "iqr_lower": 0.0885,
       "iqr_upper": 1.3538,
-      "ae_error": 0.7343
+      "ae_error": 0.557
     },
     {
       "time_key": "Week_3",
       "time_order": 9,
       "pseudo_days": 21,
-      "expected_kmr": 1.4553,
+      "expected_kmr": 1.9475,
       "cohort_mean": 1.5492,
       "cohort_median": 0.3478,
       "cohort_std": 2.648,
@@ -131,13 +131,13 @@
       "bound_upper": 4.3804,
       "iqr_lower": 0.0915,
       "iqr_upper": 1.1218,
-      "ae_error": 0.7459
+      "ae_error": 0.4679
     },
     {
       "time_key": "Week_4",
       "time_order": 10,
       "pseudo_days": 28,
-      "expected_kmr": 1.2416,
+      "expected_kmr": 1.6725,
       "cohort_mean": 1.4768,
       "cohort_median": 0.5455,
       "cohort_std": 2.3434,
@@ -145,13 +145,13 @@
       "bound_upper": 3.9058,
       "iqr_lower": 0.2026,
       "iqr_upper": 0.8898,
-      "ae_error": 0.3204
+      "ae_error": 0.5568
     },
     {
       "time_key": "Month_2",
       "time_order": 11,
       "pseudo_days": 60,
-      "expected_kmr": 1.0926,
+      "expected_kmr": 1.5191,
       "cohort_mean": 1.3995,
       "cohort_median": 0.5154,
       "cohort_std": 2.055,
@@ -159,13 +159,13 @@
       "bound_upper": 3.4311,
       "iqr_lower": 0.2879,
       "iqr_upper": 1.0338,
-      "ae_error": 0.6392
+      "ae_error": 0.5185
     },
     {
       "time_key": "Month_3",
       "time_order": 12,
       "pseudo_days": 90,
-      "expected_kmr": 0.982,
+      "expected_kmr": 1.4299,
       "cohort_mean": 1.3229,
       "cohort_median": 0.6709,
       "cohort_std": 1.7886,
@@ -173,13 +173,13 @@
       "bound_upper": 2.9565,
       "iqr_lower": 0.1588,
       "iqr_upper": 1.2914,
-      "ae_error": 0.4288
+      "ae_error": 0.3289
     },
     {
       "time_key": "Month_4",
       "time_order": 13,
       "pseudo_days": 120,
-      "expected_kmr": 0.8868,
+      "expected_kmr": 1.3504,
       "cohort_mean": 1.1963,
       "cohort_median": 0.4608,
       "cohort_std": 1.5619,
@@ -187,13 +187,13 @@
       "bound_upper": 2.4819,
       "iqr_lower": 0.1311,
       "iqr_upper": 1.5615,
-      "ae_error": 0.4323
+      "ae_error": 0.3859
     },
     {
       "time_key": "Month_5",
       "time_order": 14,
       "pseudo_days": 150,
-      "expected_kmr": 0.833,
+      "expected_kmr": 1.3074,
       "cohort_mean": 1.2552,
       "cohort_median": 0.6574,
       "cohort_std": 1.3508,
@@ -201,13 +201,13 @@
       "bound_upper": 2.7538,
       "iqr_lower": 0.2272,
       "iqr_upper": 1.7702,
-      "ae_error": 0.5246
+      "ae_error": 0.3522
     },
     {
       "time_key": "Month_6",
       "time_order": 15,
       "pseudo_days": 180,
-      "expected_kmr": 0.7784,
+      "expected_kmr": 1.2406,
       "cohort_mean": 1.045,
       "cohort_median": 0.2585,
       "cohort_std": 1.3325,
@@ -215,13 +215,13 @@
       "bound_upper": 3.5597,
       "iqr_lower": 0.1358,
       "iqr_upper": 1.2092,
-      "ae_error": 0.364
+      "ae_error": 0.7393
     },
     {
       "time_key": "Month_7",
       "time_order": 16,
       "pseudo_days": 210,
-      "expected_kmr": 0.5228,
+      "expected_kmr": 0.9562,
       "cohort_mean": 0.6213,
       "cohort_median": 0.2884,
       "cohort_std": 0.791,
@@ -229,13 +229,13 @@
       "bound_upper": 1.2333,
       "iqr_lower": 0.1457,
       "iqr_upper": 0.7602,
-      "ae_error": 0.6579
+      "ae_error": 0.5824
     },
     {
       "time_key": "Month_8",
       "time_order": 17,
       "pseudo_days": 240,
-      "expected_kmr": 0.2949,
+      "expected_kmr": 0.7524,
       "cohort_mean": 0.4887,
       "cohort_median": 0.19,
       "cohort_std": 0.5885,
@@ -243,13 +243,13 @@
       "bound_upper": 1.2541,
       "iqr_lower": 0.1055,
       "iqr_upper": 0.5844,
-      "ae_error": 0.3001
+      "ae_error": 0.3789
     },
     {
       "time_key": "Month_9",
       "time_order": 18,
       "pseudo_days": 270,
-      "expected_kmr": 0.1139,
+      "expected_kmr": 0.593,
       "cohort_mean": 0.3331,
       "cohort_median": 0.1456,
       "cohort_std": 0.3775,
@@ -257,13 +257,13 @@
       "bound_upper": 0.9055,
       "iqr_lower": 0.038,
       "iqr_upper": 0.5625,
-      "ae_error": 0.2334
+      "ae_error": 0.3862
     },
     {
       "time_key": "Month_10",
       "time_order": 19,
       "pseudo_days": 300,
-      "expected_kmr": -0.0228,
+      "expected_kmr": 0.4788,
       "cohort_mean": 0.2494,
       "cohort_median": 0.142,
       "cohort_std": 0.3131,
@@ -271,13 +271,13 @@
       "bound_upper": 0.4673,
       "iqr_lower": 0.0809,
       "iqr_upper": 0.2297,
-      "ae_error": 0.4951
+      "ae_error": 0.4056
     },
     {
       "time_key": "Month_11",
       "time_order": 20,
       "pseudo_days": 330,
-      "expected_kmr": -0.1,
+      "expected_kmr": 0.4292,
       "cohort_mean": 0.2937,
       "cohort_median": 0.1607,
       "cohort_std": 0.3866,
@@ -285,13 +285,13 @@
       "bound_upper": 0.5395,
       "iqr_lower": 0.089,
       "iqr_upper": 0.2954,
-      "ae_error": 0.6952
+      "ae_error": 0.6569
     },
     {
       "time_key": "Month_12",
       "time_order": 21,
       "pseudo_days": 365,
-      "expected_kmr": -0.1333,
+      "expected_kmr": 0.4192,
       "cohort_mean": 0.3144,
       "cohort_median": 0.1217,
       "cohort_std": 0.4597,
@@ -299,7 +299,7 @@
       "bound_upper": 0.6117,
       "iqr_lower": 0.0998,
       "iqr_upper": 0.2711,
-      "ae_error": 0.2916
+      "ae_error": 1.0188
     }
   ],
   "summary": {

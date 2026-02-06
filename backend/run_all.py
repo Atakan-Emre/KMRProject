@@ -33,6 +33,7 @@ GENERATED_FILES = [
     "data_summary.json",
     "patient_features.json",
     "channel_overview.json",
+    "system_config.json",
     "doctor_performance_report.json",
     "doctor_performance_report.csv",
 ]
@@ -51,6 +52,7 @@ def clean_training_data():
         FRONTEND_PUBLIC / "data_summary.json",
         FRONTEND_PUBLIC / "patient_features.json",
         FRONTEND_PUBLIC / "channel_overview.json",
+        FRONTEND_PUBLIC / "system_config.json",
         FRONTEND_PUBLIC / "doctor_performance_report.json",
         FRONTEND_PUBLIC / "doctor_performance_report.csv",
     ]
@@ -297,13 +299,16 @@ def run_pipeline(clean_first: bool = True):
             print(f"[WARNING] LAB cohort trajectory fallback exported: {error_msg}")
 
         # Export summary
-        exporter.export_data_summary(meta_df, patient_risks)
+        exporter.export_data_summary(meta_df, patient_risks, timelines)
 
         # Export patient features
         exporter.export_patient_features(meta_df, patient_risks, kmr_long, lab_long, timelines)
 
         # Export channel overview
         exporter.export_channel_overview(kmr_long, lab_long)
+
+        # Export system config for dynamic frontend labels/charts
+        exporter.export_system_config()
 
         # Export doctor panel performance report (patient-based)
         exporter.export_doctor_performance_report(meta_df, patient_risks, timelines)

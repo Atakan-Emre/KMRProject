@@ -1,0 +1,37 @@
+{
+  "metadata": {
+    "created_at": "2026-02-07T01:12:41.917050",
+    "schema_version": "1.0"
+  },
+  "risk_weights": {
+    "kmr_level": 0.35,
+    "kmr_trend": 0.25,
+    "kmr_volatility": 0.1,
+    "kmr_ae": 0.15,
+    "kmr_residual": 0.15,
+    "lab_level_weight": 0.6,
+    "lab_trend_weight": 0.4,
+    "kmr_weight": 0.65,
+    "lab_weight": 0.35
+  },
+  "alarm_thresholds": {
+    "dikkat": 30,
+    "kritik": 60,
+    "cok_kritik": 80
+  },
+  "clinical_thresholds": {
+    "kmr": {
+      "normal_upper": 0.5,
+      "dikkat_upper": 2.0,
+      "kritik_upper": 5.0
+    },
+    "kre": {
+      "very_good_lt": 1.2,
+      "very_bad_gt": 4.5
+    },
+    "gfr": {
+      "very_good_ge": 90,
+      "very_bad_le": 15
+    }
+  }
+}
