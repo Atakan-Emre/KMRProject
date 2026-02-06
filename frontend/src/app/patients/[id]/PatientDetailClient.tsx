@@ -45,6 +45,19 @@ function formatPercent(value: number | null | undefined, decimals: number): stri
   return `%${value.toFixed(decimals)}`;
 }
 
+function predictionStatusText(status: string | null | undefined): string {
+  switch (status) {
+    case "timepoint_not_applicable":
+      return "Bu zaman noktası bu metrik için geçerli değil";
+    case "insufficient_data":
+      return "Yetersiz veri (en az 3 ölçüm gerekli)";
+    case "missing_prediction":
+      return "Tahmin üretilemedi";
+    default:
+      return "Durum bilgisi yok";
+  }
+}
+
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
 // Renk sabitleri - Toggle ve katman eşleşmesi için
@@ -174,6 +187,9 @@ export default function PatientDetailClient() {
     kmrPred: number | null;
     krePred: number | null;
     gfrPred: number | null;
+    kmrPredStatus?: string | null;
+    krePredStatus?: string | null;
+    gfrPredStatus?: string | null;
     kreAnomalyScore: number | null;
     gfrAnomalyScore: number | null;
     kreAnomalyFlag: boolean;
@@ -201,6 +217,9 @@ export default function PatientDetailClient() {
       kmrPred: point.kmr_pred,
       krePred: point.kre_pred ?? null,
       gfrPred: point.gfr_pred ?? null,
+      kmrPredStatus: point.kmr_pred_status ?? null,
+      krePredStatus: point.kre_pred_status ?? null,
+      gfrPredStatus: point.gfr_pred_status ?? null,
       kreAnomalyScore: point.kre_anomaly_score ?? null,
       gfrAnomalyScore: point.gfr_anomaly_score ?? null,
       kreAnomalyFlag: point.kre_anomaly_flag ?? false,
@@ -785,6 +804,9 @@ export default function PatientDetailClient() {
         timeOrder: g.timeOrder, timeKey: g.timeKey || '', kmr: g.timelinePoint.kmr, kre: g.timelinePoint.kre, gfr: g.timelinePoint.gfr,
         risk: g.timelinePoint.risk_score, riskLevel: g.timelinePoint.risk_level, kmrPred: g.timelinePoint.kmr_pred,
         krePred: g.timelinePoint.kre_pred, gfrPred: g.timelinePoint.gfr_pred,
+        kmrPredStatus: g.timelinePoint.kmr_pred_status ?? null,
+        krePredStatus: g.timelinePoint.kre_pred_status ?? null,
+        gfrPredStatus: g.timelinePoint.gfr_pred_status ?? null,
         kreAnomalyScore: g.timelinePoint.kre_anomaly_score, gfrAnomalyScore: g.timelinePoint.gfr_anomaly_score,
         kreAnomalyFlag: g.timelinePoint.kre_anomaly_flag, gfrAnomalyFlag: g.timelinePoint.gfr_anomaly_flag,
         isAnomaly: hasAnyAnomaly(g.timelinePoint)
@@ -806,6 +828,9 @@ export default function PatientDetailClient() {
           customdata: anomalyPts.map(g => ({
             timeOrder: g.timeOrder, timeKey: g.timeKey || '', kmr: g.timelinePoint!.kmr, kre: g.timelinePoint!.kre, gfr: g.timelinePoint!.gfr,
             risk: g.timelinePoint!.risk_score, riskLevel: g.timelinePoint!.risk_level, kmrPred: g.timelinePoint!.kmr_pred, isAnomaly: true
+            , kmrPredStatus: g.timelinePoint!.kmr_pred_status ?? null
+            , krePredStatus: g.timelinePoint!.kre_pred_status ?? null
+            , gfrPredStatus: g.timelinePoint!.gfr_pred_status ?? null
           })),
           xaxis: 'x', yaxis: 'y'
         });
@@ -2226,7 +2251,7 @@ export default function PatientDetailClient() {
                     )}
 
                     {/* AI Prediction - Collapsible */}
-                    {(pinnedPoint.kmrPred !== null || pinnedPoint.krePred !== null || pinnedPoint.gfrPred !== null) && (
+                    {(pinnedPoint.kmrPred !== null || pinnedPoint.krePred !== null || pinnedPoint.gfrPred !== null || pinnedPoint.kmrPredStatus || pinnedPoint.krePredStatus || pinnedPoint.gfrPredStatus) && (
                       <div className="bg-emerald-50 rounded-lg border border-emerald-200 mb-2 overflow-hidden">
                         <button 
                           onClick={() => dispatchExpanded({ type: 'TOGGLE', section: 'thresholds' })}
@@ -2274,6 +2299,9 @@ export default function PatientDetailClient() {
                               )}
                             </>
                           )}
+                          {pinnedPoint.kmrPred === null && pinnedPoint.kmrPredStatus && (
+                            <div className="text-slate-600 text-xs">KMR Tahmin: {predictionStatusText(pinnedPoint.kmrPredStatus)}</div>
+                          )}
                           {pinnedPoint.krePred !== null && (
                             <>
                               <div className="font-semibold text-purple-700 mb-1 mt-2">KRE:</div>
@@ -2299,6 +2327,9 @@ export default function PatientDetailClient() {
                               )}
                             </>
                           )}
+                          {pinnedPoint.krePred === null && pinnedPoint.krePredStatus && (
+                            <div className="text-slate-600 text-xs mt-2">KRE Tahmin: {predictionStatusText(pinnedPoint.krePredStatus)}</div>
+                          )}
                           {pinnedPoint.gfrPred !== null && (
                             <>
                               <div className="font-semibold text-cyan-700 mb-1 mt-2">GFR:</div>
@@ -2323,6 +2354,9 @@ export default function PatientDetailClient() {
                                 </>
                               )}
                             </>
+                          )}
+                          {pinnedPoint.gfrPred === null && pinnedPoint.gfrPredStatus && (
+                            <div className="text-slate-600 text-xs mt-2">GFR Tahmin: {predictionStatusText(pinnedPoint.gfrPredStatus)}</div>
                           )}
                         </div>
                         )}

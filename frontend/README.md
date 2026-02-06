@@ -1,36 +1,81 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Frontend (Next.js)
 
-## Getting Started
+Bu uygulama `frontend/public` altına backend tarafından üretilen statik JSON/CSV dosyalarını okuyarak çalışır.
 
-First, run the development server:
+## Teknoloji
+
+- Next.js (App Router)
+- TypeScript
+- React Query
+- Plotly
+- Tailwind + shadcn/ui bileşenleri
+
+## Çalıştırma
 
 ```bash
+cd frontend
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Önemli: Frontend’den önce backend pipeline çalıştırılmalıdır:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cd ..
+python3 backend/run_all.py
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Sayfalar
 
-## Learn More
+- `/` : Dashboard (KPI, risk dağılımı, kohort görünümü)
+- `/patients` : Hasta listesi (arama, filtre, sıralama)
+- `/patients/[id]` : Hasta detay (KMR/KRE/GFR/risk timeline)
+- `/reports` : Rapor indirme (CSV/PDF + doktor performans raporu)
+- `/model-evaluation` : Model değerlendirme ekranı
 
-To learn more about Next.js, take a look at the following resources:
+## Veri Kaynakları
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+UI aşağıdaki dosyaları fetch eder:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- `/patient_features.json`
+- `/data_summary.json`
+- `/reference_band.json`
+- `/cohort_trajectory.json`
+- `/cohort_trajectory_lab.json`
+- `/channel_overview.json`
+- `/patients/{id}.json`
+- `/doctor_performance_report.json` (rapor indirme)
+- `/doctor_performance_report.csv` (rapor indirme)
 
-## Deploy on Vercel
+## Tipler
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Temel tip tanımları: `src/types/index.ts`
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Özellikle timeline noktasında şu alanlar kritik:
+
+- gerçek ölçümler: `kmr`, `kre`, `gfr`
+- tahmin: `*_pred`, `*_pred_lo`, `*_pred_hi`
+- tahmin durumu: `*_pred_status`
+- anomali: `*_anomaly_score`, `*_anomaly_flag`
+- risk: `risk_components`, `risk_score`, `risk_level`
+
+## Tahmin Durumu Gösterimi
+
+`*_pred_status` alanları sayesinde UI, boş tahmini neden bazında gösterir:
+
+- `timepoint_not_applicable`
+- `insufficient_data`
+- `missing_prediction`
+- `ok`
+
+## Build ve Kontrol
+
+```bash
+npm run lint
+npm run build:next
+```
+
+## Notlar
+
+- Uygulama statik veriye dayanır; backend canlı API açmaz.
+- JSON şeması değişirse frontend tipleri de güncellenmelidir.

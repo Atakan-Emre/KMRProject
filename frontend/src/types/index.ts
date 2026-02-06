@@ -9,12 +9,15 @@ export interface TimelinePoint {
   kmr_pred: number | null;
   kmr_pred_lo: number | null;
   kmr_pred_hi: number | null;
+  kmr_pred_status?: string;
   kre_pred: number | null;
   kre_pred_lo: number | null;
   kre_pred_hi: number | null;
+  kre_pred_status?: string;
   gfr_pred: number | null;
   gfr_pred_lo: number | null;
   gfr_pred_hi: number | null;
+  gfr_pred_status?: string;
   kmr_anomaly_score: number;
   kmr_anomaly_flag: boolean;
   kre_anomaly_score: number | null;

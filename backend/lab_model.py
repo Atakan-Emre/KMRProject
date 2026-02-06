@@ -31,6 +31,68 @@ class LABPredictor:
         self.models: Dict[str, Any] = {}  # Model type when TF available
         self.scalers: Dict[str, dict] = {}
         self.use_multi_output = True  # Use multi-output model for KRE+GFR
+
+    @staticmethod
+    def _sanitize_prediction(metric: str, pred: float, pred_lo: float, pred_hi: float) -> Tuple[float, float, float]:
+        """Clamp predictions to physiological bounds and keep lo <= pred <= hi."""
+        bounds = {
+            "kre": (0.0, 15.0),
+            "gfr": (0.0, 180.0),
+        }
+        lower, upper = bounds.get(metric, (0.0, 1e9))
+        pred = float(np.clip(pred, lower, upper))
+        pred_lo = float(np.clip(pred_lo, lower, upper))
+        pred_hi = float(np.clip(pred_hi, lower, upper))
+        lo, hi = sorted((pred_lo, pred_hi))
+        pred = float(np.clip(pred, lo, hi))
+        return pred, lo, hi
+
+    def _apply_gfr_bias_calibration(self, predictions: List[dict], actual_lookup: Dict[int, Any]) -> List[dict]:
+        """
+        Apply lightweight patient-level bias correction for GFR predictions.
+        Uses observed points only; correction is damped to avoid overfitting.
+        """
+        errors = []
+        for p in predictions:
+            order = p.get("time_order")
+            actual = actual_lookup.get(order)
+            pred = p.get("gfr_pred")
+            if isinstance(actual, (int, float)) and not np.isnan(actual) and isinstance(pred, (int, float)):
+                errors.append(float(pred) - float(actual))
+
+        if len(errors) < 3:
+            return predictions
+
+        correction = float(np.mean(errors)) * 0.8
+        calibrated = []
+        for p in predictions:
+            pred = p.get("gfr_pred")
+            lo = p.get("gfr_pred_lo")
+            hi = p.get("gfr_pred_hi")
+            if not all(isinstance(x, (int, float)) for x in [pred, lo, hi]):
+                calibrated.append(p)
+                continue
+
+            pred_adj = float(pred) - correction
+            lo_adj = float(lo) - correction
+            hi_adj = float(hi) - correction
+            pred_adj, lo_adj, hi_adj = self._sanitize_prediction("gfr", pred_adj, lo_adj, hi_adj)
+
+            order = p.get("time_order")
+            actual = actual_lookup.get(order)
+            residual = None
+            if isinstance(actual, (int, float)) and not np.isnan(actual):
+                residual = round(float(actual - pred_adj), 1)
+
+            calibrated.append({
+                **p,
+                "gfr_pred": round(pred_adj, 1),
+                "gfr_pred_lo": round(lo_adj, 1),
+                "gfr_pred_hi": round(hi_adj, 1),
+                "residual": residual,
+            })
+
+        return calibrated
     
     def _winsorize_values(self, values: np.ndarray, metric: str) -> np.ndarray:
         """Winsorize extreme values based on clinical thresholds"""
@@ -387,6 +449,8 @@ class LABPredictor:
                 pred = pred_norm * value_std + value_mean
                 pred_lo = pred * 0.85 if metric == "kre" else pred * 0.9
                 pred_hi = pred * 1.15 if metric == "kre" else pred * 1.1
+
+            pred, pred_lo, pred_hi = self._sanitize_prediction(metric, pred, pred_lo, pred_hi)
             
             actual = targets[i] if not np.isnan(targets[i]) else None
             residual = (actual - pred) if actual is not None else None
@@ -428,21 +492,24 @@ class LABPredictor:
             
             kre_actual = kre_targets[i] if not np.isnan(kre_targets[i]) else None
             gfr_actual = gfr_targets[i] if not np.isnan(gfr_targets[i]) else None
+
+            kre_pred, kre_lo, kre_hi = self._sanitize_prediction("kre", kre_pred, kre_pred * 0.85, kre_pred * 1.15)
+            gfr_pred, gfr_lo, gfr_hi = self._sanitize_prediction("gfr", gfr_pred, gfr_pred * 0.9, gfr_pred * 1.1)
             
             kre_residual = (kre_actual - kre_pred) if kre_actual is not None else None
             gfr_residual = (gfr_actual - gfr_pred) if gfr_actual is not None else None
             
             kre_pred_list.append({
                 "kre_pred": round(float(kre_pred), 2),
-                "kre_pred_lo": round(float(kre_pred * 0.85), 2),
-                "kre_pred_hi": round(float(kre_pred * 1.15), 2),
+                "kre_pred_lo": round(float(kre_lo), 2),
+                "kre_pred_hi": round(float(kre_hi), 2),
                 "residual": round(float(kre_residual), 2) if kre_residual is not None else None
             })
             
             gfr_pred_list.append({
                 "gfr_pred": round(float(gfr_pred), 1),
-                "gfr_pred_lo": round(float(gfr_pred * 0.9), 1),
-                "gfr_pred_hi": round(float(gfr_pred * 1.1), 1),
+                "gfr_pred_lo": round(float(gfr_lo), 1),
+                "gfr_pred_hi": round(float(gfr_hi), 1),
                 "residual": round(float(gfr_residual), 1) if gfr_residual is not None else None
             })
         
@@ -527,6 +594,8 @@ class LABPredictor:
                 # Historical prediction: tighter interval
                 pred_lo = pred * 0.85 if metric == "kre" else pred * 0.9
                 pred_hi = pred * 1.15 if metric == "kre" else pred * 1.1
+
+            pred, pred_lo, pred_hi = self._sanitize_prediction(metric, pred, pred_lo, pred_hi)
             
             # Residual (only if actual exists)
             residual = (actual_val - pred) if actual_val is not None and not np.isnan(actual_val) else None
@@ -539,7 +608,10 @@ class LABPredictor:
                 f"{metric}_pred_hi": round(float(pred_hi), 2) if metric == "kre" else round(float(pred_hi), 1),
                 "residual": round(float(residual), 2) if residual is not None and metric == "kre" else (round(float(residual), 1) if residual is not None else None)
             })
-        
+
+        if metric == "gfr":
+            predictions = self._apply_gfr_bias_calibration(predictions, value_lookup)
+
         return predictions
     
     def _generate_predictions_multi_unified(self, model: Any, features_norm: np.ndarray,
@@ -647,6 +719,9 @@ class LABPredictor:
             else:
                 gfr_pred_lo = gfr_pred * 0.9
                 gfr_pred_hi = gfr_pred * 1.1
+
+            kre_pred, kre_pred_lo, kre_pred_hi = self._sanitize_prediction("kre", kre_pred, kre_pred_lo, kre_pred_hi)
+            gfr_pred, gfr_pred_lo, gfr_pred_hi = self._sanitize_prediction("gfr", gfr_pred, gfr_pred_lo, gfr_pred_hi)
             
             # Residuals
             kre_residual = (kre_actual - kre_pred) if kre_actual is not None and not np.isnan(kre_actual) else None
@@ -669,7 +744,9 @@ class LABPredictor:
                 "gfr_pred_hi": round(float(gfr_pred_hi), 1),
                 "residual": round(float(gfr_residual), 1) if gfr_residual is not None else None
             })
-        
+
+        gfr_pred_list = self._apply_gfr_bias_calibration(gfr_pred_list, gfr_lookup)
+
         return kre_pred_list, gfr_pred_list
     
     def _simple_prediction_single(self, unified_df: pd.DataFrame, metric: str) -> dict:
@@ -718,6 +795,7 @@ class LABPredictor:
             
             pred_lo = pred * 0.7 if metric == "kre" else pred * 0.8
             pred_hi = pred * 1.3 if metric == "kre" else pred * 1.2
+            pred, pred_lo, pred_hi = self._sanitize_prediction(metric, pred, pred_lo, pred_hi)
             residual = (val - pred) if val is not None and not pd.isna(val) else None
             
             predictions.append({
@@ -728,7 +806,15 @@ class LABPredictor:
                 f"{metric}_pred_hi": round(float(pred_hi), 2) if metric == "kre" else round(float(pred_hi), 1),
                 "residual": round(float(residual), 2) if residual is not None and metric == "kre" else (round(float(residual), 1) if residual is not None else None)
             })
-        
+
+        if metric == "gfr":
+            value_lookup = {
+                int(row.get("time_order")): row.get(metric.lower())
+                for _, row in df.iterrows()
+                if row.get("time_order") is not None
+            }
+            predictions = self._apply_gfr_bias_calibration(predictions, value_lookup)
+
         return {"predictions": predictions}
     
     def _simple_prediction_multi(self, unified_df: pd.DataFrame) -> dict:

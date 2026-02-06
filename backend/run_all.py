@@ -7,6 +7,7 @@ import sys
 import json
 import shutil
 import tempfile
+import argparse
 from pathlib import Path
 
 # Add parent to path for imports
@@ -32,6 +33,8 @@ GENERATED_FILES = [
     "data_summary.json",
     "patient_features.json",
     "channel_overview.json",
+    "doctor_performance_report.json",
+    "doctor_performance_report.csv",
 ]
 
 
@@ -48,6 +51,8 @@ def clean_training_data():
         FRONTEND_PUBLIC / "data_summary.json",
         FRONTEND_PUBLIC / "patient_features.json",
         FRONTEND_PUBLIC / "channel_overview.json",
+        FRONTEND_PUBLIC / "doctor_performance_report.json",
+        FRONTEND_PUBLIC / "doctor_performance_report.csv",
     ]
     
     removed_count = 0
@@ -123,11 +128,15 @@ def publish_staged_output(staging_output: Path) -> None:
         shutil.rmtree(patients_old, ignore_errors=True)
 
 
-def run_pipeline():
+def run_pipeline(clean_first: bool = True):
     """Execute full data processing pipeline"""
     print("=" * 60)
     print("Kimerizm Takip Sistemi - Data Pipeline v3.0")
     print("=" * 60)
+
+    # Step 0: Always clean generated artifacts unless explicitly skipped
+    if clean_first:
+        clean_training_data()
     
     # Step 1: Load data from Excel
     print("Step 1: Loading Excel data...")
@@ -296,6 +305,9 @@ def run_pipeline():
         # Export channel overview
         exporter.export_channel_overview(kmr_long, lab_long)
 
+        # Export doctor panel performance report (patient-based)
+        exporter.export_doctor_performance_report(meta_df, patient_risks, timelines)
+
         print("   Publishing staged outputs...")
         publish_staged_output(staging_output)
     finally:
@@ -316,5 +328,13 @@ def run_pipeline():
 
 
 if __name__ == "__main__":
-    result = run_pipeline()
+    parser = argparse.ArgumentParser(description="Run Kimerizm full training/export pipeline.")
+    parser.add_argument(
+        "--skip-clean",
+        action="store_true",
+        help="Do not remove previous generated outputs before training.",
+    )
+    args = parser.parse_args()
+
+    result = run_pipeline(clean_first=not args.skip_clean)
     print(f"\nResult: {result}")

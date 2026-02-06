@@ -19,7 +19,7 @@ class RiskScorer:
     
     # ==================== KMR COMPONENTS ====================
     
-    def calc_kmr_level_score(self, kmr: float) -> float:
+    def calc_kmr_level_score(self, kmr: float, pseudo_time_days: Optional[int] = None) -> float:
         """
         KMR level score (0-100)
         Based on clinical thresholds
@@ -28,19 +28,29 @@ class RiskScorer:
         
         if kmr <= thresholds["normal_upper"]:
             # 0-0.5: very good (0-20)
-            return (kmr / thresholds["normal_upper"]) * 20
+            base = (kmr / thresholds["normal_upper"]) * 20
         elif kmr <= thresholds["dikkat_upper"]:
             # 0.5-2: attention (20-50)
-            return 20 + ((kmr - thresholds["normal_upper"]) / 
-                        (thresholds["dikkat_upper"] - thresholds["normal_upper"])) * 30
+            base = 20 + ((kmr - thresholds["normal_upper"]) /
+                         (thresholds["dikkat_upper"] - thresholds["normal_upper"])) * 30
         elif kmr <= thresholds["kritik_upper"]:
             # 2-5: critical (50-80)
-            return 50 + ((kmr - thresholds["dikkat_upper"]) / 
-                        (thresholds["kritik_upper"] - thresholds["dikkat_upper"])) * 30
+            base = 50 + ((kmr - thresholds["dikkat_upper"]) /
+                         (thresholds["kritik_upper"] - thresholds["dikkat_upper"])) * 30
         else:
             # >5: very critical (80-100)
             excess = kmr - thresholds["kritik_upper"]
-            return min(100, 80 + excess * 4)
+            base = min(100, 80 + excess * 4)
+
+        # Clinical phase-aware weighting:
+        # first 48h values can be transiently high and should be penalized less.
+        if pseudo_time_days is None:
+            return base
+        if pseudo_time_days <= 2:
+            return base * 0.55
+        if pseudo_time_days <= 6:
+            return base * 0.80
+        return base
     
     def calc_kmr_trend_score(self, slopes: List[float], consecutive_up: int) -> float:
         """
@@ -472,6 +482,19 @@ class RiskScorer:
                     # LAB anomaly scores
                     if lab_anomaly_scores and i < len(lab_anomaly_scores):
                         lab_anom_lookup[base_key] = lab_anomaly_scores[i]
+
+        patient_kmr_points = len(kmr_sorted)
+        patient_kre_points = int(lab_sorted["kre"].notna().sum()) if len(lab_sorted) > 0 else 0
+        patient_gfr_points = int(lab_sorted["gfr"].notna().sum()) if len(lab_sorted) > 0 else 0
+
+        def prediction_status(slot_enabled: bool, pred_value: Optional[float], n_points: int) -> str:
+            if not slot_enabled:
+                return "timepoint_not_applicable"
+            if pred_value is not None:
+                return "ok"
+            if n_points < 3:
+                return "insufficient_data"
+            return "missing_prediction"
         
         # Create UNIFIED time points (all time_keys from unified grid: has_kmr=True or has_lab=True)
         # Include all unified grid points, not just those with actual data
@@ -518,6 +541,10 @@ class RiskScorer:
                 gfr_history.append(gfr_val)
             _, _, lab_trend = self.calc_lab_trend_score(kre_history, gfr_history)
             
+            # Slot availability on unified grid
+            has_kmr_slot = bool(time_info.get("has_kmr", False))
+            has_lab_slot = bool(time_info.get("has_lab", False))
+
             # Get KMR prediction and anomaly data (by time_order first, then time_key)
             kmr_pred = kmr_pred_lookup.get(time_order) or kmr_pred_lookup.get(time_key, {})
             kmr_anom = kmr_anom_lookup.get(time_key, {})
@@ -530,6 +557,14 @@ class RiskScorer:
             lab_pred_kre = lab_pred_base.get("kre", {}) if isinstance(lab_pred_base, dict) else {}
             lab_pred_gfr = lab_pred_base.get("gfr", {}) if isinstance(lab_pred_base, dict) else {}
             lab_anom = lab_anom_lookup.get(base_key, {})
+
+            kmr_pred_val = kmr_pred.get("kmr_pred") if isinstance(kmr_pred, dict) else None
+            kre_pred_val = lab_pred_kre.get("kre_pred") if isinstance(lab_pred_kre, dict) else None
+            gfr_pred_val = lab_pred_gfr.get("gfr_pred") if isinstance(lab_pred_gfr, dict) else None
+
+            kmr_pred_status = prediction_status(has_kmr_slot, kmr_pred_val, patient_kmr_points)
+            kre_pred_status = prediction_status(has_lab_slot, kre_pred_val, patient_kre_points)
+            gfr_pred_status = prediction_status(has_lab_slot, gfr_pred_val, patient_gfr_points)
             
             # Calculate KMR metrics only if KMR exists
             kmr_level = 0
@@ -561,7 +596,7 @@ class RiskScorer:
                 cv = np.std(window) / (np.mean(window) + 1e-6) if len(window) > 1 else 0
                 
                 # KMR component scores
-                kmr_level = self.calc_kmr_level_score(kmr_val)
+                kmr_level = self.calc_kmr_level_score(kmr_val, int(time_info.get("pseudo_days", 0)))
                 kmr_trend_score = self.calc_kmr_trend_score(slopes, consecutive_up)
                 kmr_volatility = self.calc_kmr_volatility_score(cv)
                 kmr_ae = self.calc_kmr_ae_score(kmr_anom.get("kmr_anomaly_score", 0))
@@ -585,11 +620,17 @@ class RiskScorer:
             kre_anom_score = lab_anom.get("kre_anomaly_score")
             gfr_anom_score = lab_anom.get("gfr_anomaly_score")
             
-            lab_risk = self.calc_lab_risk(kre_level, gfr_level, lab_trend, 
+            has_current_measurement = (kmr_val is not None) or (kre_val is not None) or (gfr_val is not None)
+            lab_trend_effective = lab_trend if has_current_measurement else None
+
+            lab_risk = self.calc_lab_risk(kre_level, gfr_level, lab_trend_effective,
                                          kre_anom_score, gfr_anom_score)
             
-            # Overall risk - use LAB risk if no KMR, otherwise combine
-            if kmr_val is None and lab_risk is not None:
+            # Overall risk policy:
+            # no current measurement at this time point -> risk stays 0 (no carry-forward).
+            if not has_current_measurement:
+                overall_risk = 0
+            elif kmr_val is None and lab_risk is not None:
                 overall_risk = lab_risk
             elif kmr_val is not None:
                 overall_risk = self.calc_overall_risk(kmr_risk, lab_risk)
@@ -606,16 +647,19 @@ class RiskScorer:
                 "kre": round(kre_val, 2) if kre_val is not None else None,
                 "gfr": round(gfr_val, 1) if gfr_val is not None else None,
                 
-                "kmr_pred": kmr_pred.get("kmr_pred"),
-                "kmr_pred_lo": kmr_pred.get("kmr_pred_lo"),
-                "kmr_pred_hi": kmr_pred.get("kmr_pred_hi"),
+                "kmr_pred": kmr_pred_val,
+                "kmr_pred_lo": kmr_pred.get("kmr_pred_lo") if isinstance(kmr_pred, dict) else None,
+                "kmr_pred_hi": kmr_pred.get("kmr_pred_hi") if isinstance(kmr_pred, dict) else None,
+                "kmr_pred_status": kmr_pred_status,
                 
-                "kre_pred": lab_pred_kre.get("kre_pred") if isinstance(lab_pred_kre, dict) else None,
+                "kre_pred": kre_pred_val,
                 "kre_pred_lo": lab_pred_kre.get("kre_pred_lo") if isinstance(lab_pred_kre, dict) else None,
                 "kre_pred_hi": lab_pred_kre.get("kre_pred_hi") if isinstance(lab_pred_kre, dict) else None,
-                "gfr_pred": lab_pred_gfr.get("gfr_pred") if isinstance(lab_pred_gfr, dict) else None,
+                "kre_pred_status": kre_pred_status,
+                "gfr_pred": gfr_pred_val,
                 "gfr_pred_lo": lab_pred_gfr.get("gfr_pred_lo") if isinstance(lab_pred_gfr, dict) else None,
                 "gfr_pred_hi": lab_pred_gfr.get("gfr_pred_hi") if isinstance(lab_pred_gfr, dict) else None,
+                "gfr_pred_status": gfr_pred_status,
                 
                 "kmr_anomaly_score": kmr_anom.get("kmr_anomaly_score", 0),
                 "kmr_anomaly_flag": kmr_anom.get("kmr_anomaly_flag", False),
@@ -626,7 +670,7 @@ class RiskScorer:
                 
                 "kre_level_score": round(kre_level, 1) if kre_level is not None else None,
                 "gfr_level_score": round(gfr_level, 1) if gfr_level is not None else None,
-                "lab_trend_score": round(lab_trend, 1) if lab_trend is not None else None,
+                "lab_trend_score": round(lab_trend_effective, 1) if lab_trend_effective is not None else None,
                 
                 "risk_components": {
                     "kmr_level": round(kmr_level, 1),
@@ -635,7 +679,7 @@ class RiskScorer:
                     "kmr_ae": round(kmr_ae, 1),
                     "kmr_residual": round(kmr_residual, 1),
                     "lab_level": round(lab_level, 1) if lab_level is not None else 0,
-                    "lab_trend": round(lab_trend, 1) if lab_trend is not None else 0
+                    "lab_trend": round(lab_trend_effective, 1) if lab_trend_effective is not None else 0
                 },
                 "risk_score": round(overall_risk, 1),
                 "risk_level": alarm_level

@@ -1,295 +1,144 @@
-# NISTH - Sistem Mimarisi v3.0
+# Sistem Mimarisi (Detaylı)
 
-**Non-invasive Screening of Transplantation Health (NISTH)**
+Bu doküman NISTH sisteminin teknik mimarisini bileşen, veri akışı, çalışma sırası ve dağıtım modeli düzeyinde açıklar.
 
-Organ nakli sonrası hasta takibi için hibrit AI tabanlı zaman serisi analiz sistemi. KMR (Kimerizm), KRE (Kreatinin) ve GFR (Glomerüler Filtrasyon Hızı) verilerini entegre ederek kapsamlı risk değerlendirmesi sunar.
+## 1) Mimari Prensip
 
----
+Sistem bir **batch analytics pipeline** olarak tasarlanmıştır.
 
-## İÇERİK TABLOSU
-- Mimari Genel Bakış
-- Veri Akışı ve Katmanları
-- Backend Model Mimarisi
-- Frontend Uygulama Mimarisi
-- Risk Skorlama Sistemi
-- Dağıtım ve Çalıştırma
+- canlı backend API yok,
+- kaynak veri tek dosya (`data.xlsx`),
+- çıktı sözleşmesi statik JSON/CSV,
+- frontend bu sözleşmeyi doğrudan tüketir.
 
----
-
-## Mimari Genel Bakış
+## 2) Katmanlı Mimari
 
 ```mermaid
-graph TD
-    A[Excel Veri Kaynağı] --> B[io_excel.py]
-    B --> C[time_mapping.py]
-    
-    C --> D[KMRPredictor - LSTM]
-    C --> E[KMRAnomalyDetector - VAE]
-    C --> F[ReferenceBandCalculator]
-    
-    D --> G[RiskScorer]
-    E --> G
+flowchart LR
+    A["Veri Katmanı\n/data/data.xlsx"] --> B["Ingestion Katmanı\nio_excel.py"]
+    B --> C["Modelleme Katmanı\nkmr_model.py + lab_model.py"]
+    B --> D["Anomali Katmanı\nanomaly_vae.py + lab_anomaly_vae.py"]
+    C --> E["Risk Katmanı\nrisk_scoring.py"]
+    D --> E
+    B --> F["Referans/Kohort\nreference_band.py + cohort_trajectory*"]
+    E --> G["Export Katmanı\nexport_json.py"]
     F --> G
-    
-    G --> H[export_json.py]
-    H --> I[Frontend JSON Files]
-    
-    I --> J[Next.js Frontend]
-    J --> K[Plotly Grafikler]
-    J --> L[Hasta Detay Sayfaları]
-    J --> M[Model Değerlendirme]
+    G --> H["Public Artifact Katmanı\nfrontend/public"]
+    H --> I["UI Katmanı\nNext.js"]
 ```
 
-### Temel Bileşenler
+## 3) Çalışma Sırası (Orchestrator)
 
-| Katman | Teknoloji | Dosyalar |
-|--------|-----------|----------|
-| **Veri İşleme** | Python + Pandas | `io_excel.py`, `time_mapping.py` |
-| **LSTM Tahmin** | TensorFlow/Keras | `kmr_model.py` |
-| **Anomali Tespiti** | VAE Autoencoder | `anomaly_vae.py` |
-| **Risk Skorlama** | İstatistiksel + AI | `risk_scoring.py` |
-| **Referans Bandı** | Kohort Analizi | `reference_band.py` |
-| **Frontend** | Next.js + React | `frontend/src/app/` |
+Orkestrasyon dosyası:
 
----
+- `./backend/run_all.py`
 
-## Veri Akışı ve Katmanları
+```mermaid
+sequenceDiagram
+    participant U as User
+    participant R as run_all.py
+    participant IO as io_excel
+    participant M as models
+    participant A as anomaly
+    participant S as risk
+    participant X as export
+    participant P as frontend/public
 
-### Girdi Verileri
-
-**Excel Kaynak Dosyası**: `IM17 Kimerizm Birleşik Data v3.xlsx`
-- **Metadata Sheet**: Hasta demografik bilgileri (cinsiyet, vital durum, tanı)
-- **KMR Sheet**: Kimerizm zaman serisi (Day_7, Week_2, Month_1, vb.)
-- **LAB Sheet**: Laboratuvar değerleri (Kreatinin, GFR)
-
-### Zaman Noktaları Eşlemesi
-
-```python
-UNIFIED_TIME_MAP = {
-    "Day_7":   {"order": 1,  "pseudo_days": 7,   "has_kmr": True,  "has_lab": True},
-    "Week_2":  {"order": 2,  "pseudo_days": 14,  "has_kmr": True,  "has_lab": True},
-    "Week_3":  {"order": 3,  "pseudo_days": 21,  "has_kmr": True,  "has_lab": True},
-    "Month_1": {"order": 4,  "pseudo_days": 30,  "has_kmr": True,  "has_lab": True},
-    "Month_2": {"order": 5,  "pseudo_days": 60,  "has_kmr": True,  "has_lab": True},
-    "Month_3": {"order": 6,  "pseudo_days": 90,  "has_kmr": True,  "has_lab": True},
-    "Month_6": {"order": 7,  "pseudo_days": 180, "has_kmr": True,  "has_lab": True},
-    "Month_9": {"order": 8,  "pseudo_days": 270, "has_kmr": True,  "has_lab": False},
-    "Year_1":  {"order": 9,  "pseudo_days": 365, "has_kmr": True,  "has_lab": True},
-    "Year_2":  {"order": 10, "pseudo_days": 730, "has_kmr": True,  "has_lab": True},
-    # ... devam eder
-}
+    U->>R: run_all.py
+    R->>R: Step 0 clean (default)
+    R->>IO: load + transform
+    R->>M: KMR/LAB train + predict
+    R->>A: KMR/LAB anomaly score
+    R->>S: unified timeline risk
+    R->>X: json/csv staging export
+    X->>P: atomic publish
+    R-->>U: pipeline complete
 ```
 
-### Çıktı JSON Yapısı
+## 4) Bileşen Sorumluluk Matrisi
 
-```json
-frontend/public/
-├── patients/
-│   ├── {patient_code}.json    # Hasta detay verileri
-│   └── ...
-├── summary.json               # Genel özet istatistikler
-├── reference_band.json        # KMR/KRE/GFR referans bantları
-├── patient_features.json      # Hasta özellik listesi
-├── channel_overview.json      # Kanal bazlı istatistikler
-└── cohort_trajectory.json     # İyileşmiş hasta kohort analizi
+| Katman | Dosya | Sorumluluk | Kritik Çıktı |
+|---|---|---|---|
+| Ingestion | `io_excel.py` | Excel okuma, normalizasyon, long format, improved proxy | `meta_df`, `kmr_long`, `lab_long` |
+| Zaman Sözleşmesi | `time_mapping.py` | KMR/LAB/unified order + pseudo_days | `UNIFIED_TIME_MAP` |
+| KMR Model | `kmr_model.py` | hasta bazlı KMR tahmini | `kmr_pred*`, `residual` |
+| LAB Model | `lab_model.py` | KRE/GFR tahmini, bias kalibrasyon | `kre_pred*`, `gfr_pred*` |
+| KMR Anomali | `anomaly_vae.py` | reconstruction/tabanlı skor | `kmr_anomaly_*` |
+| LAB Anomali | `lab_anomaly_vae.py` | KRE/GFR anomaly skorları | `kre_anomaly_*`, `gfr_anomaly_*` |
+| Risk | `risk_scoring.py` | bileşen risk + overall risk + alarm | `risk_score`, `risk_level` |
+| Referans | `reference_band.py` | cohort band + trend fit | `reference_band.json` |
+| Export | `export_json.py` | frontend sözleşmeleri | `patients/*.json`, özet JSON'lar |
+| QA | `full_system_check.py` | veri ve şema doğrulama + FE build | pass/fail raporu |
+
+## 5) Veri Sözleşmesi Sınırı
+
+Backend ile frontend arasında tek entegrasyon noktası:
+
+- `./frontend/public`
+
+Bu klasördeki dosyalar **API sözleşmesi** gibi düşünülmelidir.
+
+### Sözleşme Dosyaları
+
+- `patients/{id}.json`
+- `patient_features.json`
+- `data_summary.json`
+- `reference_band.json`
+- `cohort_trajectory.json`
+- `cohort_trajectory_lab.json`
+- `channel_overview.json`
+- `doctor_performance_report.json`
+- `doctor_performance_report.csv`
+
+## 6) Tasarım Kararları
+
+### 6.1 Unified Timeline
+
+Farklı metriklerde farklı zaman noktası sorununu çözmek için tek timeline kullanılır. Böylece:
+
+- grafikler tutarlı kalır,
+- tahmin boşlukları şeffaflaşır,
+- risk hesabı deterministic olur.
+
+### 6.2 No Measurement, No Risk Carry-Forward
+
+Ölçüm yoksa risk 0 alınır. Bu karar “ölçüm dışı” dönemlerde yanlış alarm birikimini engeller.
+
+### 6.3 Atomic Publish
+
+Export önce staging alana yazılır, sonra tek seferde `frontend/public` güncellenir. Kısmi/yarım veri servis edilmez.
+
+## 7) Dağıtım Mimarisi
+
+```mermaid
+flowchart TD
+    A["Local/CI Pipeline"] --> B["run_all.py"]
+    B --> C["frontend/public artifacts"]
+    C --> D["next build (static export)"]
+    D --> E["frontend/out"]
+    E --> F["GitHub Pages / Static Host"]
 ```
 
----
+## 8) Kalite Kapısı
 
-## Backend Model Mimarisi
-
-### 1. LSTM Tahmin Modeli (`kmr_model.py`)
-
-**Dinamik Karmaşıklık Seçimi**:
-```python
-def _determine_complexity(n_points):
-    if n_points < 10:   return "simple"   # GRU-16
-    elif n_points < 20: return "medium"   # LSTM 32-16
-    else:               return "complex"  # LSTM 64-32-16
-```
-
-**Özellik Mühendisliği**:
-- `delta_from_baseline`: Baseline'dan sapma
-- `ratio_from_baseline`: Baseline oranı
-- `ewma`: Üstel ağırlıklı hareketli ortalama
-- `rolling_cv`: Kayan pencere varyasyon katsayısı
-- `slope_short`: Kısa vadeli eğim (son 3 nokta)
-
-**Model Çıktıları**:
-- `kmr_pred`: Tahmin değeri
-- `kmr_pred_lo`, `kmr_pred_hi`: Güven aralığı (%80)
-- `residual`: Tahmin hatası
-
-### 2. VAE Anomali Dedektörü (`anomaly_vae.py`)
-
-**Autoencoder Mimarisi**:
-```python
-# Encoder
-Input(5) → Dense(16, relu) → Dense(8, relu) → Dense(4, relu)
-
-# Decoder  
-Dense(4) → Dense(8, relu) → Dense(16, relu) → Dense(5)
-```
-
-**Anomali Skoru Hesaplama**:
-```python
-reconstruction_error = MSE(original, reconstructed)
-threshold = Q3 + 1.5 * IQR  # Robust eşik
-anomaly_score = reconstruction_error / threshold
-anomaly_flag = anomaly_score > 1.0
-```
-
-### 3. Risk Skorlama (`risk_scoring.py`)
-
-**5 Bileşenli Ensemble Skor**:
-
-| Bileşen | Ağırlık | Açıklama |
-|---------|---------|----------|
-| **KMR Skoru** | 30% | KMR trend ve seviye analizi |
-| **LAB Skoru** | 25% | Kreatinin ve GFR değerlendirmesi |
-| **LSTM Residual** | 20% | Tahmin hatası bazlı anomali |
-| **VAE Anomali** | 15% | Rekonstrüksiyon hatası |
-| **Volatilite** | 10% | Değişkenlik analizi |
-
-**Risk Kategorileri**:
-- 0-20: Çok Düşük (Yeşil)
-- 20-40: Düşük (Açık Yeşil)
-- 40-60: Orta (Sarı)
-- 60-80: Yüksek (Turuncu)
-- 80-100: Çok Yüksek (Kırmızı)
-
----
-
-## Frontend Uygulama Mimarisi
-
-### Teknoloji Stack
-
-- **Framework**: Next.js 15.4.6 (App Router)
-- **UI Kütüphanesi**: React 18 + TypeScript
-- **Stil**: TailwindCSS + shadcn/ui
-- **Grafikler**: Plotly.js (react-plotly.js)
-- **State Yönetimi**: React Query (TanStack Query)
-- **İkonlar**: Lucide React
-
-### Sayfa Yapısı
+Release öncesi zorunlu komut:
 
 ```bash
-frontend/src/app/
-├── page.tsx              # Ana Sayfa (Dashboard)
-├── layout.tsx            # Global layout ve navigasyon
-├── patients/
-│   ├── page.tsx          # Hasta listesi
-│   └── [id]/page.tsx     # Hasta detay sayfası
-├── model-evaluation/
-│   └── page.tsx          # Model değerlendirme
-└── reports/
-    └── page.tsx          # Rapor indirme
+python3 ./backend/full_system_check.py
 ```
 
-### Hasta Detay Sayfası Grafikleri
+Bu komut:
 
-**KMR Zaman Serisi**:
-- Gerçek KMR değerleri (çizgi + marker)
-- AI Tahmini (LSTM prediction)
-- Benzer Hastalar beklentisi (kohort median)
-- Referans IQR bandı (P25-P75)
-- Anomali noktaları vurgulama
+- data.xlsx ile JSON eşleşmesini,
+- risk/anomali tutarlılığını,
+- doktor raporu sözleşmesini,
+- frontend lint/build durumunu
 
-**KRE/GFR Grafikleri**:
-- Hasta gerçek değerleri
-- Referans IQR bandı
-- Klinik eşik çizgileri (1.2, 4.5 mg/dL - KRE; 15, 30, 60, 90 mL/min - GFR)
+otomatik doğrular.
 
-**Risk Analizi**:
-- Risk skoru zaman serisi
-- Risk bileşenleri breakdown
-- Trend göstergesi
+## 9) Gelecek Genişletme Noktaları
 
----
-
-## Dağıtım ve Çalıştırma
-
-### Gereksinimler
-
-```bash
-# Backend
-Python 3.9+
-tensorflow>=2.10
-pandas, numpy, openpyxl
-
-# Frontend
-Node.js 18+
-npm veya yarn
-```
-
-### Kurulum
-
-```bash
-# Backend bağımlılıkları
-cd backend
-pip install -r requirements.txt
-
-# Frontend bağımlılıkları
-cd frontend
-npm install
-```
-
-### Pipeline Çalıştırma
-
-```bash
-# 1. Backend pipeline (Excel → JSON)
-python -m backend.run_all
-
-# 2. Frontend development server
-cd frontend
-npm run dev
-```
-
-### Üretim Dağıtımı
-
-```bash
-# Frontend build
-cd frontend
-npm run build
-npm start
-```
-
----
-
-## Proje Dosya Yapısı
-
-```bash
-KMRProject/
-├── backend/
-│   ├── __init__.py
-│   ├── config.py              # Konfigürasyon sabitleri
-│   ├── io_excel.py            # Excel veri okuma
-│   ├── time_mapping.py        # Zaman noktası eşleme
-│   ├── kmr_model.py           # LSTM tahmin modeli
-│   ├── anomaly_vae.py         # VAE anomali dedektörü
-│   ├── risk_scoring.py        # Risk skorlama
-│   ├── reference_band.py      # Referans bandı hesaplama
-│   ├── cohort_trajectory.py   # Kohort analizi
-│   ├── export_json.py         # JSON dışa aktarma
-│   └── run_all.py             # Ana pipeline
-│
-├── frontend/
-│   ├── src/
-│   │   ├── app/               # Next.js App Router
-│   │   ├── components/        # UI bileşenleri
-│   │   ├── hooks/             # Custom React hooks
-│   │   ├── types/             # TypeScript tipleri
-│   │   └── utils/             # Yardımcı fonksiyonlar
-│   └── public/
-│       └── patients/          # Hasta JSON dosyaları
-│
-├── Doc/                       # Dokümantasyon
-└── README.md
-```
-
----
-
-**Son güncelleme**: 2026-01-18  
-**Versiyon**: v3.0  
-**Sistem Adı**: NISTH (Non-invasive Screening of Transplantation Health)  
-**İlgili dosyalar**: `README.md`, `GRAFIK_ACIKLAMA_DOKÜMANTASYON.md`, `GELISMIS_KIMERIZM_SISTEMI_v2.md`
+- canlı API modu (opsiyonel),
+- model registry/versioning,
+- online drift monitoring,
+- metrik bazlı otomatik model fallback telemetrisi.

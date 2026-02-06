@@ -92,12 +92,27 @@ def wide_to_long_lab(df: pd.DataFrame) -> pd.DataFrame:
 
 def calculate_improved_proxy(df: pd.DataFrame) -> Dict[str, bool]:
     """
-    Determine improved_proxy: True if patient has any KMR value in Month_9..Month_12
+    Determine improved_proxy using late follow-up + clinical trend criteria.
+
+    Rule set:
+    - Candidate cohort: has at least one KMR value in Month_9..Month_12
+    - Clinical improvement:
+      - KMR improves (last < 0.5 OR strong reduction vs first value)
+      - KRE improves when available (last < 1.2 OR last <= first)
+      - GFR improves when available (last >= 90 OR last >= first)
+
+    If the strict cohort becomes too small, fallback to candidate cohort to keep
+    training stable.
     """
+    kmr_keys = sorted(KMR_TIME_MAP.keys(), key=lambda k: KMR_TIME_MAP[k]["order"])
+    lab_keys = sorted(LAB_TIME_MAP.keys(), key=lambda k: LAB_TIME_MAP[k]["order"])
+
     late_months = ["Month_9", "Month_10", "Month_11", "Month_12"]
     late_cols = [c for c in df.columns if c in late_months]
-    
-    result = {}
+
+    strict_result: Dict[str, bool] = {}
+    candidate_result: Dict[str, bool] = {}
+
     for _, row in df.iterrows():
         patient = row["patient_code"]
         has_late = False
@@ -105,9 +120,57 @@ def calculate_improved_proxy(df: pd.DataFrame) -> Dict[str, bool]:
             if pd.notna(row.get(col)):
                 has_late = True
                 break
-        result[patient] = has_late
-    
-    return result
+
+        candidate_result[patient] = has_late
+        if not has_late:
+            strict_result[patient] = False
+            continue
+
+        # KMR first/last
+        kmr_vals = [float(row.get(k)) for k in kmr_keys if pd.notna(row.get(k))]
+        first_kmr = kmr_vals[0] if kmr_vals else None
+        last_kmr = kmr_vals[-1] if kmr_vals else None
+
+        kmr_improved = False
+        if last_kmr is not None:
+            kmr_improved = (
+                last_kmr < 0.5
+                or (first_kmr is not None and first_kmr > 0 and last_kmr <= first_kmr * 0.35)
+            )
+
+        # KRE first/last
+        kre_vals = [float(row.get(f"{k}_KRE")) for k in lab_keys if pd.notna(row.get(f"{k}_KRE"))]
+        first_kre = kre_vals[0] if kre_vals else None
+        last_kre = kre_vals[-1] if kre_vals else None
+        kre_improved = (
+            last_kre is None
+            or last_kre < 1.2
+            or (first_kre is not None and last_kre <= first_kre)
+        )
+
+        # GFR first/last
+        gfr_vals = [float(row.get(f"{k}_GFR")) for k in lab_keys if pd.notna(row.get(f"{k}_GFR"))]
+        first_gfr = gfr_vals[0] if gfr_vals else None
+        last_gfr = gfr_vals[-1] if gfr_vals else None
+        gfr_improved = (
+            last_gfr is None
+            or last_gfr >= 90
+            or (first_gfr is not None and last_gfr >= first_gfr)
+        )
+
+        strict_result[patient] = kmr_improved and kre_improved and gfr_improved
+
+    strict_count = sum(strict_result.values())
+    min_required = max(5, int(len(df) * 0.15))
+
+    if strict_count < min_required:
+        print(
+            f"   Improved proxy strict cohort too small ({strict_count}); "
+            f"fallback to late-follow-up cohort ({sum(candidate_result.values())})"
+        )
+        return candidate_result
+
+    return strict_result
 
 
 def load_all_data() -> Tuple[pd.DataFrame, pd.DataFrame, pd.DataFrame, Dict[str, bool], pd.DataFrame]:

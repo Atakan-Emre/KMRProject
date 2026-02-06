@@ -13,6 +13,7 @@ export default function ReportsPage() {
   const { patients, isLoading, error } = useDashboardData();
   const [selectedPatient, setSelectedPatient] = useState<string>("all");
   const [reportType, setReportType] = useState<"summary" | "detailed">("summary");
+  const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
   if (error) {
     return (
@@ -189,6 +190,29 @@ export default function ReportsPage() {
     }
   };
 
+  const downloadDoctorPerformanceReport = async (format: "csv" | "json") => {
+    const source = `${basePath}/doctor_performance_report.${format}`;
+    try {
+      const res = await fetch(source);
+      if (!res.ok) {
+        throw new Error(`Rapor bulunamadı (${res.status})`);
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = url;
+      const date = new Date().toISOString().split("T")[0];
+      link.download = `DoktorPaneli_Performans_HastaBazli_${date}.${format}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      URL.revokeObjectURL(url);
+    } catch (e) {
+      const message = e instanceof Error ? e.message : "Bilinmeyen hata";
+      window.alert(`Doktor performans raporu indirilemedi: ${message}`);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Header */}
@@ -255,6 +279,17 @@ export default function ReportsPage() {
                 PDF İndir
               </Button>
             </div>
+          </div>
+
+          <div className="mt-4 border-t pt-4 flex flex-col md:flex-row gap-2">
+            <Button variant="secondary" onClick={() => downloadDoctorPerformanceReport("csv")}>
+              <FileSpreadsheet className="h-4 w-4 mr-2" />
+              Doktor Performans (CSV)
+            </Button>
+            <Button variant="secondary" onClick={() => downloadDoctorPerformanceReport("json")}>
+              <FileText className="h-4 w-4 mr-2" />
+              Doktor Performans (JSON)
+            </Button>
           </div>
         </CardContent>
       </Card>

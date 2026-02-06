@@ -384,6 +384,279 @@ class JSONExporter:
         from .time_mapping import UNIFIED_TIME_MAP
         base_key = time_key.replace("_KRE", "").replace("_GFR", "")
         return UNIFIED_TIME_MAP.get(base_key, {}).get("order", 999)
+
+    def _compute_metric_performance(
+        self,
+        timeline: List[dict],
+        *,
+        actual_key: str,
+        pred_key: str,
+        pred_lo_key: str,
+        pred_hi_key: str,
+        pred_status_key: str,
+        mape_floor: float,
+        round_digits: int,
+    ) -> Dict[str, Any]:
+        """
+        Compute per-metric prediction performance for one patient.
+        Evaluation is done where actual and prediction are both available and prediction status is 'ok'
+        (or status is missing for backward compatibility).
+        """
+        n_actual = 0
+        n_pred = 0
+        n_eval = 0
+        n_interval = 0
+        interval_hits = 0
+        abs_errors: List[float] = []
+        sq_errors: List[float] = []
+        apes: List[float] = []
+        signed_errors: List[float] = []
+
+        last_actual = None
+        last_pred = None
+        last_error = None
+
+        for point in timeline:
+            actual = _safe_float(point.get(actual_key))
+            pred = _safe_float(point.get(pred_key))
+            pred_lo = _safe_float(point.get(pred_lo_key))
+            pred_hi = _safe_float(point.get(pred_hi_key))
+            pred_status = str(point.get(pred_status_key) or "")
+
+            if actual is not None:
+                n_actual += 1
+                last_actual = actual
+
+            if pred is not None:
+                n_pred += 1
+                last_pred = pred
+
+            status_ok = pred_status in {"", "ok"}
+            if actual is None or pred is None or not status_ok:
+                continue
+
+            err = pred - actual
+            abs_err = abs(err)
+            denom = max(abs(actual), mape_floor)
+
+            abs_errors.append(abs_err)
+            sq_errors.append(err * err)
+            apes.append(abs_err / denom)
+            signed_errors.append(err)
+            n_eval += 1
+            last_error = err
+
+            if pred_lo is not None and pred_hi is not None:
+                n_interval += 1
+                if pred_lo <= actual <= pred_hi:
+                    interval_hits += 1
+
+        mae = round(float(np.mean(abs_errors)), round_digits) if abs_errors else None
+        rmse = round(float(np.sqrt(np.mean(sq_errors))), round_digits) if sq_errors else None
+        mape = round(float(np.mean(apes) * 100.0), 2) if apes else None
+        bias = round(float(np.mean(signed_errors)), round_digits) if signed_errors else None
+        coverage = round(float(interval_hits / n_interval), 4) if n_interval > 0 else None
+
+        return {
+            "n_actual_points": n_actual,
+            "n_pred_points": n_pred,
+            "n_eval_points": n_eval,
+            "mae": mae,
+            "rmse": rmse,
+            "mape_percent": mape,
+            "bias": bias,
+            "n_interval_points": n_interval,
+            "interval_coverage": coverage,
+            "last_actual": round(last_actual, round_digits) if last_actual is not None else None,
+            "last_pred": round(last_pred, round_digits) if last_pred is not None else None,
+            "last_error": round(last_error, round_digits) if last_error is not None else None,
+            "_agg_abs_error": float(np.sum(abs_errors)) if abs_errors else 0.0,
+            "_agg_sq_error": float(np.sum(sq_errors)) if sq_errors else 0.0,
+            "_agg_ape": float(np.sum(apes)) if apes else 0.0,
+            "_agg_n_eval": n_eval,
+            "_agg_n_interval": n_interval,
+            "_agg_interval_hits": interval_hits,
+        }
+
+    def _build_report_summary(self, patient_rows: List[dict]) -> Dict[str, Any]:
+        """Build aggregate summary from patient-level report rows."""
+        metric_names = ["kmr", "kre", "gfr"]
+        summary_metrics: Dict[str, Dict[str, Any]] = {}
+
+        for metric in metric_names:
+            patients_with_eval = 0
+            total_eval_points = 0
+            total_interval_points = 0
+            total_interval_hits = 0
+            agg_abs_error = 0.0
+            agg_sq_error = 0.0
+            agg_ape = 0.0
+
+            for row in patient_rows:
+                info = row.get(metric, {})
+                n_eval = int(info.get("_agg_n_eval", 0) or 0)
+                if n_eval > 0:
+                    patients_with_eval += 1
+                total_eval_points += n_eval
+                total_interval_points += int(info.get("_agg_n_interval", 0) or 0)
+                total_interval_hits += int(info.get("_agg_interval_hits", 0) or 0)
+                agg_abs_error += float(info.get("_agg_abs_error", 0.0) or 0.0)
+                agg_sq_error += float(info.get("_agg_sq_error", 0.0) or 0.0)
+                agg_ape += float(info.get("_agg_ape", 0.0) or 0.0)
+
+            summary_metrics[metric] = {
+                "patients_with_eval": patients_with_eval,
+                "total_eval_points": total_eval_points,
+                "mae": round(agg_abs_error / total_eval_points, 4) if total_eval_points > 0 else None,
+                "rmse": round(float(np.sqrt(agg_sq_error / total_eval_points)), 4) if total_eval_points > 0 else None,
+                "mape_percent": round((agg_ape / total_eval_points) * 100.0, 2) if total_eval_points > 0 else None,
+                "interval_coverage": round(total_interval_hits / total_interval_points, 4) if total_interval_points > 0 else None,
+            }
+
+        patients_with_any_eval = 0
+        for row in patient_rows:
+            if any(int((row.get(metric, {}) or {}).get("n_eval_points", 0) or 0) > 0 for metric in metric_names):
+                patients_with_any_eval += 1
+
+        return {
+            "n_patients": len(patient_rows),
+            "patients_with_any_eval": patients_with_any_eval,
+            "metrics": summary_metrics,
+        }
+
+    def export_doctor_performance_report(
+        self,
+        meta_df: pd.DataFrame,
+        patient_risks: Dict[str, dict],
+        timelines: Dict[str, List[dict]],
+    ) -> None:
+        """
+        Export patient-based doctor performance report.
+        Includes KMR/KRE/GFR prediction quality metrics per patient.
+        """
+        rows: List[dict] = []
+
+        for _, row in meta_df.iterrows():
+            patient = str(row["patient_code"])
+            timeline = timelines.get(patient, [])
+            risk_data = patient_risks.get(patient, {})
+
+            kmr_perf = self._compute_metric_performance(
+                timeline,
+                actual_key="kmr",
+                pred_key="kmr_pred",
+                pred_lo_key="kmr_pred_lo",
+                pred_hi_key="kmr_pred_hi",
+                pred_status_key="kmr_pred_status",
+                mape_floor=0.05,
+                round_digits=4,
+            )
+            kre_perf = self._compute_metric_performance(
+                timeline,
+                actual_key="kre",
+                pred_key="kre_pred",
+                pred_lo_key="kre_pred_lo",
+                pred_hi_key="kre_pred_hi",
+                pred_status_key="kre_pred_status",
+                mape_floor=0.1,
+                round_digits=3,
+            )
+            gfr_perf = self._compute_metric_performance(
+                timeline,
+                actual_key="gfr",
+                pred_key="gfr_pred",
+                pred_lo_key="gfr_pred_lo",
+                pred_hi_key="gfr_pred_hi",
+                pred_status_key="gfr_pred_status",
+                mape_floor=1.0,
+                round_digits=2,
+            )
+
+            rows.append(
+                {
+                    "patient_code": patient,
+                    "improved_proxy": bool(row.get("improved_proxy", False)),
+                    "risk_level": risk_data.get("risk_level_last", "Normal"),
+                    "risk_score": round(float(risk_data.get("risk_last", 0.0)), 2),
+                    "has_anomaly": bool(risk_data.get("has_anomaly", False)),
+                    "kmr_has_anomaly": bool(risk_data.get("kmr_has_anomaly", False)),
+                    "kre_has_anomaly": bool(risk_data.get("kre_has_anomaly", False)),
+                    "gfr_has_anomaly": bool(risk_data.get("gfr_has_anomaly", False)),
+                    "kmr": kmr_perf,
+                    "kre": kre_perf,
+                    "gfr": gfr_perf,
+                }
+            )
+
+        summary = self._build_report_summary(rows)
+
+        cleaned_rows: List[dict] = []
+        agg_keys = {
+            "_agg_abs_error",
+            "_agg_sq_error",
+            "_agg_ape",
+            "_agg_n_eval",
+            "_agg_n_interval",
+            "_agg_interval_hits",
+        }
+        for item in rows:
+            cleaned = dict(item)
+            for metric in ("kmr", "kre", "gfr"):
+                metric_obj = dict(cleaned.get(metric, {}))
+                for agg_key in agg_keys:
+                    metric_obj.pop(agg_key, None)
+                cleaned[metric] = metric_obj
+            cleaned_rows.append(cleaned)
+
+        json_payload = {
+            "metadata": {
+                "created_at": datetime.now().isoformat(),
+                "schema_version": "1.0",
+                "type": "doctor_performance_patient_based",
+            },
+            "summary": summary,
+            "patients": cleaned_rows,
+        }
+
+        json_path = self.output_dir / "doctor_performance_report.json"
+        with open(json_path, "w", encoding="utf-8") as f:
+            json.dump(sanitize_for_json(json_payload), f, ensure_ascii=False, indent=2)
+        print(f"✅ Exported: {json_path}")
+
+        # Flatten for CSV export (doctor-friendly tabular format)
+        csv_rows = []
+        for item in cleaned_rows:
+            csv_rows.append(
+                {
+                    "patient_code": item["patient_code"],
+                    "improved_proxy": item["improved_proxy"],
+                    "risk_level": item["risk_level"],
+                    "risk_score": item["risk_score"],
+                    "has_anomaly": item["has_anomaly"],
+                    "kmr_has_anomaly": item["kmr_has_anomaly"],
+                    "kre_has_anomaly": item["kre_has_anomaly"],
+                    "gfr_has_anomaly": item["gfr_has_anomaly"],
+                    "kmr_n_eval": item["kmr"]["n_eval_points"],
+                    "kmr_mae": item["kmr"]["mae"],
+                    "kmr_rmse": item["kmr"]["rmse"],
+                    "kmr_mape_percent": item["kmr"]["mape_percent"],
+                    "kmr_interval_coverage": item["kmr"]["interval_coverage"],
+                    "kre_n_eval": item["kre"]["n_eval_points"],
+                    "kre_mae": item["kre"]["mae"],
+                    "kre_rmse": item["kre"]["rmse"],
+                    "kre_mape_percent": item["kre"]["mape_percent"],
+                    "kre_interval_coverage": item["kre"]["interval_coverage"],
+                    "gfr_n_eval": item["gfr"]["n_eval_points"],
+                    "gfr_mae": item["gfr"]["mae"],
+                    "gfr_rmse": item["gfr"]["rmse"],
+                    "gfr_mape_percent": item["gfr"]["mape_percent"],
+                    "gfr_interval_coverage": item["gfr"]["interval_coverage"],
+                }
+            )
+
+        csv_path = self.output_dir / "doctor_performance_report.csv"
+        pd.DataFrame(csv_rows).to_csv(csv_path, index=False, encoding="utf-8-sig")
+        print(f"✅ Exported: {csv_path}")
     
     def bulk_export_patients(self, meta_df: pd.DataFrame,
                              kmr_long: pd.DataFrame,

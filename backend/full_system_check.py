@@ -24,7 +24,13 @@ PROJECT_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
 from backend.config import FRONTEND_PUBLIC  # noqa: E402
-from backend.io_excel import extract_meta, load_excel, wide_to_long_kmr, wide_to_long_lab  # noqa: E402
+from backend.io_excel import (  # noqa: E402
+    calculate_improved_proxy,
+    extract_meta,
+    load_excel,
+    wide_to_long_kmr,
+    wide_to_long_lab,
+)
 from backend.run_all import run_pipeline  # noqa: E402
 from backend.time_mapping import UNIFIED_TIME_MAP  # noqa: E402
 
@@ -36,6 +42,7 @@ REQUIRED_JSON_FILES = [
     "data_summary.json",
     "patient_features.json",
     "channel_overview.json",
+    "doctor_performance_report.json",
 ]
 
 RISK_LEVELS = {"Normal", "Dikkat", "Kritik", "Çok Kritik"}
@@ -208,16 +215,8 @@ def main() -> int:
     excel_df = load_excel()
     meta_df = extract_meta(excel_df).copy()
     meta_df["patient_code"] = meta_df["patient_code"].astype(str)
-    meta_df["improved_proxy"] = meta_df["patient_code"].map(
-        {
-            str(row["patient_code"]): any(
-                pd.notna(row.get(col))
-                for col in ["Month_9", "Month_10", "Month_11", "Month_12"]
-                if col in excel_df.columns
-            )
-            for _, row in excel_df.iterrows()
-        }
-    )
+    improved_proxy = calculate_improved_proxy(excel_df)
+    meta_df["improved_proxy"] = meta_df["patient_code"].map(improved_proxy)
 
     kmr_map, kre_map, gfr_map = build_excel_maps(excel_df)
     patients_from_excel = set(meta_df["patient_code"].tolist())
@@ -239,6 +238,7 @@ def main() -> int:
     data_summary = load_json_file(FRONTEND_PUBLIC / "data_summary.json")
     patient_features = load_json_file(FRONTEND_PUBLIC / "patient_features.json")
     channel_overview = load_json_file(FRONTEND_PUBLIC / "channel_overview.json")
+    doctor_performance_report = load_json_file(FRONTEND_PUBLIC / "doctor_performance_report.json")
 
     validate_no_nonfinite(reference_band, checker, "reference_band.json")
     validate_no_nonfinite(cohort_trajectory, checker, "cohort_trajectory.json")
@@ -246,6 +246,7 @@ def main() -> int:
     validate_no_nonfinite(data_summary, checker, "data_summary.json")
     validate_no_nonfinite(patient_features, checker, "patient_features.json")
     validate_no_nonfinite(channel_overview, checker, "channel_overview.json")
+    validate_no_nonfinite(doctor_performance_report, checker, "doctor_performance_report.json")
 
     features = patient_features.get("patients", [])
     checker.check(isinstance(features, list), "patient_features.json: 'patients' must be a list")
@@ -440,6 +441,35 @@ def main() -> int:
         checker.check(isinstance(payload.get("metadata"), dict), f"{name}: metadata missing/invalid")
         checker.check(isinstance(payload.get("trajectory"), list), f"{name}: trajectory missing/invalid")
         checker.check(isinstance(payload.get("summary"), dict), f"{name}: summary missing/invalid")
+
+    # Doctor performance report checks
+    checker.check(isinstance(doctor_performance_report.get("metadata"), dict), "doctor_performance_report: metadata missing/invalid")
+    checker.check(isinstance(doctor_performance_report.get("summary"), dict), "doctor_performance_report: summary missing/invalid")
+    doctor_rows = doctor_performance_report.get("patients", [])
+    checker.check(isinstance(doctor_rows, list), "doctor_performance_report: patients missing/invalid")
+    if isinstance(doctor_rows, list):
+        checker.check(len(doctor_rows) == len(patients_from_excel), "doctor_performance_report: patient count mismatch")
+        seen_codes = set()
+        for item in doctor_rows:
+            code = str(item.get("patient_code"))
+            checker.check(code in patients_from_excel, f"doctor_performance_report: unknown patient {code}")
+            checker.check(code not in seen_codes, f"doctor_performance_report: duplicate patient {code}")
+            seen_codes.add(code)
+            for metric in ("kmr", "kre", "gfr"):
+                m = item.get(metric, {})
+                checker.check(isinstance(m, dict), f"doctor_performance_report: {code}.{metric} invalid")
+                if isinstance(m, dict):
+                    n_eval = m.get("n_eval_points")
+                    checker.check(isinstance(n_eval, int) and n_eval >= 0, f"doctor_performance_report: {code}.{metric}.n_eval_points invalid")
+                    for key in ("mae", "rmse", "mape_percent", "interval_coverage"):
+                        val = m.get(key)
+                        checker.check(val is None or isinstance(val, (int, float)), f"doctor_performance_report: {code}.{metric}.{key} invalid")
+                    coverage = m.get("interval_coverage")
+                    if isinstance(coverage, (int, float)):
+                        checker.check(0 <= float(coverage) <= 1, f"doctor_performance_report: {code}.{metric}.interval_coverage out of range")
+
+    doctor_csv = FRONTEND_PUBLIC / "doctor_performance_report.csv"
+    checker.check(doctor_csv.exists(), "doctor_performance_report.csv missing")
 
     # Frontend checks
     if not args.skip_frontend:

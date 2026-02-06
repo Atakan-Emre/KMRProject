@@ -42,6 +42,17 @@ class KMRPredictor:
         """Calculate adaptive sequence length"""
         seq_len = max(self.config["seq_len_min"], round(n_points / 3))
         return min(seq_len, self.config["seq_len_max"])
+
+    @staticmethod
+    def _sanitize_prediction(pred: float, pred_lo: float, pred_hi: float,
+                             lower: float = 0.0, upper: float = 100.0) -> Tuple[float, float, float]:
+        """Clamp predictions to physiological bounds and keep lo <= pred <= hi."""
+        pred = float(np.clip(pred, lower, upper))
+        pred_lo = float(np.clip(pred_lo, lower, upper))
+        pred_hi = float(np.clip(pred_hi, lower, upper))
+        lo, hi = sorted((pred_lo, pred_hi))
+        pred = float(np.clip(pred, lo, hi))
+        return pred, lo, hi
     
     def _feature_engineering(self, kmr_series: pd.DataFrame) -> pd.DataFrame:
         """
@@ -224,6 +235,7 @@ class KMRPredictor:
                 pred_lo = pred * 0.85
                 pred_hi = pred * 1.15
             
+            pred, pred_lo, pred_hi = self._sanitize_prediction(pred, pred_lo, pred_hi)
             actual = features_norm[i, 0] * kmr_std + kmr_mean
             residual = actual - pred
             
@@ -325,6 +337,8 @@ class KMRPredictor:
                 pred_lo = pred * 0.85
                 pred_hi = pred * 1.15
             
+            pred, pred_lo, pred_hi = self._sanitize_prediction(pred, pred_lo, pred_hi)
+
             # Residual (only if actual exists)
             residual = (actual_kmr - pred) if actual_kmr is not None else None
             
@@ -381,6 +395,7 @@ class KMRPredictor:
             
             pred_lo = pred * 0.7
             pred_hi = pred * 1.3
+            pred, pred_lo, pred_hi = self._sanitize_prediction(pred, pred_lo, pred_hi)
             residual = (actual_kmr - pred) if actual_kmr is not None else None
             
             predictions.append({
