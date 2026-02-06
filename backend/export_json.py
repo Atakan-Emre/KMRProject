@@ -37,6 +37,59 @@ def sanitize_for_json(obj: Any) -> Any:
         return obj
 
 
+def _safe_float(value: Any) -> Optional[float]:
+    """Convert value to float when possible, otherwise return None."""
+    if value is None:
+        return None
+    try:
+        f = float(value)
+        if math.isnan(f) or math.isinf(f):
+            return None
+        return f
+    except (TypeError, ValueError):
+        return None
+
+
+def _is_kmr_threshold_anomaly(kmr: Any) -> bool:
+    val = _safe_float(kmr)
+    return val is not None and (val > 5.0 or val < 0.0)
+
+
+def _is_kre_threshold_anomaly(kre: Any) -> bool:
+    val = _safe_float(kre)
+    return val is not None and (val > 4.5 or val < 0.0)
+
+
+def _is_gfr_threshold_anomaly(gfr: Any) -> bool:
+    val = _safe_float(gfr)
+    return val is not None and (val < 15.0 or val > 120.0)
+
+
+def _timeline_anomaly_flags(timeline: List[dict]) -> Dict[str, bool]:
+    """
+    Build anomaly flags from both AI anomaly outputs and clinical threshold breaches.
+    This keeps list-level anomaly badges aligned with what the user sees on charts.
+    """
+    kmr_ai = any(bool(t.get("kmr_anomaly_flag", False)) for t in timeline)
+    kre_ai = any(bool(t.get("kre_anomaly_flag", False)) for t in timeline)
+    gfr_ai = any(bool(t.get("gfr_anomaly_flag", False)) for t in timeline)
+
+    kmr_threshold = any(_is_kmr_threshold_anomaly(t.get("kmr")) for t in timeline)
+    kre_threshold = any(_is_kre_threshold_anomaly(t.get("kre")) for t in timeline)
+    gfr_threshold = any(_is_gfr_threshold_anomaly(t.get("gfr")) for t in timeline)
+
+    kmr_has = kmr_ai or kmr_threshold
+    kre_has = kre_ai or kre_threshold
+    gfr_has = gfr_ai or gfr_threshold
+
+    return {
+        "kmr_has_anomaly": kmr_has,
+        "kre_has_anomaly": kre_has,
+        "gfr_has_anomaly": gfr_has,
+        "has_anomaly": kmr_has or kre_has or gfr_has,
+    }
+
+
 class JSONExporter:
     """Export data to JSON files for frontend consumption"""
     
@@ -150,8 +203,9 @@ class JSONExporter:
             
             # Get LAB data
             p_lab = lab_long[lab_long["patient_code"] == patient].sort_values("time_order")
-            kre_values = [v for v in p_lab["kre"].tolist() if v is not None] if len(p_lab) > 0 else []
-            gfr_values = [v for v in p_lab["gfr"].tolist() if v is not None] if len(p_lab) > 0 else []
+            # None + NaN değerleri güvenli şekilde ele (NaN, "is not None" filtresinden geçebilir)
+            kre_values = [float(v) for v in p_lab["kre"].tolist() if pd.notna(v)] if len(p_lab) > 0 else []
+            gfr_values = [float(v) for v in p_lab["gfr"].tolist() if pd.notna(v)] if len(p_lab) > 0 else []
             
             # Calculate slopes
             kmr_slope = None
@@ -246,6 +300,8 @@ class JSONExporter:
                         found_time_key = str(gfr_with_order.iloc[0]["time_key"]) if pd.notna(gfr_with_order.iloc[0]["time_key"]) else None
                         if found_time_key:
                             last_gfr_time_key = found_time_key
+
+            anomaly_flags = _timeline_anomaly_flags(timeline)
             
             features.append({
                 "patient_code": patient,
@@ -276,11 +332,11 @@ class JSONExporter:
                 
                 "risk_score": risk_data.get("risk_last", 0),
                 "risk_level": risk_data.get("risk_level_last", "Normal"),
-                "has_anomaly": risk_data.get("has_anomaly", False),
-                # Anomali bayrakları - timeline'dan kontrol et
-                "kmr_has_anomaly": any(t.get("kmr_anomaly_flag", False) for t in timeline),
-                "kre_has_anomaly": any(t.get("kre_anomaly_flag", False) for t in timeline),
-                "gfr_has_anomaly": any(t.get("gfr_anomaly_flag", False) for t in timeline)
+                "has_anomaly": bool(risk_data.get("has_anomaly", anomaly_flags["has_anomaly"])),
+                # Anomali bayrakları - AI + klinik eşik ihlali birleşik
+                "kmr_has_anomaly": bool(risk_data.get("kmr_has_anomaly", anomaly_flags["kmr_has_anomaly"])),
+                "kre_has_anomaly": bool(risk_data.get("kre_has_anomaly", anomaly_flags["kre_has_anomaly"])),
+                "gfr_has_anomaly": bool(risk_data.get("gfr_has_anomaly", anomaly_flags["gfr_has_anomaly"]))
             })
         
         filepath = self.output_dir / "patient_features.json"
@@ -444,13 +500,8 @@ class JSONExporter:
                         last_status["last_gfr_order"] = t.get("time_order")
                         break
             
-            # Check for anomalies - ayrı ayrı kontrol et
-            has_anomaly = any(t.get("kmr_anomaly_flag", False) or 
-                            t.get("kre_anomaly_flag", False) or 
-                            t.get("gfr_anomaly_flag", False) for t in timeline)
-            kmr_has_anomaly = any(t.get("kmr_anomaly_flag", False) for t in timeline)
-            kre_has_anomaly = any(t.get("kre_anomaly_flag", False) for t in timeline)
-            gfr_has_anomaly = any(t.get("gfr_anomaly_flag", False) for t in timeline)
+            # Check for anomalies - AI flags + klinik eşik ihlalleri
+            anomaly_flags = _timeline_anomaly_flags(timeline)
             
             # Export
             self.export_patient_json(patient, meta, timeline, last_status)
@@ -458,10 +509,7 @@ class JSONExporter:
             # Store for summary
             patient_risks[patient] = {
                 **last_status,
-                "has_anomaly": has_anomaly,
-                "kmr_has_anomaly": kmr_has_anomaly,
-                "kre_has_anomaly": kre_has_anomaly,
-                "gfr_has_anomaly": gfr_has_anomaly
+                **anomaly_flags
             }
         
         print(f"✅ All patient files exported to {self.patients_dir}")

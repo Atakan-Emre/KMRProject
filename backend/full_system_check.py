@@ -26,7 +26,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 from backend.config import FRONTEND_PUBLIC  # noqa: E402
 from backend.io_excel import extract_meta, load_excel, wide_to_long_kmr, wide_to_long_lab  # noqa: E402
 from backend.run_all import run_pipeline  # noqa: E402
-from backend.time_mapping import KMR_TIME_MAP, LAB_TIME_MAP, UNIFIED_TIME_MAP  # noqa: E402
+from backend.time_mapping import UNIFIED_TIME_MAP  # noqa: E402
 
 
 REQUIRED_JSON_FILES = [
@@ -107,6 +107,33 @@ def is_close_or_none(a: Any, b: Any, tol: float) -> bool:
         return abs(float(a) - float(b)) <= tol
     except (TypeError, ValueError):
         return False
+
+
+def safe_float(value: Any) -> float | None:
+    try:
+        if value is None:
+            return None
+        f = float(value)
+        if not math.isfinite(f):
+            return None
+        return f
+    except (TypeError, ValueError):
+        return None
+
+
+def is_kmr_threshold_anomaly(kmr: Any) -> bool:
+    v = safe_float(kmr)
+    return v is not None and (v > 5.0 or v < 0.0)
+
+
+def is_kre_threshold_anomaly(kre: Any) -> bool:
+    v = safe_float(kre)
+    return v is not None and (v > 4.5 or v < 0.0)
+
+
+def is_gfr_threshold_anomaly(gfr: Any) -> bool:
+    v = safe_float(gfr)
+    return v is not None and (v < 15.0 or v > 120.0)
 
 
 def validate_no_nonfinite(obj: Any, checker: Checker, where: str) -> None:
@@ -316,13 +343,17 @@ def main() -> int:
                 checker.check(0 <= float(risk_score) <= 100, f"{patient_code} {tk}: risk_score out of range [0,100]")
             checker.check(point.get("risk_level") in RISK_LEVELS, f"{patient_code} {tk}: invalid risk_level")
 
-            if point.get("kmr_anomaly_flag"):
+            point_kmr_anomaly = bool(point.get("kmr_anomaly_flag")) or is_kmr_threshold_anomaly(point.get("kmr"))
+            point_kre_anomaly = bool(point.get("kre_anomaly_flag")) or is_kre_threshold_anomaly(point.get("kre"))
+            point_gfr_anomaly = bool(point.get("gfr_anomaly_flag")) or is_gfr_threshold_anomaly(point.get("gfr"))
+
+            if point_kmr_anomaly:
                 kmr_anomaly = True
                 has_any_anomaly = True
-            if point.get("kre_anomaly_flag"):
+            if point_kre_anomaly:
                 kre_anomaly = True
                 has_any_anomaly = True
-            if point.get("gfr_anomaly_flag"):
+            if point_gfr_anomaly:
                 gfr_anomaly = True
                 has_any_anomaly = True
 

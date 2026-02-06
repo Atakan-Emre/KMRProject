@@ -27,7 +27,7 @@
       "has_anomaly": true,
       "kmr_has_anomaly": true,
       "kre_has_anomaly": false,
-      "gfr_has_anomaly": false
+      "gfr_has_anomaly": true
     },
     {
       "patient_code": "C",
@@ -51,10 +51,10 @@
       "kre_slope": 0.0035,
       "gfr_slope": -0.4175,
       "kmr_variability": 1.3911,
-      "risk_score": 45.1,
+      "risk_score": 45.3,
       "risk_level": "Dikkat",
-      "has_anomaly": false,
-      "kmr_has_anomaly": false,
+      "has_anomaly": true,
+      "kmr_has_anomaly": true,
       "kre_has_anomaly": false,
       "gfr_has_anomaly": false
     },
@@ -95,7 +95,7 @@
       "improved_proxy": true,
       "n_kmr_points": 7,
       "n_kre_points": 10,
-      "n_gfr_points": 10,
+      "n_gfr_points": 0,
       "last_kmr": 1.6359,
       "last_kre": 0.55,
       "last_gfr": null,
@@ -112,7 +112,7 @@
       "risk_score": 41.2,
       "risk_level": "Dikkat",
       "has_anomaly": true,
-      "kmr_has_anomaly": false,
+      "kmr_has_anomaly": true,
       "kre_has_anomaly": true,
       "gfr_has_anomaly": false
     },
@@ -141,7 +141,7 @@
       "risk_score": 44.9,
       "risk_level": "Dikkat",
       "has_anomaly": true,
-      "kmr_has_anomaly": false,
+      "kmr_has_anomaly": true,
       "kre_has_anomaly": true,
       "gfr_has_anomaly": false
     },
@@ -169,8 +169,8 @@
       "kmr_variability": 0.679,
       "risk_score": 37.9,
       "risk_level": "Dikkat",
-      "has_anomaly": false,
-      "kmr_has_anomaly": false,
+      "has_anomaly": true,
+      "kmr_has_anomaly": true,
       "kre_has_anomaly": false,
       "gfr_has_anomaly": false
     },
@@ -198,10 +198,10 @@
       "kmr_variability": 1.617,
       "risk_score": 66.0,
       "risk_level": "Kritik",
-      "has_anomaly": false,
-      "kmr_has_anomaly": false,
-      "kre_has_anomaly": false,
-      "gfr_has_anomaly": false
+      "has_anomaly": true,
+      "kmr_has_anomaly": true,
+      "kre_has_anomaly": true,
+      "gfr_has_anomaly": true
     },
     {
       "patient_code": "J",
@@ -258,8 +258,8 @@
       "risk_level": "Dikkat",
       "has_anomaly": true,
       "kmr_has_anomaly": true,
-      "kre_has_anomaly": false,
-      "gfr_has_anomaly": false
+      "kre_has_anomaly": true,
+      "gfr_has_anomaly": true
     },
     {
       "patient_code": "L",
@@ -327,7 +327,7 @@
       "improved_proxy": false,
       "n_kmr_points": 6,
       "n_kre_points": 10,
-      "n_gfr_points": 10,
+      "n_gfr_points": 0,
       "last_kmr": 0.1525,
       "last_kre": 0.93,
       "last_gfr": null,
@@ -343,8 +343,8 @@
       "kmr_variability": 0.7441,
       "risk_score": 53.4,
       "risk_level": "Dikkat",
-      "has_anomaly": false,
-      "kmr_has_anomaly": false,
+      "has_anomaly": true,
+      "kmr_has_anomaly": true,
       "kre_has_anomaly": false,
       "gfr_has_anomaly": false
     },
@@ -372,10 +372,10 @@
       "kmr_variability": 1.5019,
       "risk_score": 60.8,
       "risk_level": "Kritik",
-      "has_anomaly": false,
-      "kmr_has_anomaly": false,
+      "has_anomaly": true,
+      "kmr_has_anomaly": true,
       "kre_has_anomaly": false,
-      "gfr_has_anomaly": false
+      "gfr_has_anomaly": true
     },
     {
       "patient_code": "R",
@@ -399,7 +399,7 @@
       "kre_slope": 0.0055,
       "gfr_slope": -0.497,
       "kmr_variability": 1.3807,
-      "risk_score": 27.7,
+      "risk_score": 26.9,
       "risk_level": "Normal",
       "has_anomaly": false,
       "kmr_has_anomaly": false,
@@ -430,8 +430,8 @@
       "kmr_variability": 0.6771,
       "risk_score": 40.9,
       "risk_level": "Dikkat",
-      "has_anomaly": false,
-      "kmr_has_anomaly": false,
+      "has_anomaly": true,
+      "kmr_has_anomaly": true,
       "kre_has_anomaly": false,
       "gfr_has_anomaly": false
     },
@@ -520,7 +520,7 @@
       "has_anomaly": true,
       "kmr_has_anomaly": false,
       "kre_has_anomaly": true,
-      "gfr_has_anomaly": false
+      "gfr_has_anomaly": true
     },
     {
       "patient_code": "Y",
@@ -588,7 +588,7 @@
       "improved_proxy": false,
       "n_kmr_points": 10,
       "n_kre_points": 10,
-      "n_gfr_points": 10,
+      "n_gfr_points": 9,
       "last_kmr": 0.6576,
       "last_kre": 1.22,
       "last_gfr": 86.0,
@@ -600,7 +600,7 @@
       "last_gfr_time_order": 16,
       "kmr_slope": -0.5156,
       "kre_slope": -0.0508,
-      "gfr_slope": null,
+      "gfr_slope": 2.9333,
       "kmr_variability": 0.985,
       "risk_score": 33.4,
       "risk_level": "Dikkat",
@@ -617,7 +617,7 @@
       "improved_proxy": false,
       "n_kmr_points": 9,
       "n_kre_points": 10,
-      "n_gfr_points": 10,
+      "n_gfr_points": 7,
       "last_kmr": 0.4104,
       "last_kre": 2.9,
       "last_gfr": 40.0,
@@ -629,12 +629,12 @@
       "last_gfr_time_order": 16,
       "kmr_slope": -0.8157,
       "kre_slope": -0.0357,
-      "gfr_slope": null,
+      "gfr_slope": 6.6071,
       "kmr_variability": 1.2974,
       "risk_score": 46.5,
       "risk_level": "Dikkat",
-      "has_anomaly": false,
-      "kmr_has_anomaly": false,
+      "has_anomaly": true,
+      "kmr_has_anomaly": true,
       "kre_has_anomaly": false,
       "gfr_has_anomaly": false
     },
@@ -646,7 +646,7 @@
       "improved_proxy": true,
       "n_kmr_points": 10,
       "n_kre_points": 10,
-      "n_gfr_points": 10,
+      "n_gfr_points": 0,
       "last_kmr": 0.3153,
       "last_kre": 0.49,
       "last_gfr": null,
@@ -662,8 +662,8 @@
       "kmr_variability": 1.0233,
       "risk_score": 42.2,
       "risk_level": "Dikkat",
-      "has_anomaly": false,
-      "kmr_has_anomaly": false,
+      "has_anomaly": true,
+      "kmr_has_anomaly": true,
       "kre_has_anomaly": false,
       "gfr_has_anomaly": false
     },
@@ -691,8 +691,8 @@
       "kmr_variability": 1.2031,
       "risk_score": 43.5,
       "risk_level": "Dikkat",
-      "has_anomaly": false,
-      "kmr_has_anomaly": false,
+      "has_anomaly": true,
+      "kmr_has_anomaly": true,
       "kre_has_anomaly": false,
       "gfr_has_anomaly": false
     },
@@ -791,7 +791,7 @@
       "improved_proxy": false,
       "n_kmr_points": 9,
       "n_kre_points": 9,
-      "n_gfr_points": 9,
+      "n_gfr_points": 0,
       "last_kmr": 0.4879,
       "last_kre": 0.7,
       "last_gfr": null,
@@ -807,8 +807,8 @@
       "kmr_variability": 1.092,
       "risk_score": 39.3,
       "risk_level": "Dikkat",
-      "has_anomaly": false,
-      "kmr_has_anomaly": false,
+      "has_anomaly": true,
+      "kmr_has_anomaly": true,
       "kre_has_anomaly": false,
       "gfr_has_anomaly": false
     },
@@ -952,8 +952,8 @@
       "kmr_variability": 1.3333,
       "risk_score": 36.8,
       "risk_level": "Dikkat",
-      "has_anomaly": false,
-      "kmr_has_anomaly": false,
+      "has_anomaly": true,
+      "kmr_has_anomaly": true,
       "kre_has_anomaly": false,
       "gfr_has_anomaly": false
     },
@@ -1023,7 +1023,7 @@
       "improved_proxy": false,
       "n_kmr_points": 6,
       "n_kre_points": 9,
-      "n_gfr_points": 9,
+      "n_gfr_points": 0,
       "last_kmr": 0.2956,
       "last_kre": 0.82,
       "last_gfr": null,
@@ -1039,8 +1039,8 @@
       "kmr_variability": 0.9225,
       "risk_score": 50.5,
       "risk_level": "Dikkat",
-      "has_anomaly": false,
-      "kmr_has_anomaly": false,
+      "has_anomaly": true,
+      "kmr_has_anomaly": true,
       "kre_has_anomaly": false,
       "gfr_has_anomaly": false
     },
@@ -1071,7 +1071,7 @@
       "has_anomaly": true,
       "kmr_has_anomaly": true,
       "kre_has_anomaly": false,
-      "gfr_has_anomaly": false
+      "gfr_has_anomaly": true
     },
     {
       "patient_code": "AT",
@@ -1126,8 +1126,8 @@
       "kmr_variability": 1.0219,
       "risk_score": 38.1,
       "risk_level": "Dikkat",
-      "has_anomaly": false,
-      "kmr_has_anomaly": false,
+      "has_anomaly": true,
+      "kmr_has_anomaly": true,
       "kre_has_anomaly": false,
       "gfr_has_anomaly": false
     },
@@ -1139,7 +1139,7 @@
       "improved_proxy": false,
       "n_kmr_points": 6,
       "n_kre_points": 1,
-      "n_gfr_points": 1,
+      "n_gfr_points": 0,
       "last_kmr": 0.3399,
       "last_kre": 2.61,
       "last_gfr": null,

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useDashboardData, RISK_COLORS, getRiskColor } from "@/hooks/useKimerizmData";
 import type { RiskLevel } from "@/types";
-import { formatGender, formatVitalStatus, formatKMR, formatKRE, formatGFR } from "@/utils/formatters";
+import { formatGender, formatVitalStatus, formatKMR, formatKRE, formatGFR, formatTimeKey } from "@/utils/formatters";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -269,7 +269,7 @@ export default function PatientsPage() {
                         <div className="flex flex-col">
                           <span>{formatKMR(patient.last_kmr)}</span>
                           {patient.last_kmr_time_key && (
-                            <span className="text-xs text-muted-foreground">{patient.last_kmr_time_key}</span>
+                            <span className="text-xs text-muted-foreground">{formatTimeKey(patient.last_kmr_time_key)}</span>
                           )}
                         </div>
                       ) : (
@@ -281,7 +281,7 @@ export default function PatientsPage() {
                         <div className="flex flex-col">
                           <span>{formatKRE(patient.last_kre)}</span>
                           {patient.last_kre_time_key && (
-                            <span className="text-xs text-muted-foreground">{patient.last_kre_time_key}</span>
+                            <span className="text-xs text-muted-foreground">{formatTimeKey(patient.last_kre_time_key)}</span>
                           )}
                         </div>
                       ) : (
@@ -293,7 +293,7 @@ export default function PatientsPage() {
                         <div className="flex flex-col">
                           <span>{formatGFR(patient.last_gfr)}</span>
                           {patient.last_gfr_time_key && (
-                            <span className="text-xs text-muted-foreground">{patient.last_gfr_time_key}</span>
+                            <span className="text-xs text-muted-foreground">{formatTimeKey(patient.last_gfr_time_key)}</span>
                           )}
                         </div>
                       ) : (
