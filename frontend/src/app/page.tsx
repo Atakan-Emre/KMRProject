@@ -9,7 +9,9 @@ import {
   RISK_COLORS,
   getRiskColor,
   useCohortTrajectory,
+  useLABCohortTrajectory,
   useChannelOverview,
+  useDoctorPerformanceReport,
   useSystemConfig,
 } from "@/hooks/useKimerizmData";
 import dynamic from "next/dynamic";
@@ -24,6 +26,8 @@ const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 export default function Dashboard() {
   const { patients, kpis, riskDistribution, isLoading, error } = useDashboardData();
   const { data: cohortTrajectory } = useCohortTrajectory();
+  const { data: labCohortTrajectory } = useLABCohortTrajectory();
+  const { data: doctorPerformanceReport } = useDoctorPerformanceReport();
   const { data: channelOverview } = useChannelOverview();
   const { data: systemConfig } = useSystemConfig();
   const router = useRouter();
@@ -53,13 +57,50 @@ export default function Dashboard() {
     typeof value === "number" && Number.isFinite(value) ? value.toFixed(digits) : "-";
   const safePercent = (value: number | null | undefined, digits: number): string =>
     typeof value === "number" && Number.isFinite(value) ? `%${value.toFixed(digits)}` : "-";
+  const safeRatioPercent = (value: number | null | undefined, digits: number): string =>
+    typeof value === "number" && Number.isFinite(value) ? `%${(value * 100).toFixed(digits)}` : "-";
   const safeSigned = (value: number | null | undefined, digits: number): string => {
     if (typeof value !== "number" || !Number.isFinite(value)) return "-";
     const sign = value > 0 ? "+" : "";
     return `${sign}${value.toFixed(digits)}`;
   };
+  const calcChangePercent = (initial: number | null | undefined, final: number | null | undefined): number | null => {
+    if (
+      typeof initial !== "number" ||
+      typeof final !== "number" ||
+      !Number.isFinite(initial) ||
+      !Number.isFinite(final) ||
+      Math.abs(initial) < 1e-9
+    ) {
+      return null;
+    }
+    return ((final - initial) / Math.abs(initial)) * 100;
+  };
 
   const hasTrajectory = Array.isArray(cohortTrajectory?.trajectory) && cohortTrajectory.trajectory.length > 0;
+  const hasLabTrajectory = Array.isArray(labCohortTrajectory?.trajectory) && labCohortTrajectory.trajectory.length > 0;
+
+  const kmrLastIqrWidth = hasTrajectory
+    ? (cohortTrajectory!.trajectory[cohortTrajectory!.trajectory.length - 1].iqr_upper -
+      cohortTrajectory!.trajectory[cohortTrajectory!.trajectory.length - 1].iqr_lower)
+    : null;
+  const kreLastIqrWidth = hasLabTrajectory
+    ? (labCohortTrajectory!.trajectory[labCohortTrajectory!.trajectory.length - 1].iqr_kre_upper -
+      labCohortTrajectory!.trajectory[labCohortTrajectory!.trajectory.length - 1].iqr_kre_lower)
+    : null;
+  const gfrLastIqrWidth = hasLabTrajectory
+    ? (labCohortTrajectory!.trajectory[labCohortTrajectory!.trajectory.length - 1].iqr_gfr_upper -
+      labCohortTrajectory!.trajectory[labCohortTrajectory!.trajectory.length - 1].iqr_gfr_lower)
+    : null;
+  const kreMedianChangePercent = calcChangePercent(
+    labCohortTrajectory?.summary?.initial_kre_median,
+    labCohortTrajectory?.summary?.final_kre_median,
+  );
+  const gfrMedianChangePercent = calcChangePercent(
+    labCohortTrajectory?.summary?.initial_gfr_median,
+    labCohortTrajectory?.summary?.final_gfr_median,
+  );
+  const doctorMetrics = doctorPerformanceReport?.summary?.metrics;
 
   const patientsWithAgeKmr = patients.filter(
     (p) => p.age !== null && p.age !== undefined && p.last_kmr !== null && p.last_kmr !== undefined,
@@ -1064,6 +1105,206 @@ export default function Dashboard() {
                   </CardContent>
                 </Card>
               </div>
+
+              <div className="grid gap-4 md:grid-cols-3">
+                <Card className="bg-gradient-to-br from-sky-50 to-sky-100">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">KRE Medyan Değişimi</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-lg font-bold text-sky-700">
+                      {safeFixed(labCohortTrajectory?.summary?.initial_kre_median, 2)} → {safeFixed(labCohortTrajectory?.summary?.final_kre_median, 2)}
+                    </div>
+                    <p className="text-xs text-sky-700">
+                      Değişim: {safeSigned(kreMedianChangePercent, 1)}%
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gradient-to-br from-cyan-50 to-cyan-100">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">GFR Medyan Değişimi</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-lg font-bold text-cyan-700">
+                      {safeFixed(labCohortTrajectory?.summary?.initial_gfr_median, 1)} → {safeFixed(labCohortTrajectory?.summary?.final_gfr_median, 1)}
+                    </div>
+                    <p className="text-xs text-cyan-700">
+                      Değişim: {safeSigned(gfrMedianChangePercent, 1)}%
+                    </p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">Son IQR Genişliği</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-sm text-emerald-800 space-y-1">
+                      <p>KMR: {safeFixed(kmrLastIqrWidth, 3)}</p>
+                      <p>KRE: {safeFixed(kreLastIqrWidth, 3)}</p>
+                      <p>GFR: {safeFixed(gfrLastIqrWidth, 2)}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>🧪 KRE/GFR Hasta Seyri (AI)</CardTitle>
+                  <CardDescription>
+                    KRE ve GFR için beklenen değer, cohort medyanı, IQR ve geniş güven bantları dinamik gösterilir.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  {hasLabTrajectory ? (
+                    <div className="grid gap-6 md:grid-cols-2">
+                      <div className="h-80">
+                        <Plot
+                          data={[
+                            {
+                              x: [...labCohortTrajectory!.trajectory.map((t) => t.time_key), ...labCohortTrajectory!.trajectory.slice().reverse().map((t) => t.time_key)],
+                              y: [...labCohortTrajectory!.trajectory.map((t) => t.bound_kre_upper), ...labCohortTrajectory!.trajectory.slice().reverse().map((t) => t.bound_kre_lower)],
+                              fill: 'toself',
+                              fillcolor: 'rgba(14, 165, 233, 0.14)',
+                              line: { color: 'transparent' },
+                              name: 'KRE P10-P90',
+                              type: 'scatter',
+                              hoverinfo: 'skip',
+                              showlegend: true,
+                            },
+                            {
+                              x: [...labCohortTrajectory!.trajectory.map((t) => t.time_key), ...labCohortTrajectory!.trajectory.slice().reverse().map((t) => t.time_key)],
+                              y: [...labCohortTrajectory!.trajectory.map((t) => t.iqr_kre_upper), ...labCohortTrajectory!.trajectory.slice().reverse().map((t) => t.iqr_kre_lower)],
+                              fill: 'toself',
+                              fillcolor: 'rgba(2, 132, 199, 0.20)',
+                              line: { color: 'transparent' },
+                              name: 'KRE IQR',
+                              type: 'scatter',
+                              hoverinfo: 'skip',
+                              showlegend: true,
+                            },
+                            {
+                              x: labCohortTrajectory!.trajectory.map((t) => t.time_key),
+                              y: labCohortTrajectory!.trajectory.map((t) => t.expected_kre),
+                              mode: 'lines+markers',
+                              name: 'KRE AI Tahmini',
+                              line: { color: '#0284c7', width: 3 },
+                              marker: { size: 6 },
+                              type: 'scatter',
+                            },
+                            {
+                              x: labCohortTrajectory!.trajectory.map((t) => t.time_key),
+                              y: labCohortTrajectory!.trajectory.map((t) => t.cohort_kre_median),
+                              mode: 'lines+markers',
+                              name: 'KRE Cohort Medyan',
+                              line: { color: '#075985', width: 2, dash: 'dash' },
+                              marker: { size: 5 },
+                              type: 'scatter',
+                            },
+                          ]}
+                          layout={{
+                            title: { text: 'KRE Seyri', font: { size: 14 } },
+                            xaxis: { title: 'Zaman', tickangle: -35 },
+                            yaxis: { title: 'KRE' },
+                            margin: { t: 40, b: 80, l: 55, r: 20 },
+                            paper_bgcolor: 'rgba(0,0,0,0)',
+                            shapes: [
+                              { type: 'line', x0: 0, x1: 1, xref: 'paper', y0: systemConfig?.clinical_thresholds?.kre?.very_good_lt ?? 1.2, y1: systemConfig?.clinical_thresholds?.kre?.very_good_lt ?? 1.2, line: { color: '#22c55e', width: 1, dash: 'dot' } },
+                              { type: 'line', x0: 0, x1: 1, xref: 'paper', y0: systemConfig?.clinical_thresholds?.kre?.very_bad_gt ?? 4.5, y1: systemConfig?.clinical_thresholds?.kre?.very_bad_gt ?? 4.5, line: { color: '#ef4444', width: 1, dash: 'dot' } },
+                            ],
+                          }}
+                          config={{ responsive: true, displayModeBar: false }}
+                          className="w-full h-full"
+                        />
+                      </div>
+
+                      <div className="h-80">
+                        <Plot
+                          data={[
+                            {
+                              x: [...labCohortTrajectory!.trajectory.map((t) => t.time_key), ...labCohortTrajectory!.trajectory.slice().reverse().map((t) => t.time_key)],
+                              y: [...labCohortTrajectory!.trajectory.map((t) => t.bound_gfr_upper), ...labCohortTrajectory!.trajectory.slice().reverse().map((t) => t.bound_gfr_lower)],
+                              fill: 'toself',
+                              fillcolor: 'rgba(6, 182, 212, 0.14)',
+                              line: { color: 'transparent' },
+                              name: 'GFR P10-P90',
+                              type: 'scatter',
+                              hoverinfo: 'skip',
+                              showlegend: true,
+                            },
+                            {
+                              x: [...labCohortTrajectory!.trajectory.map((t) => t.time_key), ...labCohortTrajectory!.trajectory.slice().reverse().map((t) => t.time_key)],
+                              y: [...labCohortTrajectory!.trajectory.map((t) => t.iqr_gfr_upper), ...labCohortTrajectory!.trajectory.slice().reverse().map((t) => t.iqr_gfr_lower)],
+                              fill: 'toself',
+                              fillcolor: 'rgba(8, 145, 178, 0.20)',
+                              line: { color: 'transparent' },
+                              name: 'GFR IQR',
+                              type: 'scatter',
+                              hoverinfo: 'skip',
+                              showlegend: true,
+                            },
+                            {
+                              x: labCohortTrajectory!.trajectory.map((t) => t.time_key),
+                              y: labCohortTrajectory!.trajectory.map((t) => t.expected_gfr),
+                              mode: 'lines+markers',
+                              name: 'GFR AI Tahmini',
+                              line: { color: '#0891b2', width: 3 },
+                              marker: { size: 6 },
+                              type: 'scatter',
+                            },
+                            {
+                              x: labCohortTrajectory!.trajectory.map((t) => t.time_key),
+                              y: labCohortTrajectory!.trajectory.map((t) => t.cohort_gfr_median),
+                              mode: 'lines+markers',
+                              name: 'GFR Cohort Medyan',
+                              line: { color: '#155e75', width: 2, dash: 'dash' },
+                              marker: { size: 5 },
+                              type: 'scatter',
+                            },
+                          ]}
+                          layout={{
+                            title: { text: 'GFR Seyri', font: { size: 14 } },
+                            xaxis: { title: 'Zaman', tickangle: -35 },
+                            yaxis: { title: 'GFR' },
+                            margin: { t: 40, b: 80, l: 55, r: 20 },
+                            paper_bgcolor: 'rgba(0,0,0,0)',
+                            shapes: [
+                              { type: 'line', x0: 0, x1: 1, xref: 'paper', y0: systemConfig?.clinical_thresholds?.gfr?.very_good_ge ?? 90, y1: systemConfig?.clinical_thresholds?.gfr?.very_good_ge ?? 90, line: { color: '#22c55e', width: 1, dash: 'dot' } },
+                              { type: 'line', x0: 0, x1: 1, xref: 'paper', y0: systemConfig?.clinical_thresholds?.gfr?.very_bad_le ?? 15, y1: systemConfig?.clinical_thresholds?.gfr?.very_bad_le ?? 15, line: { color: '#ef4444', width: 1, dash: 'dot' } },
+                            ],
+                          }}
+                          config={{ responsive: true, displayModeBar: false }}
+                          className="w-full h-full"
+                        />
+                      </div>
+                    </div>
+                  ) : (
+                    <p className="text-sm text-muted-foreground">
+                      LAB cohort verisi bulunamadı. Yeterli KRE/GFR zaman serisi oluşunca grafikler otomatik dolacaktır.
+                    </p>
+                  )}
+                </CardContent>
+              </Card>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>📈 Model Performans Özeti</CardTitle>
+                  <CardDescription>Doktor paneli performans raporundan dinamik MAE / RMSE / kapsama değerleri</CardDescription>
+                </CardHeader>
+                <CardContent className="space-y-2">
+                  <div className="grid gap-2 md:grid-cols-3">
+                    {(["kmr", "kre", "gfr"] as const).map((metric) => (
+                      <div key={metric} className="rounded border p-3 text-sm">
+                        <p className="font-medium uppercase">{metric}</p>
+                        <p>Eval Hasta: {doctorMetrics?.[metric]?.patients_with_eval ?? 0}</p>
+                        <p>Eval Nokta: {doctorMetrics?.[metric]?.total_eval_points ?? 0}</p>
+                        <p>MAE: {safeFixed(doctorMetrics?.[metric]?.mae, metric === "gfr" ? 2 : 3)}</p>
+                        <p>RMSE: {safeFixed(doctorMetrics?.[metric]?.rmse, metric === "gfr" ? 2 : 3)}</p>
+                        <p>Kapsama: {safeRatioPercent(doctorMetrics?.[metric]?.interval_coverage, 1)}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
             </>
           ) : (
             <Card>

@@ -294,6 +294,81 @@ export function useLABCohortTrajectory() {
   });
 }
 
+export interface DoctorMetricSummary {
+  patients_with_eval: number;
+  total_eval_points: number;
+  mae: number | null;
+  rmse: number | null;
+  mape_percent: number | null;
+  interval_coverage: number | null;
+}
+
+export interface DoctorPerformanceReportData {
+  metadata: {
+    created_at: string;
+    schema_version: string;
+    type: string;
+  };
+  summary: {
+    n_patients: number;
+    patients_with_any_eval: number;
+    metrics: {
+      kmr: DoctorMetricSummary;
+      kre: DoctorMetricSummary;
+      gfr: DoctorMetricSummary;
+    };
+  };
+}
+
+export function useDoctorPerformanceReport() {
+  return useQuery({
+    queryKey: ['doctor-performance-report'],
+    queryFn: async () => {
+      try {
+        const response = await fetch(`${basePath}/doctor_performance_report.json`);
+        if (!response.ok) {
+          return {
+            metadata: {
+              created_at: new Date().toISOString(),
+              schema_version: "fallback",
+              type: "doctor_performance_patient_based",
+            },
+            summary: {
+              n_patients: 0,
+              patients_with_any_eval: 0,
+              metrics: {
+                kmr: { patients_with_eval: 0, total_eval_points: 0, mae: null, rmse: null, mape_percent: null, interval_coverage: null },
+                kre: { patients_with_eval: 0, total_eval_points: 0, mae: null, rmse: null, mape_percent: null, interval_coverage: null },
+                gfr: { patients_with_eval: 0, total_eval_points: 0, mae: null, rmse: null, mape_percent: null, interval_coverage: null },
+              }
+            }
+          } as DoctorPerformanceReportData;
+        }
+        return response.json() as Promise<DoctorPerformanceReportData>;
+      } catch {
+        return {
+          metadata: {
+            created_at: new Date().toISOString(),
+            schema_version: "fallback",
+            type: "doctor_performance_patient_based",
+          },
+          summary: {
+            n_patients: 0,
+            patients_with_any_eval: 0,
+            metrics: {
+              kmr: { patients_with_eval: 0, total_eval_points: 0, mae: null, rmse: null, mape_percent: null, interval_coverage: null },
+              kre: { patients_with_eval: 0, total_eval_points: 0, mae: null, rmse: null, mape_percent: null, interval_coverage: null },
+              gfr: { patients_with_eval: 0, total_eval_points: 0, mae: null, rmse: null, mape_percent: null, interval_coverage: null },
+            }
+          }
+        } as DoctorPerformanceReportData;
+      }
+    },
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  });
+}
+
 // Dashboard için birleşik veriler
 export function useDashboardData() {
   const patientsQuery = usePatientsList();
