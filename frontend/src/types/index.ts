@@ -103,11 +103,19 @@ export interface PatientFeature {
   gfr_slope: number | null;
   kmr_variability: number | null;
   risk_score: number;
+  previous_risk_score?: number | null;
+  risk_delta?: number | null;
+  last_measurement_time_key?: string | null;
+  last_measurement_time_order?: number | null;
   risk_level: RiskLevel;
   has_anomaly: boolean;
   kmr_has_anomaly: boolean;
   kre_has_anomaly: boolean;
   gfr_has_anomaly: boolean;
+  kmr_threshold_breach?: boolean;
+  kre_threshold_breach?: boolean;
+  gfr_threshold_breach?: boolean;
+  any_threshold_breach?: boolean;
 }
 
 export interface PatientFeaturesData {

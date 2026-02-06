@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "created_at": "2026-02-07T01:12:41.865929",
+    "created_at": "2026-02-07T01:35:53.701321",
     "schema_version": "3.0"
   },
   "totals": {
@@ -15,7 +15,7 @@
     "Çok Kritik": 0
   },
   "averages": {
-    "risk_score": 37.8,
+    "risk_score": 37.7,
     "kmr_last": 0.4431,
     "kre_last": 1.32,
     "gfr_last": 67.1

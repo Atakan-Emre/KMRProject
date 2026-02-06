@@ -318,6 +318,29 @@ class JSONExporter:
                         if found_time_key:
                             last_gfr_time_key = found_time_key
 
+            # Son iki gerçek ölçüm noktasına göre risk değişimi
+            measured_points = [
+                t for t in timeline
+                if t.get("kmr") is not None or t.get("kre") is not None or t.get("gfr") is not None
+            ]
+            measured_points = sorted(
+                measured_points,
+                key=lambda t: int(t.get("time_order")) if t.get("time_order") is not None else -1,
+            )
+            last_measurement_time_key = None
+            last_measurement_time_order = None
+            previous_risk_score = None
+            risk_delta = None
+            if measured_points:
+                last_measurement_time_key = measured_points[-1].get("time_key")
+                last_measurement_time_order = measured_points[-1].get("time_order")
+            if len(measured_points) >= 2:
+                last_risk = _safe_float(measured_points[-1].get("risk_score"))
+                prev_risk = _safe_float(measured_points[-2].get("risk_score"))
+                if last_risk is not None and prev_risk is not None:
+                    previous_risk_score = round(prev_risk, 2)
+                    risk_delta = round(last_risk - prev_risk, 2)
+
             if timeline:
                 anomaly_flags = _timeline_anomaly_flags(timeline)
             else:
@@ -327,6 +350,15 @@ class JSONExporter:
                     "kre_has_anomaly": bool(risk_data.get("kre_has_anomaly", False)),
                     "gfr_has_anomaly": bool(risk_data.get("gfr_has_anomaly", False)),
                 }
+
+            if timeline:
+                kmr_threshold_breach = any(_is_kmr_threshold_anomaly(t.get("kmr")) for t in timeline)
+                kre_threshold_breach = any(_is_kre_threshold_anomaly(t.get("kre")) for t in timeline)
+                gfr_threshold_breach = any(_is_gfr_threshold_anomaly(t.get("gfr")) for t in timeline)
+            else:
+                kmr_threshold_breach = False
+                kre_threshold_breach = False
+                gfr_threshold_breach = False
             
             features.append({
                 "patient_code": patient,
@@ -356,12 +388,20 @@ class JSONExporter:
                 "kmr_variability": kmr_cv,
                 
                 "risk_score": risk_data.get("risk_last", 0),
+                "previous_risk_score": previous_risk_score,
+                "risk_delta": risk_delta,
+                "last_measurement_time_key": last_measurement_time_key,
+                "last_measurement_time_order": int(last_measurement_time_order) if last_measurement_time_order is not None else None,
                 "risk_level": risk_data.get("risk_level_last", "Normal"),
                 "has_anomaly": bool(anomaly_flags["has_anomaly"]),
                 # Anomali bayrakları timeline ile birebir eşleştirilir.
                 "kmr_has_anomaly": bool(anomaly_flags["kmr_has_anomaly"]),
                 "kre_has_anomaly": bool(anomaly_flags["kre_has_anomaly"]),
-                "gfr_has_anomaly": bool(anomaly_flags["gfr_has_anomaly"])
+                "gfr_has_anomaly": bool(anomaly_flags["gfr_has_anomaly"]),
+                "kmr_threshold_breach": bool(kmr_threshold_breach),
+                "kre_threshold_breach": bool(kre_threshold_breach),
+                "gfr_threshold_breach": bool(gfr_threshold_breach),
+                "any_threshold_breach": bool(kmr_threshold_breach or kre_threshold_breach or gfr_threshold_breach),
             })
         
         filepath = self.output_dir / "patient_features.json"

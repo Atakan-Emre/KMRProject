@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   useDashboardData,
@@ -9,12 +10,14 @@ import {
   getRiskColor,
   useCohortTrajectory,
   useChannelOverview,
+  useSystemConfig,
 } from "@/hooks/useKimerizmData";
 import dynamic from "next/dynamic";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { RiskLevel } from "@/types";
-import { normalizeGender } from "@/utils/formatters";
+import { formatTimeKey, normalizeGender } from "@/utils/formatters";
 
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
@@ -22,7 +25,11 @@ export default function Dashboard() {
   const { patients, kpis, riskDistribution, isLoading, error } = useDashboardData();
   const { data: cohortTrajectory } = useCohortTrajectory();
   const { data: channelOverview } = useChannelOverview();
+  const { data: systemConfig } = useSystemConfig();
+  const router = useRouter();
   const [selectedRiskLevel, setSelectedRiskLevel] = useState<RiskLevel | null>(null);
+  const [quickPatientCode, setQuickPatientCode] = useState("");
+  const [quickGoError, setQuickGoError] = useState<string | null>(null);
 
   const kmrMeasurements =
     channelOverview?.coverage?.kmr?.n_measurements ??
@@ -34,11 +41,23 @@ export default function Dashboard() {
     channelOverview?.coverage?.gfr?.n_measurements ??
     patients.reduce((sum, p) => sum + (p.n_gfr_points || 0), 0);
   const totalMeasurements = kmrMeasurements + kreMeasurements + gfrMeasurements;
+  const kmrTimepointCount = channelOverview?.coverage?.kmr?.time_keys?.length ?? 0;
+  const kreTimepointCount = channelOverview?.coverage?.kre?.time_keys?.length ?? 0;
+  const gfrTimepointCount = channelOverview?.coverage?.gfr?.time_keys?.length ?? 0;
+
+  const expectedMeasurements = patients.length * (kmrTimepointCount + kreTimepointCount + gfrTimepointCount);
+  const completenessRate = expectedMeasurements > 0 ? (totalMeasurements / expectedMeasurements) * 100 : 0;
+  const missingRate = Math.max(0, 100 - completenessRate);
 
   const safeFixed = (value: number | null | undefined, digits: number): string =>
     typeof value === "number" && Number.isFinite(value) ? value.toFixed(digits) : "-";
   const safePercent = (value: number | null | undefined, digits: number): string =>
     typeof value === "number" && Number.isFinite(value) ? `%${value.toFixed(digits)}` : "-";
+  const safeSigned = (value: number | null | undefined, digits: number): string => {
+    if (typeof value !== "number" || !Number.isFinite(value)) return "-";
+    const sign = value > 0 ? "+" : "";
+    return `${sign}${value.toFixed(digits)}`;
+  };
 
   const hasTrajectory = Array.isArray(cohortTrajectory?.trajectory) && cohortTrajectory.trajectory.length > 0;
 
@@ -75,6 +94,87 @@ export default function Dashboard() {
   const filteredPatients = selectedRiskLevel 
     ? patients.filter(p => p.risk_level === selectedRiskLevel)
     : patients;
+
+  const criticalPatients = [...patients]
+    .filter((p) => p.risk_level === "Kritik" || p.risk_level === "Çok Kritik")
+    .sort((a, b) => b.risk_score - a.risk_score)
+    .slice(0, 5);
+
+  const topRiskPatients = [...patients]
+    .sort((a, b) => b.risk_score - a.risk_score)
+    .slice(0, 5);
+
+  const priorityPatients = criticalPatients.length > 0 ? criticalPatients : topRiskPatients;
+
+  const patientsWithRiskDelta = patients.filter(
+    (p) => typeof p.risk_delta === "number" && Number.isFinite(p.risk_delta),
+  );
+  const worseningPatients = [...patientsWithRiskDelta]
+    .filter((p) => (p.risk_delta ?? 0) > 0)
+    .sort((a, b) => (b.risk_delta ?? 0) - (a.risk_delta ?? 0))
+    .slice(0, 5);
+  const improvingPatients = [...patientsWithRiskDelta]
+    .filter((p) => (p.risk_delta ?? 0) < 0)
+    .sort((a, b) => (a.risk_delta ?? 0) - (b.risk_delta ?? 0))
+    .slice(0, 5);
+
+  const kmrAnomalyCount = patients.filter((p) => p.kmr_has_anomaly).length;
+  const kreAnomalyCount = patients.filter((p) => p.kre_has_anomaly).length;
+  const gfrAnomalyCount = patients.filter((p) => p.gfr_has_anomaly).length;
+
+  const kmrCriticalThresholdCount = patients.filter((p) => p.kmr_threshold_breach).length;
+  const kreCriticalThresholdCount = patients.filter((p) => p.kre_threshold_breach).length;
+  const gfrCriticalThresholdCount = patients.filter((p) => p.gfr_threshold_breach).length;
+
+  const actionablePatients = [...patients]
+    .filter(
+      (p) =>
+        p.risk_level === "Kritik" ||
+        p.risk_level === "Çok Kritik" ||
+        p.has_anomaly ||
+        (p.last_kmr !== null && p.last_kmr > 5) ||
+        (p.last_kre !== null && p.last_kre > 4.5) ||
+        (p.last_gfr !== null && p.last_gfr < 15),
+    )
+    .sort((a, b) => b.risk_score - a.risk_score)
+    .slice(0, 8);
+
+  const latestMeasurement = patients.reduce(
+    (best, p) => {
+      const candidates = [
+        { order: p.last_measurement_time_order, key: p.last_measurement_time_key },
+        { order: p.last_kmr_time_order, key: p.last_kmr_time_key },
+        { order: p.last_kre_time_order, key: p.last_kre_time_key },
+        { order: p.last_gfr_time_order, key: p.last_gfr_time_key },
+      ].filter((c) => c.order !== null && c.order !== undefined && c.key);
+
+      if (candidates.length === 0) {
+        return best;
+      }
+
+      const localMax = candidates.reduce((a, b) => ((a.order as number) >= (b.order as number) ? a : b));
+      if ((localMax.order as number) > best.order) {
+        return { order: localMax.order as number, key: localMax.key as string };
+      }
+      return best;
+    },
+    { order: -1, key: null as string | null },
+  );
+
+  const handleQuickGo = () => {
+    const normalized = quickPatientCode.trim().toUpperCase();
+    if (!normalized) {
+      setQuickGoError("Hasta kodu girin.");
+      return;
+    }
+    const patient = patients.find((p) => p.patient_code.toUpperCase() === normalized);
+    if (!patient) {
+      setQuickGoError("Hasta bulunamadı.");
+      return;
+    }
+    setQuickGoError(null);
+    router.push(`/patients/${patient.patient_code}`);
+  };
 
   if (error) {
     return (
@@ -186,6 +286,34 @@ export default function Dashboard() {
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
+          <Card>
+            <CardHeader>
+              <CardTitle>Hızlı Hasta Geçişi</CardTitle>
+              <CardDescription>Kodu girip doğrudan hasta detayına geçin</CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Örn: AB"
+                  value={quickPatientCode}
+                  onChange={(e) => {
+                    setQuickPatientCode(e.target.value.toUpperCase());
+                    if (quickGoError) setQuickGoError(null);
+                  }}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleQuickGo();
+                    }
+                  }}
+                />
+                <Button onClick={handleQuickGo}>Git</Button>
+              </div>
+              {quickGoError && (
+                <p className="mt-2 text-xs text-red-600">{quickGoError}</p>
+              )}
+            </CardContent>
+          </Card>
+
           <div className="grid gap-6 lg:grid-cols-3">
             {/* Risk Pie Chart */}
             <Card>
@@ -275,8 +403,140 @@ export default function Dashboard() {
             </Card>
           </div>
 
+          <div className="grid gap-6 lg:grid-cols-3">
+            <Card>
+              <CardHeader>
+                <CardTitle>Anomali Özeti</CardTitle>
+                <CardDescription>Metrik bazında anomalili hasta dağılımı</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">KMR Anomali</span>
+                  <span className="text-sm font-medium">{kmrAnomalyCount}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">KRE Anomali</span>
+                  <span className="text-sm font-medium">{kreAnomalyCount}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">GFR Anomali</span>
+                  <span className="text-sm font-medium">{gfrAnomalyCount}</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Klinik Eşik İhlalleri</CardTitle>
+                <CardDescription>Tüm takip boyunca en az bir eşik ihlali görülen hastalar</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">KMR &gt; 5</span>
+                  <span className="text-sm font-medium text-red-600">{kmrCriticalThresholdCount}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">KRE &gt; 4.5</span>
+                  <span className="text-sm font-medium text-red-600">{kreCriticalThresholdCount}</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">GFR &lt; 15</span>
+                  <span className="text-sm font-medium text-red-600">{gfrCriticalThresholdCount}</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Bugün İncelenecekler</CardTitle>
+                <CardDescription>Öncelikli takip listesi</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2 max-h-52 overflow-y-auto">
+                {actionablePatients.length > 0 ? (
+                  actionablePatients.map((p) => (
+                    <div key={`action-${p.patient_code}`} className="flex items-center justify-between text-sm">
+                      <Link href={`/patients/${p.patient_code}`} className="font-medium hover:underline">
+                        Hasta {p.patient_code}
+                      </Link>
+                      <span style={{ color: getRiskColor(p.risk_level) }}>
+                        {p.risk_level} ({p.risk_score.toFixed(1)})
+                      </span>
+                    </div>
+                  ))
+                ) : (
+                  <p className="text-sm text-muted-foreground">Öncelikli hasta bulunmuyor.</p>
+                )}
+              </CardContent>
+            </Card>
+          </div>
+
+          <div className="grid gap-6 lg:grid-cols-3">
+            <Card className="lg:col-span-1">
+              <CardHeader>
+                <CardTitle>Kritik Hastalar (İlk 5)</CardTitle>
+                <CardDescription>Risk skoru en yüksek öncelikli hastalar</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                {priorityPatients.map((p) => (
+                  <div key={`critical-${p.patient_code}`} className="rounded border p-2">
+                    <div className="flex items-center justify-between">
+                      <Link href={`/patients/${p.patient_code}`} className="font-medium hover:underline">
+                        Hasta {p.patient_code}
+                      </Link>
+                      <span className="text-xs" style={{ color: getRiskColor(p.risk_level) }}>
+                        {p.risk_level}
+                      </span>
+                    </div>
+                    <div className="mt-1 text-xs text-muted-foreground">
+                      Risk: {p.risk_score.toFixed(1)} • KMR: {p.last_kmr?.toFixed(3) ?? "-"}% • KRE: {p.last_kre?.toFixed(2) ?? "-"} • GFR: {p.last_gfr?.toFixed(0) ?? "-"}
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            <Card className="lg:col-span-2">
+              <CardHeader>
+                <CardTitle>Risk Değişim Özeti</CardTitle>
+                <CardDescription>Son iki ölçüm noktası arasındaki değişim</CardDescription>
+              </CardHeader>
+              <CardContent className="grid gap-4 md:grid-cols-2">
+                <div>
+                  <p className="mb-2 text-sm font-medium text-red-600">En Çok Artan Risk</p>
+                  <div className="space-y-2">
+                    {worseningPatients.length > 0 ? (
+                      worseningPatients.map((p) => (
+                        <div key={`worse-${p.patient_code}`} className="flex items-center justify-between text-sm">
+                          <Link href={`/patients/${p.patient_code}`} className="hover:underline">Hasta {p.patient_code}</Link>
+                          <span className="font-medium text-red-600">{safeSigned(p.risk_delta, 1)}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-muted-foreground">Artış verisi bulunamadı.</p>
+                    )}
+                  </div>
+                </div>
+                <div>
+                  <p className="mb-2 text-sm font-medium text-green-600">En Çok Azalan Risk</p>
+                  <div className="space-y-2">
+                    {improvingPatients.length > 0 ? (
+                      improvingPatients.map((p) => (
+                        <div key={`improve-${p.patient_code}`} className="flex items-center justify-between text-sm">
+                          <Link href={`/patients/${p.patient_code}`} className="hover:underline">Hasta {p.patient_code}</Link>
+                          <span className="font-medium text-green-600">{safeSigned(p.risk_delta, 1)}</span>
+                        </div>
+                      ))
+                    ) : (
+                      <p className="text-sm text-muted-foreground">Azalış verisi bulunamadı.</p>
+                    )}
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+
           {/* Recent Updates */}
-          <div className="grid gap-6 md:grid-cols-2">
+          <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             <Card>
               <CardHeader>
                 <CardTitle>Son Güncellemeler</CardTitle>
@@ -348,10 +608,70 @@ export default function Dashboard() {
                     <span className="text-sm">Toplam Ölçüm</span>
                     <span className="text-sm text-muted-foreground">{totalMeasurements}</span>
                   </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Son Veri Noktası</span>
+                    <span className="text-sm text-muted-foreground">
+                      {latestMeasurement.key ? formatTimeKey(latestMeasurement.key) : "-"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Model</span>
+                    <span className="text-sm text-muted-foreground">
+                      {cohortTrajectory?.metadata?.model || "LSTM + VAE"}
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-between">
+                    <span className="text-sm">Pipeline Sürümü</span>
+                    <span className="text-sm text-muted-foreground">
+                      {systemConfig?.metadata?.schema_version || "-"}
+                    </span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <CardTitle>Veri Kalitesi</CardTitle>
+                <CardDescription>Ölçüm doluluğu ve veri kapsamı</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Toplam Doluluk</span>
+                  <span className="text-sm font-medium">{completenessRate.toFixed(1)}%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">Eksik Ölçüm</span>
+                  <span className="text-sm text-muted-foreground">{missingRate.toFixed(1)}%</span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">KMR Kanal</span>
+                  <span className="text-sm text-muted-foreground">
+                    {patients.length > 0 && kmrTimepointCount > 0
+                      ? `${((kmrMeasurements / (patients.length * kmrTimepointCount)) * 100).toFixed(1)}%`
+                      : "-"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">KRE Kanal</span>
+                  <span className="text-sm text-muted-foreground">
+                    {patients.length > 0 && kreTimepointCount > 0
+                      ? `${((kreMeasurements / (patients.length * kreTimepointCount)) * 100).toFixed(1)}%`
+                      : "-"}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between">
+                  <span className="text-sm">GFR Kanal</span>
+                  <span className="text-sm text-muted-foreground">
+                    {patients.length > 0 && gfrTimepointCount > 0
+                      ? `${((gfrMeasurements / (patients.length * gfrTimepointCount)) * 100).toFixed(1)}%`
+                      : "-"}
+                  </span>
                 </div>
               </CardContent>
             </Card>
           </div>
+
         </TabsContent>
 
         {/* Demographics Tab */}
