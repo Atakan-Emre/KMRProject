@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useMemo, useRef, useReducer } from "react";
+import React, { useState, useMemo, useRef, useReducer, useCallback } from "react";
 import { useParams } from "next/navigation";
 import { usePatientDetail, useReferenceBand, useCohortTrajectory, useLABCohortTrajectory, RISK_COLORS } from "@/hooks/useKimerizmData";
 import { Button } from "@/components/ui/button";
@@ -171,6 +171,8 @@ export default function PatientDetailClient() {
   
   // Klinik öneri sekmesi
   const [clinicalTab, setClinicalTab] = useState<'all' | 'action' | 'watch' | 'info'>('all');
+  type DetailMetric = 'kmr' | 'lab';
+  const [activeDetailMetric, setActiveDetailMetric] = useState<DetailMetric>('kmr');
   
   const showKMR = true;
   const showAnomalies = true; // Anomalies always shown (critical)
@@ -201,8 +203,22 @@ export default function PatientDetailClient() {
   // Ref for plot click handling
   const plotRef = useRef<HTMLDivElement>(null);
 
-  const hasAnyAnomaly = (point: TimelinePoint | null | undefined): boolean =>
-    !!point && !!(point.kmr_anomaly_flag || point.kre_anomaly_flag || point.gfr_anomaly_flag);
+  const isKmrThresholdAnomaly = useCallback((value: number | null | undefined): boolean =>
+    value !== null && value !== undefined && !Number.isNaN(value) && (value > 5 || value < 0), []);
+  const isKreThresholdAnomaly = useCallback((value: number | null | undefined): boolean =>
+    value !== null && value !== undefined && !Number.isNaN(value) && (value > 4.5 || value < 0), []);
+  const isGfrThresholdAnomaly = useCallback((value: number | null | undefined): boolean =>
+    value !== null && value !== undefined && !Number.isNaN(value) && (value < 15 || value > 120), []);
+
+  const isKmrAnomaly = useCallback((point: TimelinePoint | null | undefined): boolean =>
+    !!point && !!(point.kmr_anomaly_flag || isKmrThresholdAnomaly(point.kmr)), [isKmrThresholdAnomaly]);
+  const isKreAnomaly = useCallback((point: TimelinePoint | null | undefined): boolean =>
+    !!point && !!(point.kre_anomaly_flag || isKreThresholdAnomaly(point.kre)), [isKreThresholdAnomaly]);
+  const isGfrAnomaly = useCallback((point: TimelinePoint | null | undefined): boolean =>
+    !!point && !!(point.gfr_anomaly_flag || isGfrThresholdAnomaly(point.gfr)), [isGfrThresholdAnomaly]);
+
+  const hasAnyAnomaly = useCallback((point: TimelinePoint | null | undefined): boolean =>
+    isKmrAnomaly(point) || isKreAnomaly(point) || isGfrAnomaly(point), [isKmrAnomaly, isKreAnomaly, isGfrAnomaly]);
 
   const toPinnedPoint = (point: TimelinePoint | null | undefined): PinnedPointInfo => {
     if (!point) return null;
@@ -222,8 +238,8 @@ export default function PatientDetailClient() {
       gfrPredStatus: point.gfr_pred_status ?? null,
       kreAnomalyScore: point.kre_anomaly_score ?? null,
       gfrAnomalyScore: point.gfr_anomaly_score ?? null,
-      kreAnomalyFlag: point.kre_anomaly_flag ?? false,
-      gfrAnomalyFlag: point.gfr_anomaly_flag ?? false,
+      kreAnomalyFlag: isKreAnomaly(point),
+      gfrAnomalyFlag: isGfrAnomaly(point),
       isAnomaly: hasAnyAnomaly(point),
     };
   };
@@ -280,7 +296,95 @@ export default function PatientDetailClient() {
       kreLast: kreValues.length > 0 ? kreValues[kreValues.length - 1] : null,
       gfrLast: gfrValues.length > 0 ? gfrValues[gfrValues.length - 1] : null
     };
-  }, [patient, pinnedPoint]);
+  }, [patient, pinnedPoint, hasAnyAnomaly]);
+
+  const detailStats = useMemo(() => {
+    if (!patient?.timeline || patient.timeline.length === 0) return null;
+
+    const filteredTimeline = pinnedPoint
+      ? patient.timeline.filter((t: TimelinePoint) => t.time_order <= pinnedPoint.timeOrder)
+      : patient.timeline;
+
+    const buildMetricStats = (
+      metricValues: number[],
+      anomalyCount: number
+    ): {
+      min: number | null;
+      max: number | null;
+      mean: number | null;
+      cv: number | null;
+      trend: number | null;
+      anomalyCount: number;
+      totalPoints: number;
+    } => {
+      if (metricValues.length === 0) {
+        return {
+          min: null,
+          max: null,
+          mean: null,
+          cv: null,
+          trend: null,
+          anomalyCount,
+          totalPoints: 0,
+        };
+      }
+
+      let trend = 0;
+      if (metricValues.length >= 2) {
+        const n = metricValues.length;
+        const xMean = (n - 1) / 2;
+        const yMean = metricValues.reduce((a, b) => a + b, 0) / n;
+        let num = 0;
+        let den = 0;
+        metricValues.forEach((y, i) => {
+          num += (i - xMean) * (y - yMean);
+          den += (i - xMean) ** 2;
+        });
+        trend = den !== 0 ? num / den : 0;
+      }
+
+      const mean = metricValues.reduce((a, b) => a + b, 0) / metricValues.length;
+      const std = Math.sqrt(metricValues.reduce((a, b) => a + (b - mean) ** 2, 0) / metricValues.length);
+      const cv = mean !== 0 ? Math.abs(std / mean) : 0;
+
+      return {
+        min: Math.min(...metricValues),
+        max: Math.max(...metricValues),
+        mean,
+        cv,
+        trend,
+        anomalyCount,
+        totalPoints: metricValues.length,
+      };
+    };
+
+    const kmrValues = filteredTimeline
+      .map((t: TimelinePoint) => t.kmr)
+      .filter((v: number | null) => v !== null && !Number.isNaN(v)) as number[];
+    const kreValues = filteredTimeline
+      .map((t: TimelinePoint) => t.kre)
+      .filter((v: number | null) => v !== null && !Number.isNaN(v)) as number[];
+    const gfrValues = filteredTimeline
+      .map((t: TimelinePoint) => t.gfr)
+      .filter((v: number | null) => v !== null && !Number.isNaN(v)) as number[];
+
+    const kmrAnomalyCount = filteredTimeline.filter((t: TimelinePoint) => isKmrAnomaly(t)).length;
+    const kreAnomalyCount = filteredTimeline.filter((t: TimelinePoint) => isKreAnomaly(t)).length;
+    const gfrAnomalyCount = filteredTimeline.filter((t: TimelinePoint) => isGfrAnomaly(t)).length;
+
+    if (activeDetailMetric === 'kmr') {
+      return {
+        mode: 'kmr' as const,
+        kmr: buildMetricStats(kmrValues, kmrAnomalyCount),
+      };
+    }
+
+    return {
+      mode: 'lab' as const,
+      kre: buildMetricStats(kreValues, kreAnomalyCount),
+      gfr: buildMetricStats(gfrValues, gfrAnomalyCount),
+    };
+  }, [patient, pinnedPoint, activeDetailMetric, isKmrAnomaly, isKreAnomaly, isGfrAnomaly]);
 
   // Clinical recommendations - filtrelenmiş (pinnedPoint varsa pinnedPoint değerlerini kullan)
   const filteredRecommendations = useMemo(() => {
@@ -294,17 +398,26 @@ export default function PatientDetailClient() {
     const currentRisk = pinnedPoint?.riskLevel ?? patient.last_status.risk_level_last;
 
     if (pinnedPoint) {
+      const isEarlyLabWindow = pinnedPoint.timeKey.startsWith("Day_") && pinnedPoint.timeOrder < 7;
+      const firstLabPoint = patient.timeline.find(
+        (t: TimelinePoint) => t.kre !== null || t.gfr !== null
+      );
+      const firstLabLabel = firstLabPoint ? formatTimeKey(firstLabPoint.time_key) : "Day 7";
+
       if (currentKMR === null || currentKMR === undefined) {
         recs.push({ type: 'info', text: `${formatTimeKey(pinnedPoint.timeKey)} noktasında KMR ölçümü yok` });
       }
-      if (currentKRE === null || currentKRE === undefined) {
-        recs.push({ type: 'info', text: `${formatTimeKey(pinnedPoint.timeKey)} noktasında KRE ölçümü yok` });
-      }
-      if (currentGFR === null || currentGFR === undefined) {
-        recs.push({ type: 'info', text: `${formatTimeKey(pinnedPoint.timeKey)} noktasında GFR ölçümü yok` });
-      }
-      if (pinnedPoint.timeKey.startsWith("Day_") && pinnedPoint.timeOrder < 7 && (currentKRE == null || currentGFR == null)) {
-        recs.push({ type: 'info', text: 'LAB (KRE/GFR) ölçümleri Day 7 ile başlar' });
+      if (isEarlyLabWindow) {
+        if (currentKRE == null || currentGFR == null) {
+          recs.push({ type: 'info', text: `LAB (KRE/GFR) ölçümleri ${firstLabLabel} ile başlar` });
+        }
+      } else {
+        if (currentKRE === null || currentKRE === undefined) {
+          recs.push({ type: 'info', text: `${formatTimeKey(pinnedPoint.timeKey)} noktasında KRE ölçümü yok` });
+        }
+        if (currentGFR === null || currentGFR === undefined) {
+          recs.push({ type: 'info', text: `${formatTimeKey(pinnedPoint.timeKey)} noktasında GFR ölçümü yok` });
+        }
       }
     } else {
       if (currentKMR === null || currentKMR === undefined) recs.push({ type: 'info', text: 'KMR verisi yok' });
@@ -375,12 +488,21 @@ export default function PatientDetailClient() {
       recs.push({ type: 'info', text: 'Hasta iyileşmiş Hasta grubunda' });
     }
 
+    // Öncelik: Aksiyon > İzlem > Bilgi
+    const priority: Record<'success' | 'warning' | 'danger' | 'info', number> = {
+      danger: 0,
+      warning: 1,
+      info: 2,
+      success: 2
+    };
+    const orderedRecs = [...recs].sort((a, b) => priority[a.type] - priority[b.type]);
+
     // Sekmeye göre filtrele
-    if (clinicalTab === 'all') return recs;
-    if (clinicalTab === 'action') return recs.filter(r => r.type === 'danger');
-    if (clinicalTab === 'watch') return recs.filter(r => r.type === 'warning');
-    if (clinicalTab === 'info') return recs.filter(r => r.type === 'info' || r.type === 'success');
-    return recs;
+    if (clinicalTab === 'all') return orderedRecs;
+    if (clinicalTab === 'action') return orderedRecs.filter(r => r.type === 'danger');
+    if (clinicalTab === 'watch') return orderedRecs.filter(r => r.type === 'warning');
+    if (clinicalTab === 'info') return orderedRecs.filter(r => r.type === 'info' || r.type === 'success');
+    return orderedRecs;
   }, [patient, stats, clinicalTab, pinnedPoint]);
 
   // Build unified timeline grid - tüm time_order'ları içeren sürekli grid
@@ -794,17 +916,7 @@ export default function PatientDetailClient() {
       }),
       hovertemplate: '<b>%{text}</b><br>KMR: %%{y:.4f}<extra></extra>',
       connectgaps: true,
-      customdata: timelineGrid.map(g => g.timelinePoint ? ({
-        timeOrder: g.timeOrder, timeKey: g.timeKey || '', kmr: g.timelinePoint.kmr, kre: g.timelinePoint.kre, gfr: g.timelinePoint.gfr,
-        risk: g.timelinePoint.risk_score, riskLevel: g.timelinePoint.risk_level, kmrPred: g.timelinePoint.kmr_pred,
-        krePred: g.timelinePoint.kre_pred, gfrPred: g.timelinePoint.gfr_pred,
-        kmrPredStatus: g.timelinePoint.kmr_pred_status ?? null,
-        krePredStatus: g.timelinePoint.kre_pred_status ?? null,
-        gfrPredStatus: g.timelinePoint.gfr_pred_status ?? null,
-        kreAnomalyScore: g.timelinePoint.kre_anomaly_score, gfrAnomalyScore: g.timelinePoint.gfr_anomaly_score,
-        kreAnomalyFlag: g.timelinePoint.kre_anomaly_flag, gfrAnomalyFlag: g.timelinePoint.gfr_anomaly_flag,
-        isAnomaly: hasAnyAnomaly(g.timelinePoint)
-      }) : null),
+      customdata: timelineGrid.map(g => g.timelinePoint ? ({ ...toPinnedPoint(g.timelinePoint), metric: 'kmr' as const }) : null),
       xaxis: 'x', yaxis: 'y'
     });
 
@@ -819,13 +931,7 @@ export default function PatientDetailClient() {
           marker: { size: 12, color: COLORS.thresholds.critical, symbol: 'diamond', line: { color: '#fff', width: 2 } },
           text: anomalyPts.map(g => `${formatTimeKey(g.timeKey)} - ANOMALİ`),
           hovertemplate: '<b>%{text}</b><br>KMR: %%{y:.4f}<extra></extra>',
-          customdata: anomalyPts.map(g => ({
-            timeOrder: g.timeOrder, timeKey: g.timeKey || '', kmr: g.timelinePoint!.kmr, kre: g.timelinePoint!.kre, gfr: g.timelinePoint!.gfr,
-            risk: g.timelinePoint!.risk_score, riskLevel: g.timelinePoint!.risk_level, kmrPred: g.timelinePoint!.kmr_pred, isAnomaly: true
-            , kmrPredStatus: g.timelinePoint!.kmr_pred_status ?? null
-            , krePredStatus: g.timelinePoint!.kre_pred_status ?? null
-            , gfrPredStatus: g.timelinePoint!.gfr_pred_status ?? null
-          })),
+          customdata: anomalyPts.map(g => ({ ...toPinnedPoint(g.timelinePoint), metric: 'kmr' as const })),
           xaxis: 'x', yaxis: 'y'
         });
       }
@@ -978,22 +1084,21 @@ export default function PatientDetailClient() {
           size: kreData.map(d => {
             const point = d.point;
             if (!point || point.kre === null) return 0;
-            // Diamond marker for anomalies
-            if (point.kre_anomaly_flag && (point.kre_anomaly_score || 0) > 50) {
+            if (isKreAnomaly(point)) {
               return 10;
             }
             return 6; // Marker boyutu küçültüldü
           }),
           color: kreData.map(d => {
             const point = d.point;
-            if (point?.kre_anomaly_flag && (point.kre_anomaly_score || 0) > 50) {
+            if (isKreAnomaly(point)) {
               return COLORS.thresholds.critical; // Red for anomalies
             }
             return COLORS.kre.line;
           }),
           symbol: kreData.map(d => {
             const point = d.point;
-            if (point?.kre_anomaly_flag && (point.kre_anomaly_score || 0) > 50) {
+            if (isKreAnomaly(point)) {
               return 'diamond'; // Diamond for anomalies
             }
             return 'circle';
@@ -1004,11 +1109,12 @@ export default function PatientDetailClient() {
           if (!point || point.kre === null) return '';
           const actual = point.kre.toFixed(2);
           const pred = point.kre_pred ? ` (Tahmin: ${point.kre_pred.toFixed(2)})` : '';
-          const anomaly = point.kre_anomaly_flag ? ' ⚠️ ANOMALİ' : '';
+          const anomaly = isKreAnomaly(point) ? ' ⚠️ ANOMALİ' : '';
           return `${actual}${pred}${anomaly}`;
         }),
         hovertemplate: '<b>KRE</b> (Düşüş iyi ↓)<br>%{text}<extra></extra>',
         connectgaps: false, // Null değerler arasında çizgi çizme
+        customdata: kreData.map(d => d.point ? ({ ...toPinnedPoint(d.point), metric: 'lab' as const }) : null),
         xaxis: 'x2', 
         yaxis: 'y2',
         showlegend: false
@@ -1204,6 +1310,7 @@ export default function PatientDetailClient() {
             return `KRE ${kre.toFixed(2)} (geçersiz <0)`;
           }),
           hovertemplate: '<b>%{text}</b><extra></extra>',
+          customdata: kreCritical.map(d => d.point ? ({ ...toPinnedPoint(d.point), metric: 'lab' as const }) : null),
           xaxis: 'x2',
           yaxis: 'y2',
           showlegend: false
@@ -1225,6 +1332,7 @@ export default function PatientDetailClient() {
           },
           text: kreModerate.map(d => `KRE ${d.y!.toFixed(2)} (orta >2.0)`),
           hovertemplate: '<b>%{text}</b><extra></extra>',
+          customdata: kreModerate.map(d => d.point ? ({ ...toPinnedPoint(d.point), metric: 'lab' as const }) : null),
           xaxis: 'x2',
           yaxis: 'y2',
           showlegend: false
@@ -1259,22 +1367,21 @@ export default function PatientDetailClient() {
           size: gfrData.map(d => {
             const point = d.point;
             if (!point || point.gfr === null) return 0;
-            // Diamond marker for anomalies
-            if (point.gfr_anomaly_flag && (point.gfr_anomaly_score || 0) > 50) {
+            if (isGfrAnomaly(point)) {
               return 10;
             }
             return 6; // Marker boyutu küçültüldü
           }),
           color: gfrData.map(d => {
             const point = d.point;
-            if (point?.gfr_anomaly_flag && (point.gfr_anomaly_score || 0) > 50) {
+            if (isGfrAnomaly(point)) {
               return COLORS.thresholds.critical; // Red for anomalies
             }
             return COLORS.gfr.line;
           }),
           symbol: gfrData.map(d => {
             const point = d.point;
-            if (point?.gfr_anomaly_flag && (point.gfr_anomaly_score || 0) > 50) {
+            if (isGfrAnomaly(point)) {
               return 'diamond'; // Diamond for anomalies
             }
             return 'circle';
@@ -1285,11 +1392,12 @@ export default function PatientDetailClient() {
           if (!point || point.gfr === null) return '';
           const actual = point.gfr.toFixed(0);
           const pred = point.gfr_pred ? ` (Tahmin: ${point.gfr_pred.toFixed(0)})` : '';
-          const anomaly = point.gfr_anomaly_flag ? ' ⚠️ ANOMALİ' : '';
+          const anomaly = isGfrAnomaly(point) ? ' ⚠️ ANOMALİ' : '';
           return `GFR=${actual}${pred}${anomaly}`;
         }),
         hovertemplate: '<b>GFR</b> (Yüksek iyi ↑)<br>%{text}<extra></extra>',
         connectgaps: false, // Null değerler arasında çizgi çizme
+        customdata: gfrData.map(d => d.point ? ({ ...toPinnedPoint(d.point), metric: 'lab' as const }) : null),
         xaxis: 'x2', 
         yaxis: 'y3',
         showlegend: false
@@ -1461,7 +1569,7 @@ export default function PatientDetailClient() {
     if (gfrShowEşikler) {
       const gfrCritical = gfrData.filter(d => {
         const gfr = d.y;
-        return gfr !== null && typeof gfr === 'number' && gfr < 15;
+        return gfr !== null && typeof gfr === 'number' && (gfr < 15 || gfr > 120);
       });
       const gfrModerate = gfrData.filter(d => {
         const gfr = d.y;
@@ -1481,8 +1589,13 @@ export default function PatientDetailClient() {
             symbol: 'diamond',
             line: { color: '#fff', width: 1 }
           },
-          text: gfrCritical.map(d => `GFR ${d.y!.toFixed(0)} (kritik <15)`),
+          text: gfrCritical.map(d => {
+            const gfr = d.y!;
+            if (gfr < 15) return `GFR ${gfr.toFixed(0)} (kritik <15)`;
+            return `GFR ${gfr.toFixed(0)} (yüksek >120)`;
+          }),
           hovertemplate: '<b>%{text}</b><extra></extra>',
+          customdata: gfrCritical.map(d => d.point ? ({ ...toPinnedPoint(d.point), metric: 'lab' as const }) : null),
           xaxis: 'x2',
           yaxis: 'y3',
           showlegend: false
@@ -1504,6 +1617,7 @@ export default function PatientDetailClient() {
           },
           text: gfrModerate.map(d => `GFR ${d.y!.toFixed(0)} (orta <30)`),
           hovertemplate: '<b>%{text}</b><extra></extra>',
+          customdata: gfrModerate.map(d => d.point ? ({ ...toPinnedPoint(d.point), metric: 'lab' as const }) : null),
           xaxis: 'x2',
           yaxis: 'y3',
           showlegend: false
@@ -1704,6 +1818,15 @@ export default function PatientDetailClient() {
   // timelineGrid zaten tüm zaman noktalarını içeriyor (1-22)
   const finalTickOrders = timelineGrid.map(g => g.timeOrder);
   const finalTickTexts = timelineGrid.map(g => g.timeKey ? formatTimeKey(g.timeKey) : `Sıra ${g.timeOrder}`);
+  const formatMetricValue = (
+    value: number | null | undefined,
+    decimals: number,
+    asPercent: boolean
+  ): string => {
+    if (value === null || value === undefined || Number.isNaN(value)) return "-";
+    if (asPercent) return formatPercent(value, decimals);
+    return value.toFixed(decimals);
+  };
 
   // Ana layout - sabit split görünüm + yan panel
   return (
@@ -1842,14 +1965,31 @@ export default function PatientDetailClient() {
               style={{ width: '100%', height: '100%', minHeight: '640px' }}
               onInitialized={(figure, graphDiv) => {
                 if (graphDiv) {
-                  const plotDiv = graphDiv as { on?: (event: string, callback: (data: { points: Array<{ customdata?: PinnedPointInfo; pointIndex: number; x: number }> }) => void) => void };
+                  type ClickPoint = {
+                    customdata?: (PinnedPointInfo & { metric?: DetailMetric }) | null;
+                    pointIndex: number;
+                    x: number;
+                    data?: { name?: string };
+                    fullData?: { name?: string; yaxis?: string };
+                  };
+                  const inferMetricFromTrace = (point: ClickPoint): DetailMetric => {
+                    const yaxis = point.fullData?.yaxis;
+                    if (yaxis === 'y3' || yaxis === 'y2') return "lab";
+                    const traceName = point.data?.name || point.fullData?.name || "";
+                    const normalized = traceName.toUpperCase();
+                    if (normalized.includes("GFR") || normalized.includes("KRE")) return "lab";
+                    return "kmr";
+                  };
+                  const plotDiv = graphDiv as { on?: (event: string, callback: (data: { points: ClickPoint[] }) => void) => void };
                   if (typeof plotDiv.on === 'function') {
                     // Click handler
-                    plotDiv.on('plotly_click', (data: { points: Array<{ customdata?: PinnedPointInfo; pointIndex: number; x: number }> }) => {
+                    plotDiv.on('plotly_click', (data: { points: ClickPoint[] }) => {
                       if (data.points && data.points.length > 0) {
                         const point = data.points[0];
+                        const metricFromTrace = inferMetricFromTrace(point);
                         if (point.customdata) {
                           setPinnedPoint(point.customdata);
+                          setActiveDetailMetric(point.customdata.metric ?? metricFromTrace);
                           setPinnedPointHighlight(true);
                           setTimeout(() => setPinnedPointHighlight(false), 1000);
                         } else {
@@ -1859,6 +1999,7 @@ export default function PatientDetailClient() {
                           if (gridItem?.timelinePoint) {
                             const newPinned = toPinnedPoint(gridItem.timelinePoint);
                             setPinnedPoint(newPinned);
+                            setActiveDetailMetric(metricFromTrace);
                             setPinnedPointHighlight(true);
                             setTimeout(() => setPinnedPointHighlight(false), 1000);
                           }
@@ -2385,8 +2526,11 @@ export default function PatientDetailClient() {
                                 {pinnedPoint.kre != null && pinnedPoint.kre < 1.2 && <div className="text-green-700 text-xs">✅ Çok iyi</div>}
                                 {pinnedPoint.kre != null && pinnedPoint.kre >= 1.2 && pinnedPoint.kre <= 4.5 && <div className="text-orange-700 text-xs">⚠️ İzlem gerekli</div>}
                                 {pinnedPoint.kre != null && pinnedPoint.kre > 4.5 && <div className="text-red-700 text-xs font-bold">🚨 Çok kötü - Acil müdahale!</div>}
-                                {pinnedPoint.kreAnomalyFlag && pinnedPoint.kreAnomalyScore !== null && pinnedPoint.kreAnomalyScore > 50 && (
-                                  <div className="text-red-700 text-xs font-bold mt-1">⚠️ ANOMALİ (Skor: {pinnedPoint.kreAnomalyScore.toFixed(0)})</div>
+                                {pinnedPoint.kreAnomalyFlag && (
+                                  <div className="text-red-700 text-xs font-bold mt-1">
+                                    ⚠️ ANOMALİ
+                                    {pinnedPoint.kreAnomalyScore !== null && ` (Skor: ${pinnedPoint.kreAnomalyScore.toFixed(0)})`}
+                                  </div>
                                 )}
                             </div>
                             
@@ -2407,8 +2551,11 @@ export default function PatientDetailClient() {
                                 {pinnedPoint.gfr != null && pinnedPoint.gfr >= 90 && <div className="text-green-700 text-xs">✅ Çok iyi</div>}
                                 {pinnedPoint.gfr != null && pinnedPoint.gfr >= 15 && pinnedPoint.gfr < 90 && <div className="text-orange-700 text-xs">⚠️ İzlem gerekli</div>}
                                 {pinnedPoint.gfr != null && pinnedPoint.gfr < 15 && <div className="text-red-700 text-xs font-bold">🚨 Çok kötü - Acil müdahale!</div>}
-                                {pinnedPoint.gfrAnomalyFlag && pinnedPoint.gfrAnomalyScore !== null && pinnedPoint.gfrAnomalyScore > 50 && (
-                                  <div className="text-red-700 text-xs font-bold mt-1">⚠️ ANOMALİ (Skor: {pinnedPoint.gfrAnomalyScore.toFixed(0)})</div>
+                                {pinnedPoint.gfrAnomalyFlag && (
+                                  <div className="text-red-700 text-xs font-bold mt-1">
+                                    ⚠️ ANOMALİ
+                                    {pinnedPoint.gfrAnomalyScore !== null && ` (Skor: ${pinnedPoint.gfrAnomalyScore.toFixed(0)})`}
+                                  </div>
                                 )}
                             </div>
                             
@@ -2550,64 +2697,128 @@ export default function PatientDetailClient() {
               )}
 
               {/* Stats panel with better styling */}
-              {stats && stats.totalPoints > 0 && (
+              {detailStats && (
               <div className="bg-white rounded-xl p-3 md:p-4 shadow-sm border-2 border-slate-300">
                 <h4 className="text-sm uppercase tracking-wide font-bold text-slate-900 mb-2 flex items-center gap-2">
-                  📉 KMR İstatistikleri
+                  {detailStats.mode === 'kmr' ? '📉 KMR İstatistikleri' : '📉 KRE-GFR İstatistikleri'}
                   {pinnedPoint && (
                     <span className="text-xs normal-case text-slate-600 font-normal">({formatTimeKey(pinnedPoint.timeKey)}&apos;a kadar)</span>
                   )}
                 </h4>
-                <div className="space-y-2 text-xs">
-                  {stats.kmrMin !== null && stats.kmrMax !== null && (
+
+                {detailStats.mode === 'kmr' && detailStats.kmr.totalPoints > 0 && (
+                  <div className="space-y-2 text-xs">
+                    {detailStats.kmr.min !== null && detailStats.kmr.max !== null && (
+                      <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
+                        <span className="text-slate-700 font-medium">Min / Max</span>
+                        <span className="font-mono font-bold text-slate-900">
+                          {formatMetricValue(detailStats.kmr.min, 3, true)} - {formatMetricValue(detailStats.kmr.max, 3, true)}
+                        </span>
+                      </div>
+                    )}
+                    {detailStats.kmr.mean !== null && !isNaN(detailStats.kmr.mean) && (
+                      <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
+                        <span className="text-slate-700 font-medium">Ortalama</span>
+                        <span className="font-mono font-bold text-slate-900">{formatMetricValue(detailStats.kmr.mean, 4, true)}</span>
+                      </div>
+                    )}
+                    {detailStats.kmr.trend !== null && !isNaN(detailStats.kmr.trend) && (
+                      <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
+                        <span className="text-slate-700 font-medium">Trend</span>
+                        <span className={`font-mono font-bold flex items-center gap-1 ${detailStats.kmr.trend < 0 ? 'text-green-700' : 'text-red-700'}`}>
+                          {detailStats.kmr.trend < 0 ? '↓' : '↑'} {detailStats.kmr.trend.toFixed(4)}
+                          <span className="text-xs ml-1">{detailStats.kmr.trend < 0 ? '(İyileşme)' : '(Dikkat)'}</span>
+                        </span>
+                      </div>
+                    )}
+                    {detailStats.kmr.cv !== null && !isNaN(detailStats.kmr.cv) && (
+                      <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
+                        <span className="text-slate-700 font-medium">Volatilite (CV)</span>
+                        <span className="font-mono font-bold text-slate-900">{formatPercent(detailStats.kmr.cv * 100, 1)}</span>
+                      </div>
+                    )}
                     <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
-                      <span className="text-slate-700 font-medium">
-                        Min / Max
-                        {pinnedPoint && <span className="text-[10px] text-slate-500 ml-1">({formatTimeKey(pinnedPoint.timeKey)}&apos;a kadar)</span>}
-                      </span>
-                      <span className="font-mono font-bold text-slate-900">{formatPercent(stats.kmrMin, 3)} - {formatPercent(stats.kmrMax, 3)}</span>
-                    </div>
-                  )}
-                  {stats.kmrMean !== null && !isNaN(stats.kmrMean) && (
-                    <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
-                      <span className="text-slate-700 font-medium">
-                        Ortalama
-                        {pinnedPoint && <span className="text-[10px] text-slate-500 ml-1">({formatTimeKey(pinnedPoint.timeKey)}&apos;a kadar)</span>}
-                      </span>
-                      <span className="font-mono font-bold text-slate-900">{formatPercent(stats.kmrMean, 4)}</span>
-                    </div>
-                  )}
-                  {stats.kmrTrend !== null && !isNaN(stats.kmrTrend) && (
-                    <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
-                      <span className="text-slate-700 font-medium">
-                        Trend
-                        {pinnedPoint && <span className="text-[10px] text-slate-500 ml-1">({formatTimeKey(pinnedPoint.timeKey)}&apos;a kadar)</span>}
-                      </span>
-                      <span className={`font-mono font-bold flex items-center gap-1 ${stats.kmrTrend < 0 ? 'text-green-700' : 'text-red-700'}`}>
-                        {stats.kmrTrend < 0 ? '↓' : '↑'} {stats.kmrTrend.toFixed(4)}
-                        <span className="text-xs ml-1">{stats.kmrTrend < 0 ? '(İyileşme)' : '(Dikkat)'}</span>
+                      <span className="text-slate-700 font-medium">Anomali Sayısı</span>
+                      <span className={`font-mono font-bold ${detailStats.kmr.anomalyCount > 0 ? 'text-orange-700' : 'text-green-700'}`}>
+                        {detailStats.kmr.anomalyCount} / {detailStats.kmr.totalPoints}
                       </span>
                     </div>
-                  )}
-                  {stats.kmrCV !== null && !isNaN(stats.kmrCV) && (
-                    <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
-                      <span className="text-slate-700 font-medium">
-                        Volatilite (CV)
-                        {pinnedPoint && <span className="text-[10px] text-slate-500 ml-1">({formatTimeKey(pinnedPoint.timeKey)}&apos;a kadar)</span>}
-                      </span>
-                      <span className="font-mono font-bold text-slate-900">{formatPercent(stats.kmrCV * 100, 1)}</span>
-                    </div>
-                  )}
-                  <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
-                    <span className="text-slate-700 font-medium">
-                      Anomali Sayısı
-                      {pinnedPoint && <span className="text-[10px] text-slate-500 ml-1">({formatTimeKey(pinnedPoint.timeKey)}&apos;a kadar)</span>}
-                    </span>
-                    <span className={`font-mono font-bold ${stats.anomalyCount > 0 ? 'text-orange-700' : 'text-green-700'}`}>
-                      {stats.anomalyCount} / {stats.totalPoints}
-                    </span>
                   </div>
-                </div>
+                )}
+
+                {detailStats.mode === 'lab' && (detailStats.kre.totalPoints > 0 || detailStats.gfr.totalPoints > 0) && (
+                  <div className="space-y-3 text-xs">
+                    {detailStats.kre.totalPoints > 0 && (
+                      <div className="space-y-2">
+                        <div className="font-semibold text-purple-700">KRE</div>
+                        {detailStats.kre.min !== null && detailStats.kre.max !== null && (
+                          <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
+                            <span className="text-slate-700 font-medium">Min / Max</span>
+                            <span className="font-mono font-bold text-slate-900">
+                              {formatMetricValue(detailStats.kre.min, 2, false)} - {formatMetricValue(detailStats.kre.max, 2, false)}
+                            </span>
+                          </div>
+                        )}
+                        {detailStats.kre.mean !== null && (
+                          <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
+                            <span className="text-slate-700 font-medium">Ortalama</span>
+                            <span className="font-mono font-bold text-slate-900">{formatMetricValue(detailStats.kre.mean, 2, false)}</span>
+                          </div>
+                        )}
+                        {detailStats.kre.trend !== null && (
+                          <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
+                            <span className="text-slate-700 font-medium">Trend</span>
+                            <span className={`font-mono font-bold flex items-center gap-1 ${detailStats.kre.trend < 0 ? 'text-green-700' : 'text-red-700'}`}>
+                              {detailStats.kre.trend < 0 ? '↓' : '↑'} {detailStats.kre.trend.toFixed(4)}
+                              <span className="text-xs ml-1">{detailStats.kre.trend < 0 ? '(İyileşme)' : '(Dikkat)'}</span>
+                            </span>
+                          </div>
+                        )}
+                        <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
+                          <span className="text-slate-700 font-medium">Anomali Sayısı</span>
+                          <span className={`font-mono font-bold ${detailStats.kre.anomalyCount > 0 ? 'text-orange-700' : 'text-green-700'}`}>
+                            {detailStats.kre.anomalyCount} / {detailStats.kre.totalPoints}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+
+                    {detailStats.gfr.totalPoints > 0 && (
+                      <div className="space-y-2">
+                        <div className="font-semibold text-cyan-700">GFR</div>
+                        {detailStats.gfr.min !== null && detailStats.gfr.max !== null && (
+                          <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
+                            <span className="text-slate-700 font-medium">Min / Max</span>
+                            <span className="font-mono font-bold text-slate-900">
+                              {formatMetricValue(detailStats.gfr.min, 0, false)} - {formatMetricValue(detailStats.gfr.max, 0, false)}
+                            </span>
+                          </div>
+                        )}
+                        {detailStats.gfr.mean !== null && (
+                          <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
+                            <span className="text-slate-700 font-medium">Ortalama</span>
+                            <span className="font-mono font-bold text-slate-900">{formatMetricValue(detailStats.gfr.mean, 0, false)}</span>
+                          </div>
+                        )}
+                        {detailStats.gfr.trend !== null && (
+                          <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
+                            <span className="text-slate-700 font-medium">Trend</span>
+                            <span className={`font-mono font-bold flex items-center gap-1 ${detailStats.gfr.trend > 0 ? 'text-green-700' : 'text-red-700'}`}>
+                              {detailStats.gfr.trend < 0 ? '↓' : '↑'} {detailStats.gfr.trend.toFixed(4)}
+                              <span className="text-xs ml-1">{detailStats.gfr.trend > 0 ? '(İyileşme)' : '(Dikkat)'}</span>
+                            </span>
+                          </div>
+                        )}
+                        <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">
+                          <span className="text-slate-700 font-medium">Anomali Sayısı</span>
+                          <span className={`font-mono font-bold ${detailStats.gfr.anomalyCount > 0 ? 'text-orange-700' : 'text-green-700'}`}>
+                            {detailStats.gfr.anomalyCount} / {detailStats.gfr.totalPoints}
+                          </span>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                )}
               </div>
               )}
 
