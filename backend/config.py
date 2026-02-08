@@ -33,6 +33,7 @@ MODEL_CONFIG = {
     "seq_len_min": 5,
     "seq_len_max": 12,
     "physics_lambda": 0.03,
+    "random_seed": 42,
     "complexity_thresholds": {
         "simple": 10,
         "medium": 20

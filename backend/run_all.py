@@ -8,12 +8,21 @@ import json
 import shutil
 import tempfile
 import argparse
+import os
+import random
 from pathlib import Path
+
+# Deterministic runtime defaults (must be set before TensorFlow imports)
+os.environ.setdefault("PYTHONHASHSEED", "42")
+os.environ.setdefault("TF_DETERMINISTIC_OPS", "1")
+os.environ.setdefault("TF_CUDNN_DETERMINISTIC", "1")
 
 # Add parent to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from backend.config import FRONTEND_PUBLIC, PATIENTS_DIR
+import numpy as np
+
+from backend.config import FRONTEND_PUBLIC, PATIENTS_DIR, MODEL_CONFIG
 from backend.io_excel import load_all_data
 from backend.kmr_model import KMRPredictor
 from backend.anomaly_vae import KMRAnomalyDetector
@@ -37,6 +46,21 @@ GENERATED_FILES = [
     "doctor_performance_report.json",
     "doctor_performance_report.csv",
 ]
+
+def set_global_seed(seed: int) -> None:
+    """Set random seeds for reproducible training and exports."""
+    random.seed(seed)
+    np.random.seed(seed)
+    try:
+        import tensorflow as tf  # noqa: WPS433
+        tf.keras.utils.set_random_seed(seed)
+        try:
+            tf.config.experimental.enable_op_determinism()
+        except Exception:
+            pass
+    except Exception:
+        # TensorFlow can be unavailable in some environments.
+        pass
 
 
 def clean_training_data():
@@ -139,6 +163,10 @@ def run_pipeline(clean_first: bool = True):
     # Step 0: Always clean generated artifacts unless explicitly skipped
     if clean_first:
         clean_training_data()
+
+    seed = int(MODEL_CONFIG.get("random_seed", 42))
+    print(f"Using random seed: {seed}")
+    set_global_seed(seed)
     
     # Step 1: Load data from Excel
     print("Step 1: Loading Excel data...")

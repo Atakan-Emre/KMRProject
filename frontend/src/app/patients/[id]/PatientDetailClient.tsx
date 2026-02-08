@@ -53,6 +53,18 @@ function predictionStatusText(status: string | null | undefined): string {
       return "Yetersiz veri (en az 3 ölçüm gerekli)";
     case "missing_prediction":
       return "Tahmin üretilemedi";
+    case "warmup_copy":
+      return "Başlangıç fazı: gözleme dayalı geçiş tahmini";
+    case "warmup_bootstrap":
+      return "Başlangıç fazı: sınırlı geçmişle başlangıç tahmini";
+    case "fallback_ewma":
+      return "Basit model (EWMA) tahmini";
+    case "fallback_forecast":
+      return "Basit model (EWMA) öngörüsü";
+    case "forecast":
+      return "Gelecek dönem öngörüsü";
+    case "ok":
+      return "Model tahmini hazır";
     default:
       return "Durum bilgisi yok";
   }
@@ -1108,7 +1120,9 @@ export default function PatientDetailClient() {
           const point = d.point;
           if (!point || point.kre === null) return '';
           const actual = point.kre.toFixed(2);
-          const pred = point.kre_pred ? ` (Tahmin: ${point.kre_pred.toFixed(2)})` : '';
+          const pred = point.kre_pred !== null && point.kre_pred !== undefined
+            ? ` (Tahmin: ${point.kre_pred.toFixed(2)})`
+            : '';
           const anomaly = isKreAnomaly(point) ? ' ⚠️ ANOMALİ' : '';
           return `${actual}${pred}${anomaly}`;
         }),
@@ -1391,7 +1405,9 @@ export default function PatientDetailClient() {
           const point = d.point;
           if (!point || point.gfr === null) return '';
           const actual = point.gfr.toFixed(0);
-          const pred = point.gfr_pred ? ` (Tahmin: ${point.gfr_pred.toFixed(0)})` : '';
+          const pred = point.gfr_pred !== null && point.gfr_pred !== undefined
+            ? ` (Tahmin: ${point.gfr_pred.toFixed(0)})`
+            : '';
           const anomaly = isGfrAnomaly(point) ? ' ⚠️ ANOMALİ' : '';
           return `GFR=${actual}${pred}${anomaly}`;
         }),

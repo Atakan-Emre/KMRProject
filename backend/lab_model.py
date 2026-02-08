@@ -50,22 +50,49 @@ class LABPredictor:
     def _apply_gfr_bias_calibration(self, predictions: List[dict], actual_lookup: Dict[int, Any]) -> List[dict]:
         """
         Apply lightweight patient-level bias correction for GFR predictions.
-        Uses observed points only; correction is damped to avoid overfitting.
+        Uses observed points only; robust + clipped correction avoids overfitting
+        and prevents implausible zero-collapse on low points.
         """
         errors = []
+        observed_values = []
         for p in predictions:
+            status = p.get("gfr_pred_status")
+            if isinstance(status, str) and status.startswith("warmup_"):
+                continue
             order = p.get("time_order")
             actual = actual_lookup.get(order)
             pred = p.get("gfr_pred")
             if isinstance(actual, (int, float)) and not np.isnan(actual) and isinstance(pred, (int, float)):
                 errors.append(float(pred) - float(actual))
+                observed_values.append(float(actual))
 
-        if len(errors) < 3:
+        if len(errors) < 4:
             return predictions
 
-        correction = float(np.mean(errors)) * 0.8
+        errors_arr = np.array(errors, dtype=float)
+        q1, q3 = np.percentile(errors_arr, [25, 75])
+        iqr = max(q3 - q1, 1e-6)
+        inlier_mask = (errors_arr >= (q1 - 1.5 * iqr)) & (errors_arr <= (q3 + 1.5 * iqr))
+        core = errors_arr[inlier_mask] if int(np.sum(inlier_mask)) >= 3 else errors_arr
+
+        # Robust (median) correction with conservative cap.
+        raw_correction = float(np.median(core))
+        max_abs_correction = max(8.0, float(np.std(core)) * 1.5)
+        correction = float(np.clip(raw_correction, -max_abs_correction, max_abs_correction))
+
+        if abs(correction) < 0.1:
+            return predictions
+
+        global_floor = 1.0
+        if observed_values:
+            global_floor = max(1.0, float(np.percentile(np.array(observed_values), 10)) * 0.35)
+
         calibrated = []
         for p in predictions:
+            status = p.get("gfr_pred_status")
+            if isinstance(status, str) and status.startswith("warmup_"):
+                calibrated.append(p)
+                continue
             pred = p.get("gfr_pred")
             lo = p.get("gfr_pred_lo")
             hi = p.get("gfr_pred_hi")
@@ -76,10 +103,20 @@ class LABPredictor:
             pred_adj = float(pred) - correction
             lo_adj = float(lo) - correction
             hi_adj = float(hi) - correction
-            pred_adj, lo_adj, hi_adj = self._sanitize_prediction("gfr", pred_adj, lo_adj, hi_adj)
 
             order = p.get("time_order")
             actual = actual_lookup.get(order)
+            if isinstance(actual, (int, float)) and not np.isnan(actual):
+                # Keep calibrated prediction within clinically plausible fraction of measured value.
+                point_floor = max(1.0, float(actual) * 0.35)
+            else:
+                point_floor = global_floor
+
+            pred_adj = max(pred_adj, point_floor)
+            lo_adj = max(lo_adj, min(point_floor, pred_adj))
+            hi_adj = max(hi_adj, pred_adj)
+            pred_adj, lo_adj, hi_adj = self._sanitize_prediction("gfr", pred_adj, lo_adj, hi_adj)
+
             residual = None
             if isinstance(actual, (int, float)) and not np.isnan(actual):
                 residual = round(float(actual - pred_adj), 1)
@@ -337,7 +374,7 @@ class LABPredictor:
         # Train
         try:
             model.fit(X, y, epochs=50, batch_size=min(8, len(X)), 
-                     validation_split=0.2, callbacks=callbacks, verbose=0)
+                     validation_split=0.2, callbacks=callbacks, verbose=0, shuffle=False)
         except Exception as e:
             print(f"⚠️ Training failed for {patient_code} {metric}: {e}")
             return self._simple_prediction_single(unified_df, metric)
@@ -410,7 +447,7 @@ class LABPredictor:
         # Train
         try:
             model.fit(X, y_list, epochs=50, batch_size=min(8, len(X)), 
-                     validation_split=0.2, callbacks=callbacks, verbose=0)
+                     validation_split=0.2, callbacks=callbacks, verbose=0, shuffle=False)
         except Exception as e:
             print(f"⚠️ Multi-output training failed for {patient_code}: {e}")
             return self._simple_prediction_multi(unified_df)
@@ -442,6 +479,7 @@ class LABPredictor:
                 pred = targets[i] if not np.isnan(targets[i]) else value_mean
                 pred_lo = pred * 0.8 if metric == "kre" else pred * 0.9
                 pred_hi = pred * 1.2 if metric == "kre" else pred * 1.1
+                pred_status = "warmup_copy" if not np.isnan(targets[i]) else "warmup_bootstrap"
             else:
                 # Use model
                 seq = features_norm[i-seq_len:i].reshape(1, seq_len, -1)
@@ -449,6 +487,7 @@ class LABPredictor:
                 pred = pred_norm * value_std + value_mean
                 pred_lo = pred * 0.85 if metric == "kre" else pred * 0.9
                 pred_hi = pred * 1.15 if metric == "kre" else pred * 1.1
+                pred_status = "ok"
 
             pred, pred_lo, pred_hi = self._sanitize_prediction(metric, pred, pred_lo, pred_hi)
             
@@ -459,6 +498,7 @@ class LABPredictor:
                 f"{metric}_pred": round(float(pred), 2) if metric == "kre" else round(float(pred), 1),
                 f"{metric}_pred_lo": round(float(pred_lo), 2) if metric == "kre" else round(float(pred_lo), 1),
                 f"{metric}_pred_hi": round(float(pred_hi), 2) if metric == "kre" else round(float(pred_hi), 1),
+                f"{metric}_pred_status": pred_status,
                 "residual": round(float(residual), 2) if residual is not None else None
             })
         
@@ -482,6 +522,8 @@ class LABPredictor:
             if i < seq_len:
                 kre_pred = kre_targets[i] if not np.isnan(kre_targets[i]) else kre_mean
                 gfr_pred = gfr_targets[i] if not np.isnan(gfr_targets[i]) else gfr_mean
+                kre_status = "warmup_copy" if not np.isnan(kre_targets[i]) else "warmup_bootstrap"
+                gfr_status = "warmup_copy" if not np.isnan(gfr_targets[i]) else "warmup_bootstrap"
             else:
                 seq = features_norm[i-seq_len:i].reshape(1, seq_len, -1)
                 preds = model.predict(seq, verbose=0)
@@ -489,6 +531,8 @@ class LABPredictor:
                 gfr_pred_norm = preds[1][0, 0]
                 kre_pred = kre_pred_norm * kre_std + kre_mean
                 gfr_pred = gfr_pred_norm * gfr_std + gfr_mean
+                kre_status = "ok"
+                gfr_status = "ok"
             
             kre_actual = kre_targets[i] if not np.isnan(kre_targets[i]) else None
             gfr_actual = gfr_targets[i] if not np.isnan(gfr_targets[i]) else None
@@ -503,6 +547,7 @@ class LABPredictor:
                 "kre_pred": round(float(kre_pred), 2),
                 "kre_pred_lo": round(float(kre_lo), 2),
                 "kre_pred_hi": round(float(kre_hi), 2),
+                "kre_pred_status": kre_status,
                 "residual": round(float(kre_residual), 2) if kre_residual is not None else None
             })
             
@@ -510,6 +555,7 @@ class LABPredictor:
                 "gfr_pred": round(float(gfr_pred), 1),
                 "gfr_pred_lo": round(float(gfr_lo), 1),
                 "gfr_pred_hi": round(float(gfr_hi), 1),
+                "gfr_pred_status": gfr_status,
                 "residual": round(float(gfr_residual), 1) if gfr_residual is not None else None
             })
         
@@ -552,12 +598,15 @@ class LABPredictor:
                     seq = features_norm[idx-seq_len:idx].reshape(1, seq_len, -1)
                     pred_norm = model.predict(seq, verbose=0)[0, 0]
                     pred = pred_norm * value_std + value_mean
+                    pred_status = "ok"
                 else:
                     # Not enough history, use actual value or simple extrapolation
                     if actual_val is not None and not np.isnan(actual_val):
                         pred = actual_val
+                        pred_status = "warmup_copy"
                     else:
                         pred = value_mean
+                        pred_status = "warmup_bootstrap"
             else:
                 # Forecast: no actual data, use model with last known sequence
                 if forecast_features is not None and len(features_norm) >= seq_len:
@@ -584,6 +633,7 @@ class LABPredictor:
                 else:
                     # No history, use mean
                     pred = value_mean
+                pred_status = "forecast"
             
             # Confidence intervals (wider for forecasts)
             if actual_val is None or np.isnan(actual_val):
@@ -606,6 +656,7 @@ class LABPredictor:
                 f"{metric}_pred": round(float(pred), 2) if metric == "kre" else round(float(pred), 1),
                 f"{metric}_pred_lo": round(float(pred_lo), 2) if metric == "kre" else round(float(pred_lo), 1),
                 f"{metric}_pred_hi": round(float(pred_hi), 2) if metric == "kre" else round(float(pred_hi), 1),
+                f"{metric}_pred_status": pred_status,
                 "residual": round(float(residual), 2) if residual is not None and metric == "kre" else (round(float(residual), 1) if residual is not None else None)
             })
 
@@ -664,10 +715,14 @@ class LABPredictor:
                     gfr_pred_norm = preds[1][0, 0]
                     kre_pred = kre_pred_norm * kre_std + kre_mean
                     gfr_pred = gfr_pred_norm * gfr_std + gfr_mean
+                    kre_status = "ok"
+                    gfr_status = "ok"
                 else:
                     # Not enough history, use actual values or mean
                     kre_pred = kre_actual if kre_actual is not None and not np.isnan(kre_actual) else kre_mean
                     gfr_pred = gfr_actual if gfr_actual is not None and not np.isnan(gfr_actual) else gfr_mean
+                    kre_status = "warmup_copy" if kre_actual is not None and not np.isnan(kre_actual) else "warmup_bootstrap"
+                    gfr_status = "warmup_copy" if gfr_actual is not None and not np.isnan(gfr_actual) else "warmup_bootstrap"
             else:
                 # Forecast: no actual data, use model with last known sequence
                 if forecast_features is not None and len(features_norm) >= seq_len:
@@ -704,6 +759,8 @@ class LABPredictor:
                     # No history, use mean
                     kre_pred = kre_mean
                     gfr_pred = gfr_mean
+                kre_status = "forecast"
+                gfr_status = "forecast"
             
             # Confidence intervals (wider for forecasts)
             if kre_actual is None or np.isnan(kre_actual):
@@ -733,6 +790,7 @@ class LABPredictor:
                 "kre_pred": round(float(kre_pred), 2),
                 "kre_pred_lo": round(float(kre_pred_lo), 2),
                 "kre_pred_hi": round(float(kre_pred_hi), 2),
+                "kre_pred_status": kre_status,
                 "residual": round(float(kre_residual), 2) if kre_residual is not None else None
             })
             
@@ -742,6 +800,7 @@ class LABPredictor:
                 "gfr_pred": round(float(gfr_pred), 1),
                 "gfr_pred_lo": round(float(gfr_pred_lo), 1),
                 "gfr_pred_hi": round(float(gfr_pred_hi), 1),
+                "gfr_pred_status": gfr_status,
                 "residual": round(float(gfr_residual), 1) if gfr_residual is not None else None
             })
 
@@ -789,9 +848,11 @@ class LABPredictor:
             if time_order in ewma_lookup:
                 # Use EWMA for this point
                 pred = ewma_lookup[time_order]
+                pred_status = "fallback_ewma"
             else:
                 # Forecast: use last EWMA value
                 pred = last_ewma
+                pred_status = "fallback_forecast"
             
             pred_lo = pred * 0.7 if metric == "kre" else pred * 0.8
             pred_hi = pred * 1.3 if metric == "kre" else pred * 1.2
@@ -804,6 +865,7 @@ class LABPredictor:
                 f"{metric}_pred": round(float(pred), 2) if metric == "kre" else round(float(pred), 1),
                 f"{metric}_pred_lo": round(float(pred_lo), 2) if metric == "kre" else round(float(pred_lo), 1),
                 f"{metric}_pred_hi": round(float(pred_hi), 2) if metric == "kre" else round(float(pred_hi), 1),
+                f"{metric}_pred_status": pred_status,
                 "residual": round(float(residual), 2) if residual is not None and metric == "kre" else (round(float(residual), 1) if residual is not None else None)
             })
 

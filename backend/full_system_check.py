@@ -48,6 +48,17 @@ REQUIRED_JSON_FILES = [
 ]
 
 RISK_LEVELS = {"Normal", "Dikkat", "Kritik", "Çok Kritik"}
+PREDICTION_STATUSES = {
+    "ok",
+    "forecast",
+    "warmup_copy",
+    "warmup_bootstrap",
+    "fallback_ewma",
+    "fallback_forecast",
+    "insufficient_data",
+    "missing_prediction",
+    "timepoint_not_applicable",
+}
 
 
 @dataclass
@@ -275,6 +286,9 @@ def main() -> int:
         "gfr",
         "risk_score",
         "risk_level",
+        "kmr_pred_status",
+        "kre_pred_status",
+        "gfr_pred_status",
         "kmr_anomaly_flag",
         "kre_anomaly_flag",
         "gfr_anomaly_flag",
@@ -347,6 +361,28 @@ def main() -> int:
             if isinstance(risk_score, (int, float)):
                 checker.check(0 <= float(risk_score) <= 100, f"{patient_code} {tk}: risk_score out of range [0,100]")
             checker.check(point.get("risk_level") in RISK_LEVELS, f"{patient_code} {tk}: invalid risk_level")
+
+            # Prediction status/value consistency checks (model output integrity)
+            for metric, tol in (("kmr", 1e-4), ("kre", 1e-2), ("gfr", 1e-1)):
+                pred_key = f"{metric}_pred"
+                status_key = f"{metric}_pred_status"
+                status = point.get(status_key)
+                pred_val = point.get(pred_key)
+                actual_val = point.get(metric)
+
+                checker.check(status in PREDICTION_STATUSES, f"{patient_code} {tk}: invalid {status_key}={status!r}")
+                if status == "timepoint_not_applicable":
+                    checker.check(pred_val is None, f"{patient_code} {tk}: {pred_key} must be null when timepoint_not_applicable")
+                if status == "warmup_copy" and actual_val is not None and pred_val is not None:
+                    checker.check(
+                        is_close_or_none(pred_val, actual_val, tol),
+                        f"{patient_code} {tk}: {metric} warmup_copy should match observed value",
+                    )
+                if metric == "gfr" and status == "ok" and actual_val is not None and pred_val is not None:
+                    checker.check(
+                        float(pred_val) > 0.0,
+                        f"{patient_code} {tk}: gfr_pred is non-positive despite status=ok",
+                    )
 
             point_kmr_anomaly = bool(point.get("kmr_anomaly_flag")) or is_kmr_threshold_anomaly(point.get("kmr"))
             point_kre_anomaly = bool(point.get("kre_anomaly_flag")) or is_kre_threshold_anomaly(point.get("kre"))

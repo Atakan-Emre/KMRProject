@@ -195,7 +195,7 @@ class KMRPredictor:
         # Train
         try:
             model.fit(X, y, epochs=50, batch_size=min(8, len(X)), 
-                     validation_split=0.2, callbacks=callbacks, verbose=0)
+                     validation_split=0.2, callbacks=callbacks, verbose=0, shuffle=False)
         except Exception as e:
             print(f"⚠️ Training failed for {patient_code}: {e}")
             return self._simple_prediction(kmr_df)
@@ -226,6 +226,7 @@ class KMRPredictor:
                 pred = features_norm[i, 0] * kmr_std + kmr_mean
                 pred_lo = pred * 0.8
                 pred_hi = pred * 1.2
+                pred_status = "warmup_bootstrap"
             else:
                 # Use model
                 seq = features_norm[i-seq_len:i].reshape(1, seq_len, -1)
@@ -234,6 +235,7 @@ class KMRPredictor:
                 # Confidence interval (simplified)
                 pred_lo = pred * 0.85
                 pred_hi = pred * 1.15
+                pred_status = "ok"
             
             pred, pred_lo, pred_hi = self._sanitize_prediction(pred, pred_lo, pred_hi)
             actual = features_norm[i, 0] * kmr_std + kmr_mean
@@ -243,6 +245,7 @@ class KMRPredictor:
                 "kmr_pred": round(float(pred), 4),
                 "kmr_pred_lo": round(float(pred_lo), 4),
                 "kmr_pred_hi": round(float(pred_hi), 4),
+                "kmr_pred_status": pred_status,
                 "residual": round(float(residual), 4)
             })
         
@@ -293,12 +296,15 @@ class KMRPredictor:
                     seq = features_norm[idx-seq_len:idx].reshape(1, seq_len, -1)
                     pred_norm = model.predict(seq, verbose=0)[0, 0]
                     pred = pred_norm * kmr_std + kmr_mean
+                    pred_status = "ok"
                 else:
                     # Not enough history, use actual value or simple extrapolation
                     if actual_kmr is not None:
                         pred = actual_kmr
+                        pred_status = "warmup_copy"
                     else:
                         pred = features_vec[0] * kmr_std + kmr_mean
+                        pred_status = "warmup_bootstrap"
             else:
                 # Forecast: no actual data, use model with last known sequence
                 if forecast_features is not None and len(features_norm) >= seq_len:
@@ -326,6 +332,7 @@ class KMRPredictor:
                 else:
                     # No history, use mean
                     pred = kmr_mean
+                pred_status = "forecast"
             
             # Confidence intervals (wider for forecasts)
             if actual_kmr is None:
@@ -348,6 +355,7 @@ class KMRPredictor:
                 "kmr_pred": round(float(pred), 4),
                 "kmr_pred_lo": round(float(pred_lo), 4),
                 "kmr_pred_hi": round(float(pred_hi), 4),
+                "kmr_pred_status": pred_status,
                 "residual": round(float(residual), 4) if residual is not None else None
             })
         
@@ -389,9 +397,11 @@ class KMRPredictor:
             if time_order in ewma_lookup:
                 # Use EWMA for this point
                 pred = ewma_lookup[time_order]
+                pred_status = "fallback_ewma"
             else:
                 # Forecast: use last EWMA value
                 pred = last_ewma
+                pred_status = "fallback_forecast"
             
             pred_lo = pred * 0.7
             pred_hi = pred * 1.3
@@ -404,6 +414,7 @@ class KMRPredictor:
                 "kmr_pred": round(float(pred), 4),
                 "kmr_pred_lo": round(float(pred_lo), 4),
                 "kmr_pred_hi": round(float(pred_hi), 4),
+                "kmr_pred_status": pred_status,
                 "residual": round(float(residual), 4) if residual is not None else None
             })
         

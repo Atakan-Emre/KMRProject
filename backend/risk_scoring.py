@@ -487,9 +487,12 @@ class RiskScorer:
         patient_kre_points = int(lab_sorted["kre"].notna().sum()) if len(lab_sorted) > 0 else 0
         patient_gfr_points = int(lab_sorted["gfr"].notna().sum()) if len(lab_sorted) > 0 else 0
 
-        def prediction_status(slot_enabled: bool, pred_value: Optional[float], n_points: int) -> str:
+        def prediction_status(slot_enabled: bool, pred_value: Optional[float], n_points: int,
+                              explicit_status: Optional[str] = None) -> str:
             if not slot_enabled:
                 return "timepoint_not_applicable"
+            if explicit_status:
+                return explicit_status
             if pred_value is not None:
                 return "ok"
             if n_points < 3:
@@ -562,9 +565,24 @@ class RiskScorer:
             kre_pred_val = lab_pred_kre.get("kre_pred") if isinstance(lab_pred_kre, dict) else None
             gfr_pred_val = lab_pred_gfr.get("gfr_pred") if isinstance(lab_pred_gfr, dict) else None
 
-            kmr_pred_status = prediction_status(has_kmr_slot, kmr_pred_val, patient_kmr_points)
-            kre_pred_status = prediction_status(has_lab_slot, kre_pred_val, patient_kre_points)
-            gfr_pred_status = prediction_status(has_lab_slot, gfr_pred_val, patient_gfr_points)
+            kmr_pred_status = prediction_status(
+                has_kmr_slot,
+                kmr_pred_val,
+                patient_kmr_points,
+                kmr_pred.get("kmr_pred_status") if isinstance(kmr_pred, dict) else None
+            )
+            kre_pred_status = prediction_status(
+                has_lab_slot,
+                kre_pred_val,
+                patient_kre_points,
+                lab_pred_kre.get("kre_pred_status") if isinstance(lab_pred_kre, dict) else None
+            )
+            gfr_pred_status = prediction_status(
+                has_lab_slot,
+                gfr_pred_val,
+                patient_gfr_points,
+                lab_pred_gfr.get("gfr_pred_status") if isinstance(lab_pred_gfr, dict) else None
+            )
             
             # Calculate KMR metrics only if KMR exists
             kmr_level = 0
