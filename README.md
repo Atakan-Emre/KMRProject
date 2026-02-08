@@ -2,7 +2,35 @@
 
 NISTH, transplant sonrası hastaların KMR/KRE/GFR ölçümlerini tek bir teknik boru hattında işleyip klinik karar desteği için risk, anomali, tahmin ve kohort karşılaştırması üreten bir sistemdir.
 
-Sistem batch çalışır, backend API sunmaz. Tüm çıktı dosyaları `frontend/public` altında statik JSON/CSV olarak üretilir ve Next.js arayüzü bu dosyaları doğrudan okur.
+
+
+![Python](https://img.shields.io/badge/Python-3.11-3776AB?logo=python&logoColor=white)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-2.x-FF6F00?logo=tensorflow&logoColor=white)
+![Next.js](https://img.shields.io/badge/Next.js-15-000000?logo=next.js&logoColor=white)
+![Pipeline](https://img.shields.io/badge/Pipeline-run__all.py-0A7E3B)
+![Validation](https://img.shields.io/badge/Validation-full__system__check.py-0052CC)
+
+## Görsel Önizleme
+
+> Aşağıdaki görseller `python3 backend/run_all.py` sonrası dinamik üretilen rapor varlıklarından alınır.
+
+### Örnek Hasta Grafikleri (K)
+
+![K KMR Zaman Seyri](Doc/reports/assets/K_kmr.png)
+
+![K KRE-GFR Zaman Seyri](Doc/reports/assets/K_kre_gfr.png)
+
+![K Risk Zaman Seyri](Doc/reports/assets/K_risk.png)
+
+## Hızlı Erişim
+
+| Konu | Link |
+|---|---|
+| Dinamik hasta raporları (index) | `Doc/Hasta_Raporları_Detay.md` |
+| Pipeline çalıştırma | [Pipeline Çalıştırma](#pipeline-çalıştırma-run_allpy) |
+| Tam doğrulama | [Tam Doğrulama](#tam-doğrulama-full_system_checkpy) |
+| Çıktı sözleşmesi | [Çıktı Dosyaları ve Veri Sözleşmesi](#çıktı-dosyaları-ve-veri-sözleşmesi) |
+| Risk skorlama detayları | [Risk Skorlama Yapısı](#risk-skorlama-yapısı) |
 
 ## İçindekiler
 
@@ -16,13 +44,14 @@ Sistem batch çalışır, backend API sunmaz. Tüm çıktı dosyaları `frontend
 8. Improved Cohort Mantığı
 9. Çıktı Dosyaları ve Veri Sözleşmesi
 10. Doktor Paneli Performans Raporu
-11. Pipeline Çalıştırma (run_all)
-12. Tam Doğrulama (full_system_check)
+11. Pipeline Çalıştırma (`run_all.py`)
+12. Tam Doğrulama (`full_system_check.py`)
 13. Frontend Entegrasyonu
 14. Operasyonel Notlar ve Limitasyonlar
 15. Hızlı Komut Referansı
+16. Ek Dokümanlar
 
-## 1) Sistem Özeti
+## Sistem Özeti
 
 NISTH aşağıdaki sorulara cevap verir:
 
@@ -33,15 +62,15 @@ NISTH aşağıdaki sorulara cevap verir:
 - Hasta trendi iyileşmiş kohort davranışına ne kadar yakın?
 - Modelin hasta bazlı tahmin performansı nedir?
 
-Temel çıktı ürünleri:
+### Temel Çıktılar
 
-- hasta detay timeline JSON dosyaları,
-- dashboard özet dosyaları,
-- referans bant/kohort analizi,
-- doktor paneli hasta bazlı performans raporu,
-- dinamik markdown hasta raporları (`Doc/Hasta_Raporları_Detay.md`).
+- Hasta detay timeline JSON dosyaları
+- Dashboard özet dosyaları
+- Referans bant / kohort analizi
+- Doktor paneli hasta bazlı performans raporu
+- Dinamik markdown hasta raporları (`Doc/Hasta_Raporları_Detay.md`)
 
-## 2) Mimari ve Bileşenler
+## Mimari ve Bileşenler
 
 ```mermaid
 flowchart TD
@@ -55,38 +84,31 @@ flowchart TD
     E --> G
     F --> G
     B --> H["Referans Band\nbackend/reference_band.py"]
-    G --> I["Export\nbackend/export_json.py"]
+    G --> I["Export\nbackend/export_json.py + backend/export_markdown.py"]
     H --> I
     I --> J["frontend/public/*.json,*.csv"]
+    I --> L["Doc/reports/*.md,*.png"]
     J --> K["Next.js UI\nfrontend/src"]
 ```
 
-### Backend Modülleri
+### Backend Modül Haritası
 
-- `backend/io_excel.py`
-  - Excel okuma, kolon normalize etme, long format üretimi, improved cohort etiketleme
-- `backend/time_mapping.py`
-  - KMR/LAB/unified timeline sözleşmesi
-- `backend/kmr_model.py`
-  - KMR için hasta bazlı tahmin
-- `backend/lab_model.py`
-  - KRE/GFR tahmini (tekli ve çoklu çıktı)
-- `backend/anomaly_vae.py`
-  - KMR anomali skorları
-- `backend/lab_anomaly_vae.py`
-  - KRE/GFR anomali skorları
-- `backend/risk_scoring.py`
-  - Bileşen riskleri + birleşik risk + alarm seviyesi
-- `backend/reference_band.py`
-  - Improved cohort referans bantları ve trend çizgileri
-- `backend/export_json.py`
-  - Frontend’e sunulacak tüm JSON/CSV sözleşmeleri
-- `backend/run_all.py`
-  - Uçtan uca pipeline orkestrasyonu
-- `backend/full_system_check.py`
-  - Uçtan uca veri + şema + frontend build doğrulaması
+| Modül | Sorumluluk |
+|---|---|
+| `backend/io_excel.py` | Excel okuma, kolon normalize etme, long format üretimi, improved cohort etiketleme |
+| `backend/time_mapping.py` | KMR/LAB/unified timeline sözleşmesi |
+| `backend/kmr_model.py` | KMR hasta bazlı tahmin |
+| `backend/lab_model.py` | KRE/GFR tahmini (tekli ve çoklu çıktı) |
+| `backend/anomaly_vae.py` | KMR anomali skorları |
+| `backend/lab_anomaly_vae.py` | KRE/GFR anomali skorları |
+| `backend/risk_scoring.py` | Bileşen riskleri + birleşik risk + alarm seviyesi |
+| `backend/reference_band.py` | Improved cohort referans bantları ve trend çizgileri |
+| `backend/export_json.py` | Frontend için JSON/CSV export sözleşmeleri |
+| `backend/export_markdown.py` | Dinamik markdown raporları + PNG grafik üretimi |
+| `backend/run_all.py` | Uçtan uca pipeline orkestrasyonu |
+| `backend/full_system_check.py` | Uçtan uca veri + şema + frontend build doğrulaması |
 
-## 3) Veri Girişi ve Dönüşüm Kuralları
+## Veri Girişi ve Dönüşüm Kuralları
 
 ### Birincil Kaynak
 
@@ -94,31 +116,30 @@ flowchart TD
 
 ### Alan Grupları
 
-- Hasta meta alanları:
-  - `patient_code`, `age`, `BMI`, `vital_status`, `blood_group`, `gender`
-- KMR alanları:
-  - `Day_1..Day_7`, `Week_2..Week_4`, `Month_2..Month_12`
-- LAB alanları:
-  - `*_KRE`, `*_GFR` çiftleri (`Day_7`, `Week_2`, `Week_3`, `Month_1..Month_6`, `Month_12`)
+| Grup | Alanlar |
+|---|---|
+| Hasta meta | `patient_code`, `age`, `BMI`, `vital_status`, `blood_group`, `gender` |
+| KMR | `Day_1..Day_7`, `Week_2..Week_4`, `Month_2..Month_12` |
+| LAB | `*_KRE`, `*_GFR` çiftleri (`Day_7`, `Week_2`, `Week_3`, `Month_1..Month_6`, `Month_12`) |
 
 ### Dönüşüm Kuralları
 
 - `io_excel.load_excel` kolon adlarında boşluk/format sorunlarını normalize eder.
-- KMR `wide -> long` dönüşümü:
-  - çıktı kolonları: `patient_code`, `time_key`, `time_order`, `pseudo_time_days`, `kmr`
-- LAB `wide -> long` dönüşümü:
-  - çıktı kolonları: `patient_code`, `time_key`, `time_order`, `pseudo_time_days`, `kre`, `gfr`
+- KMR `wide -> long` dönüşümü çıktısı:
+  - `patient_code`, `time_key`, `time_order`, `pseudo_time_days`, `kmr`
+- LAB `wide -> long` dönüşümü çıktısı:
+  - `patient_code`, `time_key`, `time_order`, `pseudo_time_days`, `kre`, `gfr`
 - Sadece mevcut (non-null) ölçüm satırları long yapıya eklenir.
 
-## 4) Zaman Eksenleri ve Birleşik Timeline
+## Zaman Eksenleri ve Birleşik Timeline
 
 Kaynak: `backend/time_mapping.py`
 
-Sistem üç farklı harita kullanır:
-
-- `KMR_TIME_MAP` (21 nokta)
-- `LAB_TIME_MAP` (10 nokta)
-- `UNIFIED_TIME_MAP` (22 nokta)
+| Harita | Nokta Sayısı | Kullanım |
+|---|---:|---|
+| `KMR_TIME_MAP` | 21 | KMR eğitim ve görselleştirme sırası |
+| `LAB_TIME_MAP` | 10 | KRE/GFR eğitim sırası |
+| `UNIFIED_TIME_MAP` | 22 | Risk, timeline birleşimi, UI senkronizasyonu |
 
 `UNIFIED_TIME_MAP` alanları:
 
@@ -141,9 +162,9 @@ Bu yaklaşım sayesinde:
 - LAB ve KMR ölçüm boşlukları açıkça ayrıştırılır,
 - tahmin durumu (`*_pred_status`) anlaşılır hale gelir.
 
-## 5) Tahmin Modelleri
+## Tahmin Modelleri
 
-## 5.1 KMR Tahmini (`backend/kmr_model.py`)
+### 5.1 KMR Tahmini (`backend/kmr_model.py`)
 
 Model davranışı:
 
@@ -153,8 +174,8 @@ Model davranışı:
 
 Feature engineering (özet):
 
-- baseline farkı (`delta_from_baseline`)
-- baseline oranı (`ratio_from_baseline`)
+- `delta_from_baseline`
+- `ratio_from_baseline`
 - EWMA
 - rolling CV
 - kısa dönem eğim
@@ -168,7 +189,7 @@ Stabilite kuralları:
 
 - `kmr_pred`, `kmr_pred_lo`, `kmr_pred_hi`, `residual`
 
-## 5.2 LAB Tahmini (`backend/lab_model.py`)
+### 5.2 LAB Tahmini (`backend/lab_model.py`)
 
 Model davranışı:
 
@@ -187,29 +208,29 @@ Stabilite kuralları:
 - `kre_pred`, `kre_pred_lo`, `kre_pred_hi`
 - `gfr_pred`, `gfr_pred_lo`, `gfr_pred_hi`
 
-## 6) Anomali Modelleri
+## Anomali Modelleri
 
-## 6.1 KMR Anomali (`backend/anomaly_vae.py`)
+### 6.1 KMR Anomali (`backend/anomaly_vae.py`)
 
-- VAE/autoencoder yaklaşımıyla reconstruction error tabanlı skor.
-- Eğitim başarısızsa basit eşik/z-score fallback.
+- VAE/autoencoder yaklaşımıyla reconstruction error tabanlı skor
+- Eğitim başarısızsa basit eşik/z-score fallback
 
 Üretilen alanlar:
 
 - `kmr_anomaly_score`
 - `kmr_anomaly_flag`
 
-## 6.2 LAB Anomali (`backend/lab_anomaly_vae.py`)
+### 6.2 LAB Anomali (`backend/lab_anomaly_vae.py`)
 
-- KRE ve GFR için ayrı model/fallback.
-- Uygun olduğunda multi-output öğrenme.
+- KRE ve GFR için ayrı model/fallback
+- Uygun olduğunda multi-output öğrenme
 
 Üretilen alanlar:
 
 - `kre_anomaly_score`, `kre_anomaly_flag`
 - `gfr_anomaly_score`, `gfr_anomaly_flag`
 
-## 7) Risk Skorlama Yapısı
+## Risk Skorlama Yapısı
 
 Kaynaklar:
 
@@ -234,7 +255,7 @@ flowchart TD
     O --> R["Alarm Level"]
 ```
 
-## 7.1 KMR Seviye Kuralı
+### 7.1 KMR Seviye Kuralı
 
 Klinik eşikler:
 
@@ -249,7 +270,7 @@ Erken faz ağırlığı:
 - `3..6`: `*0.80`
 - `>=7`: `*1.00`
 
-## 7.2 KMR Risk Formülü
+### 7.2 KMR Risk Formülü
 
 ```text
 kmr_risk =
@@ -260,13 +281,13 @@ kmr_risk =
   0.15*kmr_residual
 ```
 
-## 7.3 LAB Risk Kuralları
+### 7.3 LAB Risk Kuralları
 
-- KRE düşükse iyi, GFR yüksekse iyi.
+- KRE düşükse iyi, GFR yüksekse iyi
 - Trend:
-  - KRE düşüşü olumlu,
-  - GFR artışı olumlu.
-- LAB anomaly katkısı eklenir.
+  - KRE düşüşü olumlu
+  - GFR artışı olumlu
+- LAB anomaly katkısı eklenir
 
 Ağırlıklar:
 
@@ -275,7 +296,7 @@ Ağırlıklar:
 - iç anomaly katkısı: `0.3`
 - son çıktı ölçeği: `*0.9`
 
-## 7.4 Genel Risk ve Alarm
+### 7.4 Genel Risk ve Alarm
 
 ```text
 overall_risk = 0.65*kmr_risk + 0.35*min(lab_risk, kmr_risk+20)
@@ -283,12 +304,14 @@ overall_risk = 0.65*kmr_risk + 0.35*min(lab_risk, kmr_risk+20)
 
 Alarm eşikleri:
 
-- `0-29.9` => `Normal`
-- `30-59.9` => `Dikkat`
-- `60-79.9` => `Kritik`
-- `80-100` => `Çok Kritik`
+| Aralık | Seviye |
+|---|---|
+| `0-29.9` | `Normal` |
+| `30-59.9` | `Dikkat` |
+| `60-79.9` | `Kritik` |
+| `80-100` | `Çok Kritik` |
 
-## 7.5 Ölçüm Boşluğu Politikası
+### 7.5 Ölçüm Boşluğu Politikası
 
 Aynı zaman noktasında `kmr`, `kre`, `gfr` hepsi boş ise:
 
@@ -297,7 +320,7 @@ Aynı zaman noktasında `kmr`, `kre`, `gfr` hepsi boş ise:
 
 Bu karar, ölçüm olmayan noktalarda yanlış alarm birikimini engeller.
 
-## 7.6 Tahmin Durum Kodları
+### 7.6 Tahmin Durum Kodları
 
 Timeline, her metrik için aşağıdaki status alanlarını taşır:
 
@@ -305,16 +328,21 @@ Timeline, her metrik için aşağıdaki status alanlarını taşır:
 - `kre_pred_status`
 - `gfr_pred_status`
 
-Olası değerler:
-
-- `ok`
-- `timepoint_not_applicable`
-- `insufficient_data`
-- `missing_prediction`
+| Status | Anlam |
+|---|---|
+| `ok` | Model tahmini geçerli |
+| `forecast` | İleri dönem öngörü |
+| `warmup_copy` | Erken dönem gerçek ölçüm kopyası |
+| `warmup_bootstrap` | Warmup tahmini |
+| `fallback_ewma` | EWMA fallback |
+| `fallback_forecast` | Fallback ileri tahmin |
+| `insufficient_data` | Veri yetersiz |
+| `missing_prediction` | Tahmin üretilemedi |
+| `timepoint_not_applicable` | O metrik için zaman noktası uygulanmaz |
 
 Bu sayede UI, boş tahmini “neden boş” olarak açıklayabilir.
 
-## 8) Improved Cohort Mantığı
+## Improved Cohort Mantığı
 
 Kaynak: `backend/io_excel.py::calculate_improved_proxy`
 
@@ -333,27 +361,31 @@ Bu kohort aşağıdaki üretimlerde kullanılır:
 - kohort trajectory
 - klinik benchmark görselleri
 
-## 9) Çıktı Dosyaları ve Veri Sözleşmesi
+## Çıktı Dosyaları ve Veri Sözleşmesi
 
-Pipeline çıktıları (`frontend/public`):
+### Pipeline çıktıları (`frontend/public`)
 
-- `patients/{patient_code}.json`
-- `patient_features.json`
-- `data_summary.json`
-- `reference_band.json`
-- `cohort_trajectory.json`
-- `cohort_trajectory_lab.json`
-- `channel_overview.json`
-- `doctor_performance_report.json`
-- `doctor_performance_report.csv`
+| Dosya | İçerik |
+|---|---|
+| `patients/{patient_code}.json` | hasta timeline + meta + last status |
+| `patient_features.json` | liste ekranı için özet feature set |
+| `data_summary.json` | üst KPI özetleri |
+| `reference_band.json` | improved cohort median/IQR bantları |
+| `cohort_trajectory.json` | KMR kohort eğrisi |
+| `cohort_trajectory_lab.json` | KRE/GFR kohort eğrisi |
+| `channel_overview.json` | metrik kapsama/ölçüm sayıları |
+| `doctor_performance_report.json` | hasta bazlı model performansı |
+| `doctor_performance_report.csv` | doktor paneli tablosal export |
 
-Pipeline sonrası dokümantasyon çıktıları (`Doc`):
+### Pipeline sonrası dokümantasyon çıktıları (`Doc`)
 
-- `Hasta_Raporları_Detay.md` (index)
-- `reports/patients/{patient_code}.md` (hasta bazlı dinamik rapor)
-- `reports/assets/*.png` (otomatik üretilen grafikler)
+| Dosya | İçerik |
+|---|---|
+| `Hasta_Raporları_Detay.md` | dinamik ana index |
+| `reports/patients/{patient_code}.md` | hasta bazlı detay markdown raporları |
+| `reports/assets/*.png` | otomatik üretilen grafikler |
 
-## 9.1 Hasta Timeline JSON (özet sözleşme)
+### 9.1 Hasta Timeline JSON (özet sözleşme)
 
 ```json
 {
@@ -384,21 +416,21 @@ Pipeline sonrası dokümantasyon çıktıları (`Doc`):
 }
 ```
 
-## 9.2 Patient Features JSON (özet)
+### 9.2 Patient Features JSON (özet)
 
-- liste ekranı için optimize hafif hasta kaydı
-- son gerçek ölçüm değerleri + son ölçüm zamanları
-- anomali rozetleri + risk seviyeleri
+- Liste ekranı için optimize hafif hasta kaydı
+- Son gerçek ölçüm değerleri + son ölçüm zamanları
+- Anomali rozetleri + risk seviyeleri
 
-## 9.3 Data Summary JSON (özet)
+### 9.3 Data Summary JSON (özet)
 
-- toplam hasta sayısı
-- improved cohort sayısı
-- anomalili hasta sayısı
-- risk dağılımı
-- ortalama skorlar
+- Toplam hasta sayısı
+- Improved cohort sayısı
+- Anomalili hasta sayısı
+- Risk dağılımı
+- Ortalama skorlar
 
-## 10) Doktor Paneli Performans Raporu
+## Doktor Paneli Performans Raporu
 
 Dosyalar:
 
@@ -407,9 +439,9 @@ Dosyalar:
 
 Amaç:
 
-- modelin hasta bazlı tahmin kalitesini ölçmek,
-- hangi metrikte sapma olduğunu hızlı görmek,
-- klinik review toplantılarında doğrudan kullanılabilir performans dökümü sağlamak.
+- modelin hasta bazlı tahmin kalitesini ölçmek
+- hangi metrikte sapma olduğunu hızlı görmek
+- klinik review toplantılarında doğrudan kullanılabilir performans dökümü sağlamak
 
 Alanlar (hasta bazlı):
 
@@ -426,14 +458,14 @@ flowchart LR
     C --> E["doctor_performance_report.csv"]
 ```
 
-## 11) Pipeline Çalıştırma (`run_all.py`)
+## Pipeline Çalıştırma (`run_all.py`)
 
-`backend/run_all.py` artık varsayılan olarak:
+`backend/run_all.py` varsayılan olarak:
 
-- önce eski üretilmiş çıktıları temizler,
-- sonra tüm eğitimi sıfırdan yapar,
-- en son atomik publish yapar,
-- ardından dinamik markdown raporları ve PNG grafikleri tekrar üretir.
+- eski üretilmiş çıktıları temizler
+- tüm eğitimi sıfırdan yapar
+- atomik publish uygular
+- dinamik markdown raporları ve PNG grafikleri tekrar üretir
 
 ```bash
 python3 backend/run_all.py
@@ -468,7 +500,7 @@ sequenceDiagram
     R-->>U: Pipeline complete
 ```
 
-## 12) Tam Doğrulama (`full_system_check.py`)
+## Tam Doğrulama (`full_system_check.py`)
 
 ```bash
 python3 backend/full_system_check.py
@@ -480,11 +512,12 @@ Kontrol kapsamı:
 - JSON şema ve tutarlılık
 - risk/aralık/flag doğrulaması
 - doktor raporu dosya + şema + hasta sayısı kontrolü
+- dinamik markdown rapor dosyalarının bütünlüğü
 - frontend lint + production build
 
 Bu komut release öncesi kalite kapısıdır.
 
-## 13) Frontend Entegrasyonu
+## Frontend Entegrasyonu
 
 Ana data hook:
 
@@ -492,24 +525,26 @@ Ana data hook:
 
 Ana sayfalar:
 
-- `/` dashboard
-- `/patients` liste
-- `/patients/[id]` detay
-- `/reports` rapor indirimi
+| Route | Açıklama |
+|---|---|
+| `/` | Dashboard |
+| `/patients` | Hasta listesi |
+| `/patients/[id]` | Hasta detay |
+| `/reports` | Rapor indirme ekranı |
 
 Rapor sayfası:
 
 - klasik hasta CSV/PDF
 - doktor performans CSV/JSON indirme
 
-## 14) Operasyonel Notlar ve Limitasyonlar
+## Operasyonel Notlar ve Limitasyonlar
 
 - Sistem batch tabanlıdır, gerçek zamanlı API sunmaz.
 - TensorFlow yoksa fallback devreye girer; kalite etkilenebilir.
 - Klinik kararlar için tek başına kullanılmamalıdır.
-- Girdi kalitesi (`data.xlsx`) doğrudan çıktı kalitesini etkiler.
+- Girdi kalitesi (`data/data.xlsx`) doğrudan çıktı kalitesini etkiler.
 
-## 15) Hızlı Komut Referansı
+## Hızlı Komut Referansı
 
 ```bash
 # bağımlılıklar
@@ -521,6 +556,9 @@ python3 backend/run_all.py
 
 # tam doğrulama
 python3 backend/full_system_check.py
+
+# sadece mevcut çıktıları doğrula (pipeline çalıştırmadan)
+python3 backend/full_system_check.py --skip-pipeline
 
 # frontend geliştirme
 cd frontend && npm run dev
@@ -535,8 +573,8 @@ cd frontend && npm run lint && npm run build:next
 - Mimari: `Doc/SISTEM_MIMARISI.md`
 - Grafik açıklamaları: `Doc/GRAFIK_ACIKLAMA_DOKÜMANTASYON.md`
 - Gelişmiş sistem notları: `Doc/GELISMIS_KIMERIZM_SISTEMI_v2.md`
-- Kurulum: `kurulum.md`, `frontend/kurulum.md`
+- Kurulum: `Doc/kurulum.md`, `frontend/kurulum.md`
 
 ## Klinik Uyarı
 
-Bu sistem karar destek amaçlıdır. Nihai klinik kararlar uzman hekim değerlendirmesi ile alınmalıdır.
+> Bu sistem karar destek amaçlıdır. Nihai klinik kararlar uzman hekim değerlendirmesi ile alınmalıdır.
