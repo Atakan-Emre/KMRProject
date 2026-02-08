@@ -17,7 +17,7 @@ TIME_CONFIG = {
     # KMR time points
     "kmr_columns": [
         "Day_1", "Day_2", "Day_3", "Day_4", "Day_5", "Day_6", "Day_7",
-        "Week_2", "Week_3", "Week_4",
+        "Week_2", "Week_3", "Month_1",
         "Month_2", "Month_3", "Month_4", "Month_5", "Month_6",
         "Month_7", "Month_8", "Month_9", "Month_10", "Month_11", "Month_12"
     ],

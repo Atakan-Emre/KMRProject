@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "created_at": "2026-02-07T01:49:28.087075",
+    "created_at": "2026-02-08T17:54:55.948594",
     "schema_version": "3.0"
   },
   "totals": {
@@ -10,12 +10,12 @@
   },
   "risk_distribution": {
     "Normal": 14,
-    "Dikkat": 23,
-    "Kritik": 4,
+    "Dikkat": 22,
+    "Kritik": 5,
     "Çok Kritik": 0
   },
   "averages": {
-    "risk_score": 37.7,
+    "risk_score": 38.3,
     "kmr_last": 0.4431,
     "kre_last": 1.32,
     "gfr_last": 67.1

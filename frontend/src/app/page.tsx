@@ -19,7 +19,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { RiskLevel } from "@/types";
-import { formatTimeKey, normalizeGender } from "@/utils/formatters";
+import { formatKMR, formatTimeKey, normalizeGender } from "@/utils/formatters";
 
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
 
@@ -431,7 +431,7 @@ export default function Dashboard() {
                         <span className="font-medium">Hasta {p.patient_code}</span>
                       </div>
                       <div className="text-sm text-right">
-                        <div>KMR: {p.last_kmr?.toFixed(3) ?? '-'}%</div>
+                        <div>KMR: {formatKMR(p.last_kmr)}</div>
                         <div className="text-xs text-muted-foreground">Risk: {p.risk_score.toFixed(1)}</div>
                       </div>
                       <Link href={`/patients/${p.patient_code}`}>
@@ -529,7 +529,7 @@ export default function Dashboard() {
                       </span>
                     </div>
                     <div className="mt-1 text-xs text-muted-foreground">
-                      Risk: {p.risk_score.toFixed(1)} • KMR: {p.last_kmr?.toFixed(3) ?? "-"}% • KRE: {p.last_kre?.toFixed(2) ?? "-"} • GFR: {p.last_gfr?.toFixed(0) ?? "-"}
+                      Risk: {p.risk_score.toFixed(1)} • KMR: {formatKMR(p.last_kmr)} • KRE: {p.last_kre?.toFixed(2) ?? "-"} • GFR: {p.last_gfr?.toFixed(0) ?? "-"}
                     </div>
                   </div>
                 ))}
@@ -689,7 +689,7 @@ export default function Dashboard() {
                   <span className="text-sm">KMR Kanal</span>
                   <span className="text-sm text-muted-foreground">
                     {patients.length > 0 && kmrTimepointCount > 0
-                      ? `${((kmrMeasurements / (patients.length * kmrTimepointCount)) * 100).toFixed(1)}%`
+                      ? `%${((kmrMeasurements / (patients.length * kmrTimepointCount)) * 100).toFixed(1)}`
                       : "-"}
                   </span>
                 </div>
@@ -858,7 +858,7 @@ export default function Dashboard() {
                         opacity: 0.7
                       },
                       text: patientsWithAgeKmr.map((p) => p.patient_code),
-                      hovertemplate: '<b>%{text}</b><br>Yaş: %{x}<br>KMR: %{y:.3f}%<extra></extra>'
+                      hovertemplate: '<b>%{text}</b><br>Yaş: %{x}<br>KMR: %%{y:.3f}<extra></extra>'
                     }]}
                     layout={{
                       xaxis: { title: 'Yaş' },
@@ -933,7 +933,7 @@ export default function Dashboard() {
                     <CardTitle className="text-sm">Başlangıç KMR</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-blue-700">{safeFixed(cohortTrajectory?.summary?.initial_kmr_median, 2)}%</div>
+                    <div className="text-2xl font-bold text-blue-700">{safePercent(cohortTrajectory?.summary?.initial_kmr_median, 2)}</div>
                     <p className="text-xs text-blue-600">Median Day_1</p>
                   </CardContent>
                 </Card>
@@ -942,7 +942,7 @@ export default function Dashboard() {
                     <CardTitle className="text-sm">Son KMR</CardTitle>
                   </CardHeader>
                   <CardContent>
-                    <div className="text-2xl font-bold text-purple-700">{safeFixed(cohortTrajectory?.summary?.final_kmr_median, 3)}%</div>
+                    <div className="text-2xl font-bold text-purple-700">{safePercent(cohortTrajectory?.summary?.final_kmr_median, 3)}</div>
                     <p className="text-xs text-purple-600">Median Month_12</p>
                   </CardContent>
                 </Card>

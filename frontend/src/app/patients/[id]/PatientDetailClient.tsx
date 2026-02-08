@@ -11,33 +11,33 @@ import type { RiskLevel, TimelinePoint } from "@/types";
 import { formatGender, formatVitalStatus, formatTimeKey } from "@/utils/formatters";
 
 // Unified time mapping - LAB_TIME_MAP → UNIFIED_TIME_MAP conversion
-// Backend time_mapping.py'ye göre: Month_11=21, Month_12=22
+// Backend time_mapping.py'ye göre: Month_11=20, Month_12=21
 const LAB_TO_UNIFIED_MAP: Record<string, number> = {
   "Day_7": 7,
   "Week_2": 8,
   "Week_3": 9,
-  "Month_1": 11,
-  "Month_2": 12,
-  "Month_3": 13,
-  "Month_4": 14,
-  "Month_5": 15,
-  "Month_6": 16,
-  "Month_12": 22  // Backend time_mapping.py'ye göre Month_12=22
+  "Month_1": 10,
+  "Month_2": 11,
+  "Month_3": 12,
+  "Month_4": 13,
+  "Month_5": 14,
+  "Month_6": 15,
+  "Month_12": 21  // Backend time_mapping.py'ye göre Month_12=21
 };
 
 // UNIFIED_TIME_MAP - Backend time_mapping.py ile birebir aynı sıra
-// Day_1(1)..Day_7(7), Week_2(8), Week_3(9), Week_4(10), Month_1(11), Month_2(12), 
-// Month_3(13), Month_4(14), Month_5(15), Month_6(16), Month_7(17), Month_8(18), 
-// Month_9(19), Month_10(20), Month_11(21), Month_12(22)
+// Day_1(1)..Day_7(7), Week_2(8), Week_3(9), Month_1(10), Month_2(11),
+// Month_3(12), Month_4(13), Month_5(14), Month_6(15), Month_7(16), Month_8(17),
+// Month_9(18), Month_10(19), Month_11(20), Month_12(21)
 const UNIFIED_TIME_KEYS: Array<{key: string; order: number}> = [
   {key: "Day_1", order: 1}, {key: "Day_2", order: 2}, {key: "Day_3", order: 3},
   {key: "Day_4", order: 4}, {key: "Day_5", order: 5}, {key: "Day_6", order: 6},
   {key: "Day_7", order: 7}, {key: "Week_2", order: 8}, {key: "Week_3", order: 9},
-  {key: "Week_4", order: 10}, {key: "Month_1", order: 11}, {key: "Month_2", order: 12},
-  {key: "Month_3", order: 13}, {key: "Month_4", order: 14}, {key: "Month_5", order: 15},
-  {key: "Month_6", order: 16}, {key: "Month_7", order: 17}, {key: "Month_8", order: 18},
-  {key: "Month_9", order: 19}, {key: "Month_10", order: 20}, {key: "Month_11", order: 21},
-  {key: "Month_12", order: 22}  // Backend time_mapping.py'ye göre Month_12=22
+  {key: "Month_1", order: 10}, {key: "Month_2", order: 11}, {key: "Month_3", order: 12},
+  {key: "Month_4", order: 13}, {key: "Month_5", order: 14}, {key: "Month_6", order: 15},
+  {key: "Month_7", order: 16}, {key: "Month_8", order: 17}, {key: "Month_9", order: 18},
+  {key: "Month_10", order: 19}, {key: "Month_11", order: 20},
+  {key: "Month_12", order: 21}  // Backend time_mapping.py'ye göre Month_12=21
 ];
 
 function formatPercent(value: number | null | undefined, decimals: number): string {
@@ -306,9 +306,6 @@ export default function PatientDetailClient() {
       if (pinnedPoint.timeKey.startsWith("Day_") && pinnedPoint.timeOrder < 7 && (currentKRE == null || currentGFR == null)) {
         recs.push({ type: 'info', text: 'LAB (KRE/GFR) ölçümleri Day 7 ile başlar' });
       }
-      if (pinnedPoint.timeKey === "Week_4" && (currentKRE == null || currentGFR == null)) {
-        recs.push({ type: 'info', text: 'LAB takviminde Week 4 sonrası ölçüm noktası 1. Ay olarak etiketlenir' });
-      }
     } else {
       if (currentKMR === null || currentKMR === undefined) recs.push({ type: 'info', text: 'KMR verisi yok' });
       if (currentKRE === null || currentKRE === undefined) recs.push({ type: 'info', text: 'KRE verisi yok' });
@@ -318,13 +315,13 @@ export default function PatientDetailClient() {
     // KMR eşikleri
     if (currentKMR !== null && currentKMR !== undefined) {
       if (currentKMR < 0.5) {
-        recs.push({ type: 'success', text: `KMR değeri normal aralıkta (${currentKMR.toFixed(3)}%)` });
+        recs.push({ type: 'success', text: `KMR değeri normal aralıkta (${formatPercent(currentKMR, 3)})` });
       } else if (currentKMR < 2) {
-        recs.push({ type: 'warning', text: `KMR değeri dikkat gerektiriyor (${currentKMR.toFixed(3)}%)` });
+        recs.push({ type: 'warning', text: `KMR değeri dikkat gerektiriyor (${formatPercent(currentKMR, 3)})` });
       } else if (currentKMR < 5) {
-        recs.push({ type: 'danger', text: `KMR değeri kritik seviyede (${currentKMR.toFixed(3)}%)` });
+        recs.push({ type: 'danger', text: `KMR değeri kritik seviyede (${formatPercent(currentKMR, 3)})` });
       } else {
-        recs.push({ type: 'danger', text: `KMR değeri çok kritik! (${currentKMR.toFixed(3)}%)` });
+        recs.push({ type: 'danger', text: `KMR değeri çok kritik! (${formatPercent(currentKMR, 3)})` });
       }
     }
 
@@ -523,10 +520,7 @@ export default function PatientDetailClient() {
   const minTimeOrder = timelineGrid.length > 0 ? timelineGrid[0].timeOrder : 1;
   const maxTimeOrder = timelineGrid.length > 0 ? timelineGrid[timelineGrid.length - 1].timeOrder : 0;
   
-  // KMR band'ları timeline grid'e göre map et
-  // Reference band'da time_order'lar backend'den 1 eksik olabilir (Month_11=20, Month_12=21)
-  // Backend time_mapping.py'ye göre: Month_11=21, Month_12=22
-  // time_key'ye göre doğru order'a map et
+  // KMR band'ları timeline grid'e göre map et (time_key öncelikli)
   const mapKmrBandsToGrid = (bands: Array<{time_key?: string; time_order: number; median: number; p25: number; p75: number}>) => {
     if (bands.length === 0) return [];
     const bandMap = new Map<number, {time_order: number; median: number; p25: number; p75: number}>();
@@ -679,7 +673,7 @@ export default function PatientDetailClient() {
         connectgaps: false, xaxis: 'x', yaxis: 'y',
         legendgroup: 'ai_kmr',
         showlegend: false,
-        hovertemplate: '<b>AI Tahmini (geçmiş)</b><br>%{x}<br>%{y:.4f}%<extra></extra>'
+        hovertemplate: '<b>AI Tahmini (geçmiş)</b><br>%{x}<br>%%{y:.4f}<extra></extra>'
       });
     }
     
@@ -693,7 +687,7 @@ export default function PatientDetailClient() {
         connectgaps: false, xaxis: 'x', yaxis: 'y',
         legendgroup: 'ai_kmr',
         showlegend: false, // Geçmiş ile aynı grup, tek legend satırı
-        hovertemplate: '<b>AI Tahmini (gelecek)</b><br>%{x}<br>%{y:.4f}%<extra></extra>'
+        hovertemplate: '<b>AI Tahmini (gelecek)</b><br>%{x}<br>%%{y:.4f}<extra></extra>'
       });
       
       // Forecast bölgesi gölgesi (son gerçek noktadan sonra)
@@ -798,7 +792,7 @@ export default function PatientDetailClient() {
         const base = formatTimeKey(g.timeKey || '');
         return hasAnyAnomaly(g.timelinePoint) ? `${base} - ANOMALİ` : base;
       }),
-      hovertemplate: '<b>%{text}</b><br>KMR: %{y:.4f}%<extra></extra>',
+      hovertemplate: '<b>%{text}</b><br>KMR: %%{y:.4f}<extra></extra>',
       connectgaps: true,
       customdata: timelineGrid.map(g => g.timelinePoint ? ({
         timeOrder: g.timeOrder, timeKey: g.timeKey || '', kmr: g.timelinePoint.kmr, kre: g.timelinePoint.kre, gfr: g.timelinePoint.gfr,
@@ -824,7 +818,7 @@ export default function PatientDetailClient() {
           type: 'scatter', mode: 'markers', name: '⚠️ KMR Anomali (AI)',
           marker: { size: 12, color: COLORS.thresholds.critical, symbol: 'diamond', line: { color: '#fff', width: 2 } },
           text: anomalyPts.map(g => `${formatTimeKey(g.timeKey)} - ANOMALİ`),
-          hovertemplate: '<b>%{text}</b><br>KMR: %{y:.4f}%<extra></extra>',
+          hovertemplate: '<b>%{text}</b><br>KMR: %%{y:.4f}<extra></extra>',
           customdata: anomalyPts.map(g => ({
             timeOrder: g.timeOrder, timeKey: g.timeKey || '', kmr: g.timelinePoint!.kmr, kre: g.timelinePoint!.kre, gfr: g.timelinePoint!.gfr,
             risk: g.timelinePoint!.risk_score, riskLevel: g.timelinePoint!.risk_level, kmrPred: g.timelinePoint!.kmr_pred, isAnomaly: true
@@ -864,7 +858,7 @@ export default function PatientDetailClient() {
             symbol: 'diamond',
             line: { color: '#fff', width: 1 }
           },
-          text: kmrCritical.map(d => `KMR ${d.y!.toFixed(2)}% (kritik >5%)`),
+          text: kmrCritical.map(d => `KMR %${d.y!.toFixed(2)} (kritik >%5)`),
           hovertemplate: '<b>%{text}</b><extra></extra>',
         xaxis: 'x',
         yaxis: 'y',
@@ -885,7 +879,7 @@ export default function PatientDetailClient() {
           symbol: 'circle',
           line: { color: '#fff', width: 1 }
         },
-        text: kmrModerate.map(d => `KMR ${d.y!.toFixed(2)}% (orta >2%)`),
+        text: kmrModerate.map(d => `KMR %${d.y!.toFixed(2)} (orta >%2)`),
         hovertemplate: '<b>%{text}</b><extra></extra>',
         xaxis: 'x',
         yaxis: 'y',
@@ -1998,10 +1992,10 @@ export default function PatientDetailClient() {
         </div>
 
         {/* Resizable panel - sağ taraf - snap breakpoint'leri ile, mobilde üstte */}
-        <div className="bg-slate-50 border-t-2 md:border-t-0 md:border-l-2 border-slate-300 shadow-2xl relative flex flex-col overflow-y-auto w-full md:w-[352px] lg:w-[380px] order-first md:order-last md:sticky md:top-0 md:h-[100svh]">
+        <div className="bg-slate-50 border-t md:border-t-0 md:border-l border-slate-200 shadow-2xl relative flex flex-col overflow-y-auto w-full md:w-[352px] lg:w-[380px] order-first md:order-last md:sticky md:top-0 md:h-[100svh]">
         {/* Panel header */}
-        <div className="p-3 md:p-4 border-b-2 border-slate-300 bg-slate-50">
-          <h3 className="text-sm uppercase tracking-wide font-bold text-slate-900 mb-1">
+        <div className="h-16 px-4 md:px-6 border-b border-slate-200 bg-gradient-to-r from-slate-50 to-white shadow-sm flex flex-col justify-center">
+          <h3 className="text-sm uppercase tracking-wide font-bold text-slate-900 leading-tight">
             📊 Detaylı Analiz
             {pinnedPoint && (
               <span className="text-xs normal-case text-slate-600 ml-2">({formatTimeKey(pinnedPoint.timeKey)})</span>
@@ -2011,11 +2005,11 @@ export default function PatientDetailClient() {
             )}
           </h3>
           {pinnedPoint ? (
-            <p className="text-xs text-slate-600 flex items-center gap-1">
+            <p className="text-[11px] text-slate-600 flex items-center gap-1 leading-tight">
               📍 Seçili: <span className="font-semibold">{formatTimeKey(pinnedPoint.timeKey)}</span>
             </p>
           ) : (
-            <p className="text-xs text-slate-500">Grafik noktasına tıklayarak analiz görüntüleyin</p>
+            <p className="text-[11px] text-slate-500 leading-tight">Grafik noktasına tıklayarak analiz görüntüleyin</p>
           )}
         </div>
 
@@ -2226,7 +2220,7 @@ export default function PatientDetailClient() {
                             <div className="flex justify-between items-center p-1.5 bg-white/80 rounded border border-indigo-100">
                               <span className="text-slate-700 font-medium">KMR Δ:</span>
                               <span className={`font-bold font-mono ${kmrDiff > 0 ? 'text-red-600' : kmrDiff < 0 ? 'text-green-600' : 'text-gray-600'}`}>
-                                {kmrDiff > 0 ? '↑' : kmrDiff < 0 ? '↓' : '→'} {Math.abs(kmrDiff).toFixed(4)}%
+                                {kmrDiff > 0 ? '↑' : kmrDiff < 0 ? '↓' : '→'} {formatPercent(Math.abs(kmrDiff), 4)}
                               </span>
                             </div>
                           )}
@@ -2273,23 +2267,23 @@ export default function PatientDetailClient() {
                           {pinnedPoint.kmrPred !== null && (
                             <>
                               <div className="font-semibold text-slate-700 mb-1">KMR:</div>
-                              <div className="flex justify-between"><span>Tahmin:</span><span className="font-mono">{pinnedPoint.kmrPred.toFixed(4)}%</span></div>
+                              <div className="flex justify-between"><span>Tahmin:</span><span className="font-mono">{formatPercent(pinnedPoint.kmrPred, 4)}</span></div>
                               {pinnedPoint.kmr !== null && (
                                 <>
-                                  <div className="flex justify-between"><span>Gerçek:</span><span className="font-mono">{pinnedPoint.kmr.toFixed(4)}%</span></div>
+                                  <div className="flex justify-between"><span>Gerçek:</span><span className="font-mono">{formatPercent(pinnedPoint.kmr, 4)}</span></div>
                                   {predError !== null && (
                                     <>
                                       <div className="flex justify-between">
                                         <span>Hata:</span>
                                         <span className={`font-bold ${Math.abs(predError) > 0.5 ? 'text-orange-600' : 'text-green-600'}`}>
-                                          {predError.toFixed(4)}%
+                                          {formatPercent(predError, 4)}
                                         </span>
                                       </div>
                                       {pinnedPoint.kmr !== null && pinnedPoint.kmr !== 0 && (
                                         <div className="flex justify-between">
                                           <span>Hata %:</span>
                                           <span className={`font-bold ${Math.abs(predError / pinnedPoint.kmr * 100) > 10 ? 'text-orange-600' : 'text-green-600'}`}>
-                                            {(predError / pinnedPoint.kmr * 100).toFixed(1)}%
+                                            {formatPercent(predError / pinnedPoint.kmr * 100, 1)}
                                           </span>
                                         </div>
                                       )}
@@ -2571,7 +2565,7 @@ export default function PatientDetailClient() {
                         Min / Max
                         {pinnedPoint && <span className="text-[10px] text-slate-500 ml-1">({formatTimeKey(pinnedPoint.timeKey)}&apos;a kadar)</span>}
                       </span>
-                      <span className="font-mono font-bold text-slate-900">{stats.kmrMin.toFixed(3)}% - {stats.kmrMax.toFixed(3)}%</span>
+                      <span className="font-mono font-bold text-slate-900">{formatPercent(stats.kmrMin, 3)} - {formatPercent(stats.kmrMax, 3)}</span>
                     </div>
                   )}
                   {stats.kmrMean !== null && !isNaN(stats.kmrMean) && (
@@ -2580,7 +2574,7 @@ export default function PatientDetailClient() {
                         Ortalama
                         {pinnedPoint && <span className="text-[10px] text-slate-500 ml-1">({formatTimeKey(pinnedPoint.timeKey)}&apos;a kadar)</span>}
                       </span>
-                      <span className="font-mono font-bold text-slate-900">{stats.kmrMean.toFixed(4)}%</span>
+                      <span className="font-mono font-bold text-slate-900">{formatPercent(stats.kmrMean, 4)}</span>
                     </div>
                   )}
                   {stats.kmrTrend !== null && !isNaN(stats.kmrTrend) && (
@@ -2601,7 +2595,7 @@ export default function PatientDetailClient() {
                         Volatilite (CV)
                         {pinnedPoint && <span className="text-[10px] text-slate-500 ml-1">({formatTimeKey(pinnedPoint.timeKey)}&apos;a kadar)</span>}
                       </span>
-                      <span className="font-mono font-bold text-slate-900">{(stats.kmrCV * 100).toFixed(1)}%</span>
+                      <span className="font-mono font-bold text-slate-900">{formatPercent(stats.kmrCV * 100, 1)}</span>
                     </div>
                   )}
                   <div className="flex justify-between items-center p-2 bg-slate-50 rounded-lg border-2 border-slate-300">

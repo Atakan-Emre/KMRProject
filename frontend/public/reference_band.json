@@ -1,6 +1,6 @@
 {
   "metadata": {
-    "created_at": "2026-02-07T01:49:13.334079",
+    "created_at": "2026-02-08T17:54:38.186200",
     "schema_version": "3.0",
     "cohort_definition": "improved_proxy = KMR Month_9..Month_12 any non-null",
     "improved_cohort_size": 10,
@@ -145,7 +145,7 @@
         "max": 4.3271
       },
       {
-        "time_key": "Week_4",
+        "time_key": "Month_1",
         "time_order": 10,
         "n_samples": 2,
         "median": 0.1984,
@@ -352,7 +352,7 @@
       },
       {
         "time_key": "Month_1_KRE",
-        "time_order": 11,
+        "time_order": 10,
         "n_samples": 10,
         "median": 1.29,
         "mean": 1.38,
@@ -364,7 +364,7 @@
       },
       {
         "time_key": "Month_2_KRE",
-        "time_order": 12,
+        "time_order": 11,
         "n_samples": 10,
         "median": 1.01,
         "mean": 1.09,
@@ -376,7 +376,7 @@
       },
       {
         "time_key": "Month_3_KRE",
-        "time_order": 13,
+        "time_order": 12,
         "n_samples": 10,
         "median": 1.19,
         "mean": 1.16,
@@ -388,7 +388,7 @@
       },
       {
         "time_key": "Month_4_KRE",
-        "time_order": 14,
+        "time_order": 13,
         "n_samples": 10,
         "median": 1.1,
         "mean": 1.22,
@@ -400,7 +400,7 @@
       },
       {
         "time_key": "Month_5_KRE",
-        "time_order": 15,
+        "time_order": 14,
         "n_samples": 10,
         "median": 1.18,
         "mean": 1.23,
@@ -412,7 +412,7 @@
       },
       {
         "time_key": "Month_6_KRE",
-        "time_order": 16,
+        "time_order": 15,
         "n_samples": 10,
         "median": 1.17,
         "mean": 1.17,
@@ -424,7 +424,7 @@
       },
       {
         "time_key": "Month_12_KRE",
-        "time_order": 22,
+        "time_order": 21,
         "n_samples": 8,
         "median": 1.02,
         "mean": 0.93,
@@ -474,7 +474,7 @@
       },
       {
         "time_key": "Month_1_GFR",
-        "time_order": 11,
+        "time_order": 10,
         "n_samples": 8,
         "median": 51.0,
         "mean": 59.1,
@@ -486,7 +486,7 @@
       },
       {
         "time_key": "Month_2_GFR",
-        "time_order": 12,
+        "time_order": 11,
         "n_samples": 8,
         "median": 73.9,
         "mean": 71.2,
@@ -498,7 +498,7 @@
       },
       {
         "time_key": "Month_3_GFR",
-        "time_order": 13,
+        "time_order": 12,
         "n_samples": 8,
         "median": 62.1,
         "mean": 66.2,
@@ -510,7 +510,7 @@
       },
       {
         "time_key": "Month_4_GFR",
-        "time_order": 14,
+        "time_order": 13,
         "n_samples": 8,
         "median": 56.0,
         "mean": 64.3,
@@ -522,7 +522,7 @@
       },
       {
         "time_key": "Month_5_GFR",
-        "time_order": 15,
+        "time_order": 14,
         "n_samples": 8,
         "median": 57.4,
         "mean": 62.9,
@@ -534,7 +534,7 @@
       },
       {
         "time_key": "Month_6_GFR",
-        "time_order": 16,
+        "time_order": 15,
         "n_samples": 8,
         "median": 59.8,
         "mean": 66.6,
@@ -546,7 +546,7 @@
       },
       {
         "time_key": "Month_12_GFR",
-        "time_order": 22,
+        "time_order": 21,
         "n_samples": 6,
         "median": 64.0,
         "mean": 76.2,
@@ -572,7 +572,7 @@
         "Day_7",
         "Week_2",
         "Week_3",
-        "Week_4",
+        "Month_1",
         "Month_2",
         "Month_3",
         "Month_4",
