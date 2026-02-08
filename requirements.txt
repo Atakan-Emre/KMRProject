@@ -12,3 +12,6 @@ tensorflow>=2.13.0
 
 # İstatistiksel İşlemler
 scipy>=1.10.0
+
+# Rapor Grafikleri (Markdown PNG export)
+matplotlib>=3.7.0

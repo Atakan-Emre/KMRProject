@@ -22,7 +22,7 @@ sys.path.insert(0, str(Path(__file__).parent.parent))
 
 import numpy as np
 
-from backend.config import FRONTEND_PUBLIC, PATIENTS_DIR, MODEL_CONFIG
+from backend.config import FRONTEND_PUBLIC, PATIENTS_DIR, MODEL_CONFIG, PROJECT_ROOT
 from backend.io_excel import load_all_data
 from backend.kmr_model import KMRPredictor
 from backend.anomaly_vae import KMRAnomalyDetector
@@ -33,6 +33,7 @@ from backend.reference_band import ReferenceBandCalculator
 from backend.cohort_trajectory import analyze_improved_cohort
 from backend.cohort_trajectory_lab import analyze_improved_lab_cohort
 from backend.export_json import JSONExporter, sanitize_for_json
+from backend.export_markdown import MarkdownReportExporter
 
 
 GENERATED_FILES = [
@@ -101,7 +102,26 @@ def clean_training_data():
         print(f"  Removed {len(patient_files)} patient JSON files")
     else:
         print(f"  Patients directory not found: {PATIENTS_DIR}")
-    
+
+    # Remove dynamic markdown reports (Doc/Hasta_Raporlari_Detay + Doc/reports)
+    doc_dir = PROJECT_ROOT / "Doc"
+    report_index = doc_dir / "Hasta_Raporları_Detay.md"
+    report_root = doc_dir / "reports"
+
+    if report_index.exists():
+        report_index.unlink()
+        print(f"  Removed: {report_index.name}")
+        removed_count += 1
+    else:
+        print(f"  Not found: {report_index.name} (skipping)")
+
+    if report_root.exists():
+        shutil.rmtree(report_root, ignore_errors=True)
+        print(f"  Removed directory: {report_root}")
+        removed_count += 1
+    else:
+        print(f"  Not found: {report_root} (skipping)")
+
     print(f"[OK] Cleanup complete! Removed {removed_count} files.\n")
     return removed_count
 
@@ -345,12 +365,22 @@ def run_pipeline(clean_first: bool = True):
         publish_staged_output(staging_output)
     finally:
         shutil.rmtree(staging_root, ignore_errors=True)
+
+    # Step 7: Export dynamic markdown reports and chart PNG assets
+    print("\nStep 7: Exporting dynamic markdown reports...")
+    report_exporter = MarkdownReportExporter(public_dir=FRONTEND_PUBLIC, doc_dir=PROJECT_ROOT / "Doc")
+    report_result = report_exporter.generate()
+    print(
+        f"[OK] Report export complete: {report_result.get('patient_reports', 0)} patient markdown files, "
+        f"{report_result.get('assets', 0)} PNG assets"
+    )
     
     # Done
     print("\n" + "=" * 60)
     print("Pipeline complete!")
     print(f"   Output directory: {FRONTEND_PUBLIC}")
     print(f"   Patients exported: {len(timelines)}")
+    print(f"   Markdown index: {report_result.get('index_markdown')}")
     print("=" * 60)
     
     return {

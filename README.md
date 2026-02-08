@@ -38,7 +38,8 @@ Temel çıktı ürünleri:
 - hasta detay timeline JSON dosyaları,
 - dashboard özet dosyaları,
 - referans bant/kohort analizi,
-- doktor paneli hasta bazlı performans raporu.
+- doktor paneli hasta bazlı performans raporu,
+- dinamik markdown hasta raporları (`Doc/Hasta_Raporları_Detay.md`).
 
 ## 2) Mimari ve Bileşenler
 
@@ -346,6 +347,12 @@ Pipeline çıktıları (`frontend/public`):
 - `doctor_performance_report.json`
 - `doctor_performance_report.csv`
 
+Pipeline sonrası dokümantasyon çıktıları (`Doc`):
+
+- `Hasta_Raporları_Detay.md` (index)
+- `reports/patients/{patient_code}.md` (hasta bazlı dinamik rapor)
+- `reports/assets/*.png` (otomatik üretilen grafikler)
+
 ## 9.1 Hasta Timeline JSON (özet sözleşme)
 
 ```json
@@ -425,7 +432,8 @@ flowchart LR
 
 - önce eski üretilmiş çıktıları temizler,
 - sonra tüm eğitimi sıfırdan yapar,
-- en son atomik publish yapar.
+- en son atomik publish yapar,
+- ardından dinamik markdown raporları ve PNG grafikleri tekrar üretir.
 
 ```bash
 python3 backend/run_all.py

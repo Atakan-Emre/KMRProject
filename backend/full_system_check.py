@@ -11,6 +11,7 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import re
 import subprocess
 import sys
 import time
@@ -46,6 +47,9 @@ REQUIRED_JSON_FILES = [
     "system_config.json",
     "doctor_performance_report.json",
 ]
+REPORT_INDEX_FILE = PROJECT_ROOT / "Doc" / "Hasta_Raporları_Detay.md"
+REPORT_PATIENTS_DIR = PROJECT_ROOT / "Doc" / "reports" / "patients"
+REPORT_ASSETS_DIR = PROJECT_ROOT / "Doc" / "reports" / "assets"
 
 RISK_LEVELS = {"Normal", "Dikkat", "Kritik", "Çok Kritik"}
 PREDICTION_STATUSES = {
@@ -516,6 +520,32 @@ def main() -> int:
 
     doctor_csv = FRONTEND_PUBLIC / "doctor_performance_report.csv"
     checker.check(doctor_csv.exists(), "doctor_performance_report.csv missing")
+
+    # Markdown report checks
+    checker.check(REPORT_INDEX_FILE.exists(), f"Missing markdown index: {REPORT_INDEX_FILE}")
+    checker.check(REPORT_PATIENTS_DIR.exists(), f"Missing markdown patients dir: {REPORT_PATIENTS_DIR}")
+    checker.check(REPORT_ASSETS_DIR.exists(), f"Missing markdown assets dir: {REPORT_ASSETS_DIR}")
+
+    if REPORT_INDEX_FILE.exists() and REPORT_PATIENTS_DIR.exists():
+        index_text = REPORT_INDEX_FILE.read_text(encoding="utf-8")
+        index_patient_links = set(re.findall(r"reports/patients/([A-Za-z0-9_]+)\.md", index_text))
+        checker.check(
+            index_patient_links == patients_from_excel,
+            "Hasta_Raporları_Detay.md patient links mismatch",
+        )
+
+    if REPORT_PATIENTS_DIR.exists():
+        md_files = sorted(REPORT_PATIENTS_DIR.glob("*.md"))
+        md_codes = {p.stem for p in md_files}
+        checker.check(md_codes == patients_from_excel, "Markdown patient report count/code mismatch")
+        image_pattern = re.compile(r"!\[[^\]]*]\(([^)]+)\)")
+        for md_path in md_files:
+            text = md_path.read_text(encoding="utf-8")
+            for rel in image_pattern.findall(text):
+                if rel.startswith("http://") or rel.startswith("https://"):
+                    continue
+                img_path = (md_path.parent / rel).resolve()
+                checker.check(img_path.exists(), f"{md_path.name}: missing image asset -> {rel}")
 
     # Frontend checks
     if not args.skip_frontend:

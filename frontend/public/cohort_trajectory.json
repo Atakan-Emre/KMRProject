@@ -4,7 +4,7 @@
     "n_patients": 10,
     "n_time_points": 21,
     "model": "LSTM + Autoencoder",
-    "created_at": "2026-02-08T19:50:31.402845"
+    "created_at": "2026-02-08T20:24:17.537797"
   },
   "trajectory": [
     {
