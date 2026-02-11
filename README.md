@@ -26,7 +26,7 @@ NISTH, transplant sonrası hastaların KMR/KRE/GFR ölçümlerini tek bir teknik
 
 | Konu | Link |
 |---|---|
-| Dinamik hasta raporları (index) | `Doc/Hasta_Raporları_Detay.md` |
+| Dinamik hasta raporları (index) | [Doc/Hasta_Raporları_Detay.md](Doc/Hasta_Raporları_Detay.md) |
 | Pipeline çalıştırma | [Pipeline Çalıştırma](#pipeline-çalıştırma-run_allpy) |
 | Tam doğrulama | [Tam Doğrulama](#tam-doğrulama-full_system_checkpy) |
 | Çıktı sözleşmesi | [Çıktı Dosyaları ve Veri Sözleşmesi](#çıktı-dosyaları-ve-veri-sözleşmesi) |
