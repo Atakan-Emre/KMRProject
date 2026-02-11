@@ -572,7 +572,6 @@ cd frontend && npm run lint && npm run build:next
 - Sistem raporu: `Doc/SISTEM_RAPORU.md`
 - Mimari: `Doc/SISTEM_MIMARISI.md`
 - Grafik açıklamaları: `Doc/GRAFIK_ACIKLAMA_DOKÜMANTASYON.md`
-- Gelişmiş sistem notları: `Doc/GELISMIS_KIMERIZM_SISTEMI_v2.md`
 - Kurulum: `Doc/kurulum.md`, `frontend/kurulum.md`
 
 ## Klinik Uyarı
