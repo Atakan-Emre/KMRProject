@@ -41,6 +41,7 @@ REQUIRED_JSON_FILES = [
     "reference_band.json",
     "cohort_trajectory.json",
     "cohort_trajectory_lab.json",
+    "anomaly_trajectory.json",
     "data_summary.json",
     "patient_features.json",
     "channel_overview.json",
@@ -252,6 +253,7 @@ def main() -> int:
     reference_band = load_json_file(FRONTEND_PUBLIC / "reference_band.json")
     cohort_trajectory = load_json_file(FRONTEND_PUBLIC / "cohort_trajectory.json")
     cohort_trajectory_lab = load_json_file(FRONTEND_PUBLIC / "cohort_trajectory_lab.json")
+    anomaly_trajectory = load_json_file(FRONTEND_PUBLIC / "anomaly_trajectory.json")
     data_summary = load_json_file(FRONTEND_PUBLIC / "data_summary.json")
     patient_features = load_json_file(FRONTEND_PUBLIC / "patient_features.json")
     channel_overview = load_json_file(FRONTEND_PUBLIC / "channel_overview.json")
@@ -261,6 +263,7 @@ def main() -> int:
     validate_no_nonfinite(reference_band, checker, "reference_band.json")
     validate_no_nonfinite(cohort_trajectory, checker, "cohort_trajectory.json")
     validate_no_nonfinite(cohort_trajectory_lab, checker, "cohort_trajectory_lab.json")
+    validate_no_nonfinite(anomaly_trajectory, checker, "anomaly_trajectory.json")
     validate_no_nonfinite(data_summary, checker, "data_summary.json")
     validate_no_nonfinite(patient_features, checker, "patient_features.json")
     validate_no_nonfinite(channel_overview, checker, "channel_overview.json")
@@ -485,6 +488,14 @@ def main() -> int:
         checker.check(isinstance(payload.get("metadata"), dict), f"{name}: metadata missing/invalid")
         checker.check(isinstance(payload.get("trajectory"), list), f"{name}: trajectory missing/invalid")
         checker.check(isinstance(payload.get("summary"), dict), f"{name}: summary missing/invalid")
+
+    # Anomaly trajectory schema checks
+    checker.check(isinstance(anomaly_trajectory.get("metadata"), dict), "anomaly_trajectory.json: metadata missing/invalid")
+    for metric in ("kmr", "kre", "gfr"):
+        obj = anomaly_trajectory.get(metric, {})
+        checker.check(isinstance(obj, dict), f"anomaly_trajectory.json: {metric} missing/invalid")
+        checker.check(isinstance(obj.get("points"), list), f"anomaly_trajectory.json: {metric}.points missing/invalid")
+        checker.check(isinstance(obj.get("summary_by_time"), list), f"anomaly_trajectory.json: {metric}.summary_by_time missing/invalid")
 
     # System config checks
     checker.check(isinstance(system_config.get("metadata"), dict), "system_config: metadata missing/invalid")

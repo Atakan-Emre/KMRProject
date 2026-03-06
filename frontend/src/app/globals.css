@@ -89,3 +89,19 @@
     page-break-before: always;
   }
 }
+
+/* Anomali grafiklerinde tam ekran okunurluk */
+.anomaly-plot-container:fullscreen,
+.anomaly-plot-container:-webkit-full-screen {
+  background: #ffffff !important;
+  padding: 16px;
+  border: 0;
+  border-radius: 0;
+}
+
+.anomaly-plot-container:fullscreen .js-plotly-plot,
+.anomaly-plot-container:fullscreen .plot-container,
+.anomaly-plot-container:-webkit-full-screen .js-plotly-plot,
+.anomaly-plot-container:-webkit-full-screen .plot-container {
+  height: calc(100vh - 32px) !important;
+}

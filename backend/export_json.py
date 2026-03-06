@@ -408,6 +408,154 @@ class JSONExporter:
         with open(filepath, 'w', encoding='utf-8') as f:
             json.dump(sanitize_for_json({"patients": features}), f, ensure_ascii=False, indent=2)
         print(f"✅ Exported: {filepath}")
+
+    def _build_anomaly_summary_by_time(self, points: List[dict]) -> List[dict]:
+        """Aggregate anomaly points by time_key/time_order for trend charts."""
+        grouped: Dict[tuple, dict] = {}
+
+        for point in points:
+            time_order = int(point.get("time_order") or 0)
+            time_key = str(point.get("time_key") or "")
+            pseudo_days = int(point.get("pseudo_time_days") or 0)
+            key = (time_order, time_key, pseudo_days)
+
+            if key not in grouped:
+                grouped[key] = {
+                    "time_order": time_order,
+                    "time_key": time_key,
+                    "pseudo_time_days": pseudo_days,
+                    "n_measurements": 0,
+                    "n_anomalies": 0,
+                    "n_ai_anomalies": 0,
+                    "n_threshold_breaches": 0,
+                    "_values": [],
+                }
+
+            agg = grouped[key]
+            agg["n_measurements"] += 1
+
+            value = _safe_float(point.get("value"))
+            if value is not None:
+                agg["_values"].append(value)
+
+            if bool(point.get("anomaly_flag", False)):
+                agg["n_anomalies"] += 1
+            if bool(point.get("ai_anomaly_flag", False)):
+                agg["n_ai_anomalies"] += 1
+            if bool(point.get("threshold_breach", False)):
+                agg["n_threshold_breaches"] += 1
+
+        result: List[dict] = []
+        for _, agg in sorted(grouped.items(), key=lambda item: item[0][0]):
+            values = agg.pop("_values")
+            n = agg["n_measurements"]
+
+            median_value = float(np.median(values)) if values else None
+            p25_value = float(np.percentile(values, 25)) if values else None
+            p75_value = float(np.percentile(values, 75)) if values else None
+
+            result.append({
+                **agg,
+                "anomaly_rate": round(float(agg["n_anomalies"] / n), 4) if n > 0 else 0.0,
+                "median_value": round(median_value, 4) if median_value is not None else None,
+                "p25_value": round(p25_value, 4) if p25_value is not None else None,
+                "p75_value": round(p75_value, 4) if p75_value is not None else None,
+            })
+
+        return result
+
+    def export_anomaly_trajectory(self, timelines: Dict[str, List[dict]]) -> None:
+        """
+        Export anomaly points and time-based anomaly summaries for KMR/KRE/GFR.
+        Dynamic by design: every new pipeline run recomputes from timeline outputs.
+        """
+        kmr_points: List[dict] = []
+        kre_points: List[dict] = []
+        gfr_points: List[dict] = []
+
+        for patient_code, timeline in timelines.items():
+            for point in timeline:
+                time_key = point.get("time_key")
+                time_order = point.get("time_order")
+                pseudo_days = point.get("pseudo_time_days")
+                risk_score = _safe_float(point.get("risk_score"))
+
+                kmr_val = _safe_float(point.get("kmr"))
+                if kmr_val is not None:
+                    kmr_threshold = _is_kmr_threshold_anomaly(kmr_val)
+                    kmr_ai_flag = bool(point.get("kmr_anomaly_flag", False))
+                    kmr_points.append({
+                        "patient_code": str(patient_code),
+                        "time_key": time_key,
+                        "time_order": int(time_order) if time_order is not None else None,
+                        "pseudo_time_days": int(pseudo_days) if pseudo_days is not None else None,
+                        "value": round(kmr_val, 4),
+                        "ai_anomaly_score": _safe_float(point.get("kmr_anomaly_score")),
+                        "ai_anomaly_flag": kmr_ai_flag,
+                        "threshold_breach": kmr_threshold,
+                        "anomaly_flag": bool(kmr_ai_flag or kmr_threshold),
+                        "risk_score": round(risk_score, 2) if risk_score is not None else None,
+                    })
+
+                kre_val = _safe_float(point.get("kre"))
+                if kre_val is not None:
+                    kre_threshold = _is_kre_threshold_anomaly(kre_val)
+                    kre_ai_flag = bool(point.get("kre_anomaly_flag", False))
+                    kre_points.append({
+                        "patient_code": str(patient_code),
+                        "time_key": time_key,
+                        "time_order": int(time_order) if time_order is not None else None,
+                        "pseudo_time_days": int(pseudo_days) if pseudo_days is not None else None,
+                        "value": round(kre_val, 4),
+                        "ai_anomaly_score": _safe_float(point.get("kre_anomaly_score")),
+                        "ai_anomaly_flag": kre_ai_flag,
+                        "threshold_breach": kre_threshold,
+                        "anomaly_flag": bool(kre_ai_flag or kre_threshold),
+                        "risk_score": round(risk_score, 2) if risk_score is not None else None,
+                    })
+
+                gfr_val = _safe_float(point.get("gfr"))
+                if gfr_val is not None:
+                    gfr_threshold = _is_gfr_threshold_anomaly(gfr_val)
+                    gfr_ai_flag = bool(point.get("gfr_anomaly_flag", False))
+                    gfr_points.append({
+                        "patient_code": str(patient_code),
+                        "time_key": time_key,
+                        "time_order": int(time_order) if time_order is not None else None,
+                        "pseudo_time_days": int(pseudo_days) if pseudo_days is not None else None,
+                        "value": round(gfr_val, 4),
+                        "ai_anomaly_score": _safe_float(point.get("gfr_anomaly_score")),
+                        "ai_anomaly_flag": gfr_ai_flag,
+                        "threshold_breach": gfr_threshold,
+                        "anomaly_flag": bool(gfr_ai_flag or gfr_threshold),
+                        "risk_score": round(risk_score, 2) if risk_score is not None else None,
+                    })
+
+        payload = {
+            "metadata": {
+                "created_at": datetime.now().isoformat(),
+                "schema_version": "1.0",
+                "type": "anomaly_trajectory",
+                "n_patients": int(len(timelines)),
+            },
+            "kmr": {
+                "points": kmr_points,
+                "summary_by_time": self._build_anomaly_summary_by_time(kmr_points),
+            },
+            "kre": {
+                "points": kre_points,
+                "summary_by_time": self._build_anomaly_summary_by_time(kre_points),
+            },
+            "gfr": {
+                "points": gfr_points,
+                "summary_by_time": self._build_anomaly_summary_by_time(gfr_points),
+            },
+        }
+
+        filepath = self.output_dir / "anomaly_trajectory.json"
+        with open(filepath, "w", encoding="utf-8") as f:
+            json.dump(sanitize_for_json(payload), f, ensure_ascii=False, indent=2)
+        print(f"✅ Exported: {filepath}")
     
     def export_channel_overview(self, kmr_long: pd.DataFrame, 
                                 lab_long: pd.DataFrame) -> None:

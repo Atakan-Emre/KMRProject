@@ -72,6 +72,75 @@ export function useChannelOverview() {
   });
 }
 
+export interface AnomalyPoint {
+  patient_code: string;
+  time_key: string;
+  time_order: number;
+  pseudo_time_days: number;
+  value: number;
+  ai_anomaly_score: number | null;
+  ai_anomaly_flag: boolean;
+  threshold_breach: boolean;
+  anomaly_flag: boolean;
+  risk_score: number | null;
+}
+
+export interface AnomalySummaryPoint {
+  time_order: number;
+  time_key: string;
+  pseudo_time_days: number;
+  n_measurements: number;
+  n_anomalies: number;
+  n_ai_anomalies: number;
+  n_threshold_breaches: number;
+  anomaly_rate: number;
+  median_value: number | null;
+  p25_value: number | null;
+  p75_value: number | null;
+}
+
+export interface AnomalyMetricData {
+  points: AnomalyPoint[];
+  summary_by_time: AnomalySummaryPoint[];
+}
+
+export interface AnomalyTrajectoryData {
+  metadata: {
+    created_at: string;
+    schema_version: string;
+    type: string;
+    n_patients: number;
+  };
+  kmr: AnomalyMetricData;
+  kre: AnomalyMetricData;
+  gfr: AnomalyMetricData;
+}
+
+export function useAnomalyTrajectory() {
+  return useQuery({
+    queryKey: ['anomaly-trajectory'],
+    queryFn: async () => {
+      try {
+        return await fetchJson<AnomalyTrajectoryData>('/anomaly_trajectory.json');
+      } catch {
+        return {
+          metadata: {
+            created_at: new Date().toISOString(),
+            schema_version: "fallback",
+            type: "anomaly_trajectory",
+            n_patients: 0,
+          },
+          kmr: { points: [], summary_by_time: [] },
+          kre: { points: [], summary_by_time: [] },
+          gfr: { points: [], summary_by_time: [] },
+        } as AnomalyTrajectoryData;
+      }
+    },
+    staleTime: 5 * 60 * 1000,
+    retry: false,
+  });
+}
+
 export interface SystemConfigData {
   metadata: {
     created_at: string;

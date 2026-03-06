@@ -40,6 +40,7 @@ GENERATED_FILES = [
     "reference_band.json",
     "cohort_trajectory.json",
     "cohort_trajectory_lab.json",
+    "anomaly_trajectory.json",
     "data_summary.json",
     "patient_features.json",
     "channel_overview.json",
@@ -74,6 +75,7 @@ def clean_training_data():
         FRONTEND_PUBLIC / "reference_band.json",
         FRONTEND_PUBLIC / "cohort_trajectory.json",
         FRONTEND_PUBLIC / "cohort_trajectory_lab.json",
+        FRONTEND_PUBLIC / "anomaly_trajectory.json",
         FRONTEND_PUBLIC / "data_summary.json",
         FRONTEND_PUBLIC / "patient_features.json",
         FRONTEND_PUBLIC / "channel_overview.json",
@@ -351,6 +353,9 @@ def run_pipeline(clean_first: bool = True):
 
         # Export patient features
         exporter.export_patient_features(meta_df, patient_risks, kmr_long, lab_long, timelines)
+
+        # Export anomaly trajectory (KMR/KRE/GFR anomaly points + time summaries)
+        exporter.export_anomaly_trajectory(timelines)
 
         # Export channel overview
         exporter.export_channel_overview(kmr_long, lab_long)

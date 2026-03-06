@@ -12,6 +12,7 @@ import {
   useLABCohortTrajectory,
   useChannelOverview,
   useDoctorPerformanceReport,
+  useAnomalyTrajectory,
   useSystemConfig,
 } from "@/hooks/useKimerizmData";
 import dynamic from "next/dynamic";
@@ -22,11 +23,13 @@ import type { RiskLevel } from "@/types";
 import { formatKMR, formatTimeKey, normalizeGender } from "@/utils/formatters";
 
 const Plot = dynamic(() => import("react-plotly.js"), { ssr: false });
+type AnomalyMetric = "kmr" | "kre" | "gfr";
 
 export default function Dashboard() {
   const { patients, kpis, riskDistribution, isLoading, error } = useDashboardData();
   const { data: cohortTrajectory } = useCohortTrajectory();
   const { data: labCohortTrajectory } = useLABCohortTrajectory();
+  const { data: anomalyTrajectory } = useAnomalyTrajectory();
   const { data: doctorPerformanceReport } = useDoctorPerformanceReport();
   const { data: channelOverview } = useChannelOverview();
   const { data: systemConfig } = useSystemConfig();
@@ -34,6 +37,21 @@ export default function Dashboard() {
   const [selectedRiskLevel, setSelectedRiskLevel] = useState<RiskLevel | null>(null);
   const [quickPatientCode, setQuickPatientCode] = useState("");
   const [quickGoError, setQuickGoError] = useState<string | null>(null);
+  const [anomalyYScale, setAnomalyYScale] = useState<Record<AnomalyMetric, number>>({
+    kmr: 1.0,
+    kre: 1.0,
+    gfr: 1.0,
+  });
+  const [anomalyXWindow, setAnomalyXWindow] = useState<Record<AnomalyMetric, number>>({
+    kmr: 21,
+    kre: 10,
+    gfr: 10,
+  });
+  const [showAnomalyControls, setShowAnomalyControls] = useState<Record<AnomalyMetric, boolean>>({
+    kmr: true,
+    kre: false,
+    gfr: false,
+  });
 
   const kmrMeasurements =
     channelOverview?.coverage?.kmr?.n_measurements ??
@@ -79,6 +97,138 @@ export default function Dashboard() {
 
   const hasTrajectory = Array.isArray(cohortTrajectory?.trajectory) && cohortTrajectory.trajectory.length > 0;
   const hasLabTrajectory = Array.isArray(labCohortTrajectory?.trajectory) && labCohortTrajectory.trajectory.length > 0;
+  const hasAnomalyTrajectory = Boolean(
+    anomalyTrajectory &&
+      (
+        (anomalyTrajectory.kmr.points?.length ?? 0) > 0 ||
+        (anomalyTrajectory.kre.points?.length ?? 0) > 0 ||
+        (anomalyTrajectory.gfr.points?.length ?? 0) > 0
+      ),
+  );
+
+  const kmrAllPoints = anomalyTrajectory?.kmr?.points ?? [];
+  const kmrAnomalyPoints = kmrAllPoints.filter((p) => p.anomaly_flag);
+  const kreAllPoints = anomalyTrajectory?.kre?.points ?? [];
+  const kreAnomalyPoints = kreAllPoints.filter((p) => p.anomaly_flag);
+  const gfrAllPoints = anomalyTrajectory?.gfr?.points ?? [];
+  const gfrAnomalyPoints = gfrAllPoints.filter((p) => p.anomaly_flag);
+
+  const kmrAnomalyChartMax = Math.max(
+    0,
+    ...kmrAllPoints.map((p) => p.value),
+    ...kmrAnomalyPoints.map((p) => p.value),
+    ...(hasTrajectory ? cohortTrajectory!.trajectory.map((t) => t.bound_upper) : []),
+    2,
+  );
+  const kreAnomalyChartMax = Math.max(
+    0,
+    ...kreAllPoints.map((p) => p.value),
+    ...kreAnomalyPoints.map((p) => p.value),
+    ...(hasLabTrajectory ? labCohortTrajectory!.trajectory.map((t) => t.bound_kre_upper) : []),
+    systemConfig?.clinical_thresholds?.kre?.very_bad_gt ?? 4.5,
+  );
+  const gfrAnomalyChartMax = Math.max(
+    0,
+    ...gfrAllPoints.map((p) => p.value),
+    ...gfrAnomalyPoints.map((p) => p.value),
+    ...(hasLabTrajectory ? labCohortTrajectory!.trajectory.map((t) => t.bound_gfr_upper) : []),
+    systemConfig?.clinical_thresholds?.gfr?.very_good_ge ?? 90,
+  );
+
+  const kmrXAxisKeys = hasTrajectory
+    ? cohortTrajectory!.trajectory.map((t) => t.time_key)
+    : Array.from(new Set(kmrAllPoints.map((p) => p.time_key)));
+  const kreXAxisKeys = hasLabTrajectory
+    ? labCohortTrajectory!.trajectory.map((t) => t.time_key)
+    : Array.from(new Set(kreAllPoints.map((p) => p.time_key)));
+  const gfrXAxisKeys = hasLabTrajectory
+    ? labCohortTrajectory!.trajectory.map((t) => t.time_key)
+    : Array.from(new Set(gfrAllPoints.map((p) => p.time_key)));
+
+  const buildCategoryRange = (keys: string[], windowSize: number): [string, string] | undefined => {
+    if (!keys.length) return undefined;
+    const normalizedWindow = Math.max(2, Math.min(windowSize, keys.length));
+    if (normalizedWindow >= keys.length) return undefined;
+    return [keys[keys.length - normalizedWindow], keys[keys.length - 1]];
+  };
+
+  const kmrXRange = buildCategoryRange(kmrXAxisKeys, anomalyXWindow.kmr);
+  const kreXRange = buildCategoryRange(kreXAxisKeys, anomalyXWindow.kre);
+  const gfrXRange = buildCategoryRange(gfrXAxisKeys, anomalyXWindow.gfr);
+
+  const adjustAnomalyYScale = (metric: AnomalyMetric, delta: number) => {
+    setAnomalyYScale((prev) => {
+      const next = Math.min(3.0, Math.max(0.8, prev[metric] + delta));
+      return { ...prev, [metric]: Number(next.toFixed(2)) };
+    });
+  };
+
+  const resetAnomalyYScale = (metric: AnomalyMetric) => {
+    setAnomalyYScale((prev) => ({ ...prev, [metric]: 1.0 }));
+  };
+
+  const adjustAnomalyXWindow = (metric: AnomalyMetric, delta: number, totalPoints: number) => {
+    setAnomalyXWindow((prev) => {
+      const minWindow = Math.min(4, Math.max(2, totalPoints));
+      const maxWindow = Math.max(minWindow, totalPoints);
+      const next = Math.min(maxWindow, Math.max(minWindow, prev[metric] + delta));
+      return { ...prev, [metric]: next };
+    });
+  };
+
+  const resetAnomalyXWindow = (metric: AnomalyMetric, totalPoints: number) => {
+    setAnomalyXWindow((prev) => ({ ...prev, [metric]: Math.max(2, totalPoints) }));
+  };
+
+  const openAnomalyFullscreen = (metric: AnomalyMetric) => {
+    const container = document.getElementById(`anomaly-${metric}-container`) as HTMLElement | null;
+    if (container && typeof container.requestFullscreen === "function") {
+      container.requestFullscreen().catch(() => undefined);
+    }
+  };
+
+  const downloadDataUrl = (dataUrl: string, filename: string) => {
+    const link = document.createElement("a");
+    link.href = dataUrl;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+  };
+
+  const exportAnomalyPlot = async (metric: AnomalyMetric, format: "jpeg" | "pdf") => {
+    try {
+      const plotId = `anomaly-${metric}-plot`;
+      const plotElement = document.getElementById(plotId) as unknown as HTMLDivElement | null;
+      if (!plotElement) {
+        return;
+      }
+
+      const plotlyModule = await import("plotly.js-dist-min");
+      const Plotly = plotlyModule.default;
+      const imageData = await Plotly.toImage(plotElement, {
+        format: "jpeg",
+        width: 2200,
+        height: 1200,
+        scale: 2,
+      });
+
+      const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
+      if (format === "jpeg") {
+        downloadDataUrl(imageData, `anomaly_${metric}_${timestamp}.jpeg`);
+        return;
+      }
+
+      const { jsPDF } = await import("jspdf");
+      const pdf = new jsPDF({ orientation: "landscape", unit: "pt", format: "a4" });
+      const pageWidth = pdf.internal.pageSize.getWidth();
+      const pageHeight = pdf.internal.pageSize.getHeight();
+      pdf.addImage(imageData, "JPEG", 0, 0, pageWidth, pageHeight, undefined, "FAST");
+      pdf.save(`anomaly_${metric}_${timestamp}.pdf`);
+    } catch (err) {
+      console.error("Anomali grafik export hatası:", err);
+    }
+  };
 
   const kmrLastIqrWidth = hasTrajectory
     ? (cohortTrajectory!.trajectory[cohortTrajectory!.trajectory.length - 1].iqr_upper -
@@ -324,6 +474,7 @@ export default function Dashboard() {
           <TabsTrigger value="overview">Genel Bakış</TabsTrigger>
           <TabsTrigger value="demographics">Demografik</TabsTrigger>
           <TabsTrigger value="cohort">Hasta Seyri (AI)</TabsTrigger>
+          <TabsTrigger value="anomaly">Anomali Seyri</TabsTrigger>
         </TabsList>
 
         <TabsContent value="overview" className="space-y-6">
@@ -1312,6 +1463,476 @@ export default function Dashboard() {
                 <p className="text-muted-foreground">
                   {cohortTrajectory ? "Hasta seyri verisi bulunamadı." : "Hasta seyri verisi yükleniyor..."}
                 </p>
+              </CardContent>
+            </Card>
+          )}
+        </TabsContent>
+
+        <TabsContent value="anomaly" className="space-y-6">
+          {hasAnomalyTrajectory ? (
+            <>
+              <div className="grid gap-4 md:grid-cols-4">
+                <Card className="bg-gradient-to-br from-red-50 to-red-100">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">Toplam KMR Anomali Noktası</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-red-700">{kmrAnomalyPoints.length}</div>
+                    <p className="text-xs text-red-700">Tüm hastalar / tüm zaman noktaları</p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gradient-to-br from-amber-50 to-amber-100">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">Toplam KRE Anomali Noktası</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-amber-700">{kreAnomalyPoints.length}</div>
+                    <p className="text-xs text-amber-700">Tüm hastalar / tüm zaman noktaları</p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gradient-to-br from-cyan-50 to-cyan-100">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">Toplam GFR Anomali Noktası</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-2xl font-bold text-cyan-700">{gfrAnomalyPoints.length}</div>
+                    <p className="text-xs text-cyan-700">Tüm hastalar / tüm zaman noktaları</p>
+                  </CardContent>
+                </Card>
+                <Card className="bg-gradient-to-br from-slate-50 to-slate-100">
+                  <CardHeader className="pb-2">
+                    <CardTitle className="text-sm">Dinamik Veri Durumu</CardTitle>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="text-sm text-slate-700">
+                      <p>Hasta: {anomalyTrajectory?.metadata?.n_patients ?? 0}</p>
+                      <p>Şema: {anomalyTrajectory?.metadata?.schema_version ?? "-"}</p>
+                      <p>Güncellendi: {anomalyTrajectory?.metadata?.created_at ? new Date(anomalyTrajectory.metadata.created_at).toLocaleString('tr-TR') : "-"}</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+
+              <Card>
+                <CardHeader>
+                  <CardTitle>🔴 KMR Anomali Seyri (Tüm Hastalar)</CardTitle>
+                  <CardDescription>
+                    İyileşmiş KMR seyri referansı korunur; tüm hastalardaki KMR anomalileri kırmızı noktalarla overlay gösterilir.
+                  </CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="mb-3 rounded-md border border-slate-200 bg-slate-50 p-2">
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <p className="text-xs text-slate-600">Grafik kontrolleri</p>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => setShowAnomalyControls((prev) => ({ ...prev, kmr: !prev.kmr }))}
+                      >
+                        {showAnomalyControls.kmr ? "Kontrolleri Gizle" : "Kontrolleri Aç"}
+                      </Button>
+                    </div>
+                    {showAnomalyControls.kmr && (
+                      <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-slate-200 pt-2">
+                        <Button size="sm" variant="outline" onClick={() => openAnomalyFullscreen("kmr")}>Tam Ekran</Button>
+                        <Button size="sm" variant="outline" onClick={() => exportAnomalyPlot("kmr", "jpeg")}>JPEG</Button>
+                        <Button size="sm" variant="outline" onClick={() => exportAnomalyPlot("kmr", "pdf")}>PDF</Button>
+                        <Button size="sm" variant="outline" onClick={() => adjustAnomalyYScale("kmr", 0.2)}>Y+</Button>
+                        <Button size="sm" variant="outline" onClick={() => adjustAnomalyYScale("kmr", -0.2)}>Y-</Button>
+                        <Button size="sm" variant="outline" onClick={() => resetAnomalyYScale("kmr")}>Y Sıfırla</Button>
+                        <Button size="sm" variant="outline" onClick={() => adjustAnomalyXWindow("kmr", -2, kmrXAxisKeys.length)}>X+</Button>
+                        <Button size="sm" variant="outline" onClick={() => adjustAnomalyXWindow("kmr", 2, kmrXAxisKeys.length)}>X-</Button>
+                        <Button size="sm" variant="outline" onClick={() => resetAnomalyXWindow("kmr", kmrXAxisKeys.length)}>X Tümü</Button>
+                        <span className="basis-full text-xs text-slate-600 md:ml-auto md:basis-auto">
+                          Y: x{anomalyYScale.kmr.toFixed(1)} | X pencere: {Math.min(anomalyXWindow.kmr, kmrXAxisKeys.length)}/{kmrXAxisKeys.length}
+                        </span>
+                      </div>
+                    )}
+                  </div>
+                  <div id="anomaly-kmr-container" className="anomaly-plot-container h-96 rounded-md border border-slate-200 bg-white p-2">
+                    <Plot
+                      divId="anomaly-kmr-plot"
+                      data={[
+                        ...(hasTrajectory
+                          ? [
+                              {
+                                x: [...cohortTrajectory!.trajectory.map((t) => t.time_key), ...cohortTrajectory!.trajectory.slice().reverse().map((t) => t.time_key)],
+                                y: [...cohortTrajectory!.trajectory.map((t) => t.bound_upper), ...cohortTrajectory!.trajectory.slice().reverse().map((t) => t.bound_lower)],
+                                fill: 'toself',
+                                fillcolor: 'rgba(59, 130, 246, 0.15)',
+                                line: { color: 'transparent' },
+                                name: 'P10-P90 Aralığı',
+                                showlegend: true,
+                                hoverinfo: 'skip',
+                                type: 'scatter' as const,
+                              },
+                              {
+                                x: [...cohortTrajectory!.trajectory.map((t) => t.time_key), ...cohortTrajectory!.trajectory.slice().reverse().map((t) => t.time_key)],
+                                y: [...cohortTrajectory!.trajectory.map((t) => t.iqr_upper), ...cohortTrajectory!.trajectory.slice().reverse().map((t) => t.iqr_lower)],
+                                fill: 'toself',
+                                fillcolor: 'rgba(34, 197, 94, 0.2)',
+                                line: { color: 'transparent' },
+                                name: 'IQR (P25-P75)',
+                                showlegend: true,
+                                hoverinfo: 'skip',
+                                type: 'scatter' as const,
+                              },
+                              {
+                                x: cohortTrajectory!.trajectory.map((t) => t.time_key),
+                                y: cohortTrajectory!.trajectory.map((t) => t.expected_kmr),
+                                mode: 'lines+markers',
+                                name: 'AI Tahmini (LSTM)',
+                                line: { color: '#3b82f6', width: 3 },
+                                marker: { size: 8 },
+                                type: 'scatter' as const,
+                              },
+                              {
+                                x: cohortTrajectory!.trajectory.map((t) => t.time_key),
+                                y: cohortTrajectory!.trajectory.map((t) => t.cohort_median),
+                                mode: 'lines+markers',
+                                name: 'Gerçek Hasta Medyan',
+                                line: { color: '#22c55e', width: 2, dash: 'dash' },
+                                marker: { size: 6 },
+                                type: 'scatter' as const,
+                              },
+                            ]
+                          : []),
+                        {
+                          x: kmrAllPoints.map((p) => p.time_key),
+                          y: kmrAllPoints.map((p) => p.value),
+                          mode: 'markers',
+                          name: 'Tüm KMR Ölçümleri',
+                          marker: { color: 'rgba(100,116,139,0.35)', size: 6 },
+                          type: 'scatter',
+                          hovertemplate: '<b>Hasta %{text}</b><br>%{x}<br>KMR: %{y:.4f}<extra></extra>',
+                          text: kmrAllPoints.map((p) => p.patient_code),
+                        },
+                        {
+                          x: kmrAnomalyPoints.map((p) => p.time_key),
+                          y: kmrAnomalyPoints.map((p) => p.value),
+                          mode: 'markers',
+                          name: 'KMR Anomali',
+                          marker: { color: '#ef4444', size: 9, symbol: 'circle' },
+                          type: 'scatter',
+                          hovertemplate: '<b>Hasta %{text}</b><br>%{x}<br>Anomali KMR: %{y:.4f}<extra></extra>',
+                          text: kmrAnomalyPoints.map((p) => p.patient_code),
+                        },
+                      ]}
+                      layout={{
+                        xaxis: {
+                          title: 'Zaman Noktası',
+                          tickangle: -45,
+                          ...(kmrXRange ? { range: kmrXRange } : {}),
+                        },
+                        yaxis: { title: 'KMR (%)', rangemode: 'tozero', range: [0, kmrAnomalyChartMax * (1.18 * anomalyYScale.kmr) + 0.2] },
+                        margin: { t: 85, b: 100, l: 60, r: 30 },
+                        legend: { orientation: 'h', y: 1.24, yanchor: 'bottom', x: 0, xanchor: 'left' },
+                        paper_bgcolor: '#ffffff',
+                        plot_bgcolor: '#ffffff',
+                        shapes: [
+                          { type: 'line', x0: 0, x1: 1, xref: 'paper', y0: 0.5, y1: 0.5, line: { color: '#f59e0b', width: 1, dash: 'dot' } },
+                          { type: 'line', x0: 0, x1: 1, xref: 'paper', y0: 2, y1: 2, line: { color: '#ef4444', width: 1, dash: 'dot' } },
+                        ],
+                        annotations: [
+                          { x: 0.02, xref: 'paper', y: 0.5, text: '0.5% dikkat', showarrow: false, font: { size: 10, color: '#f59e0b' } },
+                          { x: 0.02, xref: 'paper', y: 2, text: '2% kritik', showarrow: false, font: { size: 10, color: '#ef4444' } },
+                        ],
+                      }}
+                      config={{
+                        responsive: true,
+                        displayModeBar: false,
+                        toImageButtonOptions: {
+                          format: "jpeg",
+                          filename: "anomaly_kmr",
+                          width: 2200,
+                          height: 1200,
+                          scale: 2,
+                        },
+                      }}
+                      className="w-full h-full"
+                    />
+                  </div>
+                </CardContent>
+              </Card>
+
+              <div className="grid gap-6 xl:grid-cols-2">
+                <Card>
+                  <CardHeader>
+                    <CardTitle>🧪 KRE Anomali Seyri</CardTitle>
+                    <CardDescription>KRE medyan seyri + anomali noktaları</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="mb-3 rounded-md border border-slate-200 bg-slate-50 p-2">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <p className="text-xs text-slate-600">Grafik kontrolleri</p>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setShowAnomalyControls((prev) => ({ ...prev, kre: !prev.kre }))}
+                        >
+                          {showAnomalyControls.kre ? "Kontrolleri Gizle" : "Kontrolleri Aç"}
+                        </Button>
+                      </div>
+                      {showAnomalyControls.kre && (
+                        <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-slate-200 pt-2">
+                          <Button size="sm" variant="outline" onClick={() => openAnomalyFullscreen("kre")}>Tam Ekran</Button>
+                          <Button size="sm" variant="outline" onClick={() => exportAnomalyPlot("kre", "jpeg")}>JPEG</Button>
+                          <Button size="sm" variant="outline" onClick={() => exportAnomalyPlot("kre", "pdf")}>PDF</Button>
+                          <Button size="sm" variant="outline" onClick={() => adjustAnomalyYScale("kre", 0.2)}>Y+</Button>
+                          <Button size="sm" variant="outline" onClick={() => adjustAnomalyYScale("kre", -0.2)}>Y-</Button>
+                          <Button size="sm" variant="outline" onClick={() => resetAnomalyYScale("kre")}>Y Sıfırla</Button>
+                        <Button size="sm" variant="outline" onClick={() => adjustAnomalyXWindow("kre", -2, kreXAxisKeys.length)}>X+</Button>
+                        <Button size="sm" variant="outline" onClick={() => adjustAnomalyXWindow("kre", 2, kreXAxisKeys.length)}>X-</Button>
+                        <Button size="sm" variant="outline" onClick={() => resetAnomalyXWindow("kre", kreXAxisKeys.length)}>X Tümü</Button>
+                          <span className="basis-full text-xs text-slate-600 md:ml-auto md:basis-auto">
+                            Y: x{anomalyYScale.kre.toFixed(1)} | X pencere: {Math.min(anomalyXWindow.kre, kreXAxisKeys.length)}/{kreXAxisKeys.length}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <div id="anomaly-kre-container" className="anomaly-plot-container h-80 rounded-md border border-slate-200 bg-white p-2">
+                      <Plot
+                        divId="anomaly-kre-plot"
+                        data={[
+                          ...(hasLabTrajectory
+                            ? [
+                                {
+                                  x: [...labCohortTrajectory!.trajectory.map((t) => t.time_key), ...labCohortTrajectory!.trajectory.slice().reverse().map((t) => t.time_key)],
+                                  y: [...labCohortTrajectory!.trajectory.map((t) => t.bound_kre_upper), ...labCohortTrajectory!.trajectory.slice().reverse().map((t) => t.bound_kre_lower)],
+                                  fill: 'toself',
+                                  fillcolor: 'rgba(14, 165, 233, 0.14)',
+                                  line: { color: 'transparent' },
+                                  name: 'KRE P10-P90',
+                                  type: 'scatter' as const,
+                                  hoverinfo: 'skip',
+                                  showlegend: true,
+                                },
+                                {
+                                  x: [...labCohortTrajectory!.trajectory.map((t) => t.time_key), ...labCohortTrajectory!.trajectory.slice().reverse().map((t) => t.time_key)],
+                                  y: [...labCohortTrajectory!.trajectory.map((t) => t.iqr_kre_upper), ...labCohortTrajectory!.trajectory.slice().reverse().map((t) => t.iqr_kre_lower)],
+                                  fill: 'toself',
+                                  fillcolor: 'rgba(2, 132, 199, 0.20)',
+                                  line: { color: 'transparent' },
+                                  name: 'KRE IQR',
+                                  type: 'scatter' as const,
+                                  hoverinfo: 'skip',
+                                  showlegend: true,
+                                },
+                                {
+                                  x: labCohortTrajectory!.trajectory.map((t) => t.time_key),
+                                  y: labCohortTrajectory!.trajectory.map((t) => t.expected_kre),
+                                  mode: 'lines+markers',
+                                  name: 'KRE AI Tahmini',
+                                  line: { color: '#0284c7', width: 3 },
+                                  marker: { size: 6 },
+                                  type: 'scatter' as const,
+                                },
+                                {
+                                  x: labCohortTrajectory!.trajectory.map((t) => t.time_key),
+                                  y: labCohortTrajectory!.trajectory.map((t) => t.cohort_kre_median),
+                                  mode: 'lines+markers',
+                                  name: 'KRE Cohort Medyan',
+                                  line: { color: '#075985', width: 2, dash: 'dash' },
+                                  marker: { size: 5 },
+                                  type: 'scatter' as const,
+                                },
+                              ]
+                            : []),
+                          {
+                            x: kreAllPoints.map((p) => p.time_key),
+                            y: kreAllPoints.map((p) => p.value),
+                            mode: 'markers',
+                            name: 'Tüm KRE Ölçümleri',
+                            marker: { color: 'rgba(100,116,139,0.35)', size: 6 },
+                            type: 'scatter',
+                            text: kreAllPoints.map((p) => p.patient_code),
+                            hovertemplate: '<b>Hasta %{text}</b><br>%{x}<br>KRE: %{y:.3f}<extra></extra>',
+                          },
+                          {
+                            x: kreAnomalyPoints.map((p) => p.time_key),
+                            y: kreAnomalyPoints.map((p) => p.value),
+                            mode: 'markers',
+                            name: 'KRE Anomali',
+                            marker: { color: '#ef4444', size: 9 },
+                            type: 'scatter',
+                            text: kreAnomalyPoints.map((p) => p.patient_code),
+                            hovertemplate: '<b>Hasta %{text}</b><br>%{x}<br>Anomali KRE: %{y:.3f}<extra></extra>',
+                          },
+                        ]}
+                      layout={{
+                        xaxis: {
+                          title: 'Zaman Noktası',
+                          tickangle: -35,
+                          ...(kreXRange ? { range: kreXRange } : {}),
+                        },
+                        yaxis: { title: 'KRE', rangemode: 'tozero', range: [0, kreAnomalyChartMax * (1.18 * anomalyYScale.kre) + 0.2] },
+                        margin: { t: 85, b: 80, l: 55, r: 20 },
+                        legend: { orientation: 'h', y: 1.24, yanchor: 'bottom', x: 0, xanchor: 'left' },
+                        paper_bgcolor: '#ffffff',
+                        plot_bgcolor: '#ffffff',
+                        shapes: [
+                          { type: 'line', x0: 0, x1: 1, xref: 'paper', y0: systemConfig?.clinical_thresholds?.kre?.very_good_lt ?? 1.2, y1: systemConfig?.clinical_thresholds?.kre?.very_good_lt ?? 1.2, line: { color: '#22c55e', width: 1, dash: 'dot' } },
+                          { type: 'line', x0: 0, x1: 1, xref: 'paper', y0: systemConfig?.clinical_thresholds?.kre?.very_bad_gt ?? 4.5, y1: systemConfig?.clinical_thresholds?.kre?.very_bad_gt ?? 4.5, line: { color: '#ef4444', width: 1, dash: 'dot' } },
+                        ],
+                      }}
+                      config={{
+                        responsive: true,
+                        displayModeBar: false,
+                        toImageButtonOptions: {
+                          format: "jpeg",
+                          filename: "anomaly_kre",
+                          width: 2200,
+                          height: 1200,
+                          scale: 2,
+                        },
+                      }}
+                      className="w-full h-full"
+                    />
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle>🧪 GFR Anomali Seyri</CardTitle>
+                    <CardDescription>GFR medyan seyri + anomali noktaları</CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="mb-3 rounded-md border border-slate-200 bg-slate-50 p-2">
+                      <div className="flex flex-wrap items-center justify-between gap-2">
+                        <p className="text-xs text-slate-600">Grafik kontrolleri</p>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setShowAnomalyControls((prev) => ({ ...prev, gfr: !prev.gfr }))}
+                        >
+                          {showAnomalyControls.gfr ? "Kontrolleri Gizle" : "Kontrolleri Aç"}
+                        </Button>
+                      </div>
+                      {showAnomalyControls.gfr && (
+                        <div className="mt-2 flex flex-wrap items-center gap-2 border-t border-slate-200 pt-2">
+                          <Button size="sm" variant="outline" onClick={() => openAnomalyFullscreen("gfr")}>Tam Ekran</Button>
+                          <Button size="sm" variant="outline" onClick={() => exportAnomalyPlot("gfr", "jpeg")}>JPEG</Button>
+                          <Button size="sm" variant="outline" onClick={() => exportAnomalyPlot("gfr", "pdf")}>PDF</Button>
+                          <Button size="sm" variant="outline" onClick={() => adjustAnomalyYScale("gfr", 0.2)}>Y+</Button>
+                          <Button size="sm" variant="outline" onClick={() => adjustAnomalyYScale("gfr", -0.2)}>Y-</Button>
+                          <Button size="sm" variant="outline" onClick={() => resetAnomalyYScale("gfr")}>Y Sıfırla</Button>
+                          <Button size="sm" variant="outline" onClick={() => adjustAnomalyXWindow("gfr", -2, gfrXAxisKeys.length)}>X+</Button>
+                          <Button size="sm" variant="outline" onClick={() => adjustAnomalyXWindow("gfr", 2, gfrXAxisKeys.length)}>X-</Button>
+                          <Button size="sm" variant="outline" onClick={() => resetAnomalyXWindow("gfr", gfrXAxisKeys.length)}>X Tümü</Button>
+                          <span className="basis-full text-xs text-slate-600 md:ml-auto md:basis-auto">
+                            Y: x{anomalyYScale.gfr.toFixed(1)} | X pencere: {Math.min(anomalyXWindow.gfr, gfrXAxisKeys.length)}/{gfrXAxisKeys.length}
+                          </span>
+                        </div>
+                      )}
+                    </div>
+                    <div id="anomaly-gfr-container" className="anomaly-plot-container h-80 rounded-md border border-slate-200 bg-white p-2">
+                      <Plot
+                        divId="anomaly-gfr-plot"
+                        data={[
+                          ...(hasLabTrajectory
+                            ? [
+                                {
+                                  x: [...labCohortTrajectory!.trajectory.map((t) => t.time_key), ...labCohortTrajectory!.trajectory.slice().reverse().map((t) => t.time_key)],
+                                  y: [...labCohortTrajectory!.trajectory.map((t) => t.bound_gfr_upper), ...labCohortTrajectory!.trajectory.slice().reverse().map((t) => t.bound_gfr_lower)],
+                                  fill: 'toself',
+                                  fillcolor: 'rgba(6, 182, 212, 0.14)',
+                                  line: { color: 'transparent' },
+                                  name: 'GFR P10-P90',
+                                  type: 'scatter' as const,
+                                  hoverinfo: 'skip',
+                                  showlegend: true,
+                                },
+                                {
+                                  x: [...labCohortTrajectory!.trajectory.map((t) => t.time_key), ...labCohortTrajectory!.trajectory.slice().reverse().map((t) => t.time_key)],
+                                  y: [...labCohortTrajectory!.trajectory.map((t) => t.iqr_gfr_upper), ...labCohortTrajectory!.trajectory.slice().reverse().map((t) => t.iqr_gfr_lower)],
+                                  fill: 'toself',
+                                  fillcolor: 'rgba(8, 145, 178, 0.20)',
+                                  line: { color: 'transparent' },
+                                  name: 'GFR IQR',
+                                  type: 'scatter' as const,
+                                  hoverinfo: 'skip',
+                                  showlegend: true,
+                                },
+                                {
+                                  x: labCohortTrajectory!.trajectory.map((t) => t.time_key),
+                                  y: labCohortTrajectory!.trajectory.map((t) => t.expected_gfr),
+                                  mode: 'lines+markers',
+                                  name: 'GFR AI Tahmini',
+                                  line: { color: '#0891b2', width: 3 },
+                                  marker: { size: 6 },
+                                  type: 'scatter' as const,
+                                },
+                                {
+                                  x: labCohortTrajectory!.trajectory.map((t) => t.time_key),
+                                  y: labCohortTrajectory!.trajectory.map((t) => t.cohort_gfr_median),
+                                  mode: 'lines+markers',
+                                  name: 'GFR Cohort Medyan',
+                                  line: { color: '#155e75', width: 2, dash: 'dash' },
+                                  marker: { size: 5 },
+                                  type: 'scatter' as const,
+                                },
+                              ]
+                            : []),
+                          {
+                            x: gfrAllPoints.map((p) => p.time_key),
+                            y: gfrAllPoints.map((p) => p.value),
+                            mode: 'markers',
+                            name: 'Tüm GFR Ölçümleri',
+                            marker: { color: 'rgba(100,116,139,0.35)', size: 6 },
+                            type: 'scatter',
+                            text: gfrAllPoints.map((p) => p.patient_code),
+                            hovertemplate: '<b>Hasta %{text}</b><br>%{x}<br>GFR: %{y:.2f}<extra></extra>',
+                          },
+                          {
+                            x: gfrAnomalyPoints.map((p) => p.time_key),
+                            y: gfrAnomalyPoints.map((p) => p.value),
+                            mode: 'markers',
+                            name: 'GFR Anomali',
+                            marker: { color: '#ef4444', size: 9 },
+                            type: 'scatter',
+                            text: gfrAnomalyPoints.map((p) => p.patient_code),
+                            hovertemplate: '<b>Hasta %{text}</b><br>%{x}<br>Anomali GFR: %{y:.2f}<extra></extra>',
+                          },
+                        ]}
+                      layout={{
+                        xaxis: {
+                          title: 'Zaman Noktası',
+                          tickangle: -35,
+                          ...(gfrXRange ? { range: gfrXRange } : {}),
+                        },
+                        yaxis: { title: 'GFR', rangemode: 'tozero', range: [0, gfrAnomalyChartMax * (1.18 * anomalyYScale.gfr) + 5] },
+                        margin: { t: 85, b: 80, l: 55, r: 20 },
+                        legend: { orientation: 'h', y: 1.24, yanchor: 'bottom', x: 0, xanchor: 'left' },
+                        paper_bgcolor: '#ffffff',
+                        plot_bgcolor: '#ffffff',
+                        shapes: [
+                          { type: 'line', x0: 0, x1: 1, xref: 'paper', y0: systemConfig?.clinical_thresholds?.gfr?.very_good_ge ?? 90, y1: systemConfig?.clinical_thresholds?.gfr?.very_good_ge ?? 90, line: { color: '#22c55e', width: 1, dash: 'dot' } },
+                          { type: 'line', x0: 0, x1: 1, xref: 'paper', y0: systemConfig?.clinical_thresholds?.gfr?.very_bad_le ?? 15, y1: systemConfig?.clinical_thresholds?.gfr?.very_bad_le ?? 15, line: { color: '#ef4444', width: 1, dash: 'dot' } },
+                        ],
+                      }}
+                      config={{
+                        responsive: true,
+                        displayModeBar: false,
+                        toImageButtonOptions: {
+                          format: "jpeg",
+                          filename: "anomaly_gfr",
+                          width: 2200,
+                          height: 1200,
+                          scale: 2,
+                        },
+                      }}
+                      className="w-full h-full"
+                    />
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </>
+          ) : (
+            <Card>
+              <CardContent className="flex items-center justify-center h-64">
+                <p className="text-muted-foreground">Anomali seyri verisi bulunamadı. Pipeline sonrası otomatik oluşur.</p>
               </CardContent>
             </Card>
           )}
