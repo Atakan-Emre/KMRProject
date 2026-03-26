@@ -29,8 +29,8 @@
 
 | Metrik | Hasta (Median / IQR) | Referans (Median / IQR) | Son Olcum Zamani |
 |---|---|---|---|
-| KMR | 1.783 / 13.574 | 0.227 / 0.318 | 12. Ay |
-| KRE | 0.555 / 0.120 | 1.020 / 0.560 | 12. Ay |
+| KMR | 1.783 / 13.574 | 0.138 / 0.217 | 12. Ay |
+| KRE | 0.555 / 0.120 | 1.050 / 0.610 | 12. Ay |
 | GFR | - / - | - / - | - |
 
 ## AI Performans (Hasta Bazli)
@@ -38,7 +38,7 @@
 | Metrik | Eval Nokta | MAE | RMSE | MAPE | Aralik Kapsama | Son Hata |
 |---|---:|---:|---:|---:|---:|---:|
 | KMR | 2 | 2.8536 | 4.0130 | %2110.71 | %50.0 | -0.0319 |
-| KRE | 5 | 0.144 | 0.161 | %29.00 | %40.0 | 0.090 |
+| KRE | 5 | 0.154 | 0.167 | %30.78 | %0.0 | 0.130 |
 | GFR | 0 | - | - | - | %0.0 | - |
 
 ## Zaman Serisi Detay Tablosu
@@ -56,15 +56,15 @@
 | 3. Hafta | - | 0.0490 | Ongoru | 0.47 | 0.47 | Olcum Kopyasi | - | - | Yetersiz Veri | 7.8 | Normal | - |
 | 1. Ay | - | 0.0490 | Ongoru | 0.45 | 0.45 | Olcum Kopyasi | - | - | Yetersiz Veri | 8.6 | Normal | - |
 | 2. Ay | - | 0.0490 | Ongoru | 0.44 | 0.44 | Olcum Kopyasi | - | - | Yetersiz Veri | 9.1 | Normal | - |
-| 3. Ay | - | 0.0490 | Ongoru | 0.56 | 0.67 | Model | - | - | Yetersiz Veri | 9.3 | Normal | - |
-| 4. Ay | - | 0.0490 | Ongoru | 0.56 | 0.71 | Model | - | - | Yetersiz Veri | 9.7 | Normal | - |
+| 3. Ay | - | 0.0490 | Ongoru | 0.56 | 0.68 | Model | - | - | Yetersiz Veri | 9.3 | Normal | - |
+| 4. Ay | - | 0.0490 | Ongoru | 0.56 | 0.69 | Model | - | - | Yetersiz Veri | 9.7 | Normal | - |
 | 5. Ay | 1.7833 | 1.7833 | Olcum Kopyasi | 0.42 | 0.70 | Model | - | - | Yetersiz Veri | 23.1 | Normal | - |
-| 6. Ay | 0.1345 | 5.8097 | Model | 0.58 | 0.67 | Model | - | - | Yetersiz Veri | 14.6 | Normal | - |
+| 6. Ay | 0.1345 | 5.8097 | Model | 0.58 | 0.69 | Model | - | - | Yetersiz Veri | 14.6 | Normal | - |
 | 7. Ay | - | 1.6040 | Ongoru | - | - | Uygulanmaz | - | - | Uygulanmaz | 0.0 | Normal | - |
 | 8. Ay | - | 1.6040 | Ongoru | - | - | Uygulanmaz | - | - | Uygulanmaz | 0.0 | Normal | - |
 | 9. Ay | - | 1.6040 | Ongoru | - | - | Uygulanmaz | - | - | Uygulanmaz | 0.0 | Normal | - |
 | 10. Ay | - | 1.6040 | Ongoru | - | - | Uygulanmaz | - | - | Uygulanmaz | 0.0 | Normal | - |
 | 11. Ay | - | 1.6040 | Ongoru | - | - | Uygulanmaz | - | - | Uygulanmaz | 0.0 | Normal | - |
-| 12. Ay | 1.6359 | 1.6040 | Model | 0.55 | 0.64 | Model | - | - | Yetersiz Veri | 22.4 | Normal | - |
+| 12. Ay | 1.6359 | 1.6040 | Model | 0.55 | 0.68 | Model | - | - | Yetersiz Veri | 22.4 | Normal | - |
 
 > Not: Bu dosya `python3 backend/run_all.py` ile otomatik uretilir.

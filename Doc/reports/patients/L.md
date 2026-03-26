@@ -29,17 +29,17 @@
 
 | Metrik | Hasta (Median / IQR) | Referans (Median / IQR) | Son Olcum Zamani |
 |---|---|---|---|
-| KMR | 0.158 / 0.772 | 0.227 / 0.318 | 12. Ay |
-| KRE | 1.210 / 0.173 | 1.020 / 0.560 | 12. Ay |
-| GFR | 55.700 / 10.200 | 64.000 / 15.000 | 12. Ay |
+| KMR | 0.158 / 0.772 | 0.138 / 0.217 | 12. Ay |
+| KRE | 1.210 / 0.173 | 1.050 / 0.610 | 12. Ay |
+| GFR | 55.700 / 10.200 | 64.000 / 13.500 | 12. Ay |
 
 ## AI Performans (Hasta Bazli)
 
 | Metrik | Eval Nokta | MAE | RMSE | MAPE | Aralik Kapsama | Son Hata |
 |---|---:|---:|---:|---:|---:|---:|
 | KMR | 7 | 0.3714 | 0.6257 | %565.89 | %0.0 | 0.0930 |
-| KRE | 5 | 0.160 | 0.169 | %12.96 | %80.0 | 0.210 |
-| GFR | 5 | 63.06 | 63.94 | %123.39 | %0.0 | 53.30 |
+| KRE | 5 | 0.322 | 0.335 | %26.07 | %20.0 | 0.390 |
+| GFR | 5 | 14.24 | 15.70 | %28.85 | %0.0 | 8.40 |
 
 ## Zaman Serisi Detay Tablosu
 
@@ -56,15 +56,15 @@
 | 3. Hafta | - | 0.9666 | Ongoru | 1.06 | 1.06 | Olcum Kopyasi | 65.4 | 65.4 | Olcum Kopyasi | 19.6 | Normal | - |
 | 1. Ay | - | 0.9666 | Ongoru | 1.34 | 1.34 | Olcum Kopyasi | 49.2 | 49.2 | Olcum Kopyasi | 22.6 | Normal | - |
 | 2. Ay | - | 0.9666 | Ongoru | 0.96 | 0.96 | Olcum Kopyasi | 73.7 | 73.7 | Olcum Kopyasi | 18.5 | Normal | - |
-| 3. Ay | - | 0.9666 | Ongoru | 1.21 | 1.41 | Model | 55.7 | 117.2 | Model | 16.2 | Normal | - |
-| 4. Ay | - | 0.9666 | Ongoru | 1.52 | 1.43 | Model | 42.3 | 125.3 | Model | 24.9 | Normal | - |
-| 5. Ay | - | 0.9666 | Ongoru | 1.21 | 1.41 | Model | 55.7 | 118.0 | Model | 16.7 | Normal | - |
-| 6. Ay | - | 0.9666 | Ongoru | 1.27 | 1.37 | Model | 52.6 | 107.8 | Model | 18.4 | Normal | - |
+| 3. Ay | - | 0.9666 | Ongoru | 1.21 | 1.59 | Model | 55.7 | 66.2 | Model | 16.2 | Normal | - |
+| 4. Ay | - | 0.9666 | Ongoru | 1.52 | 1.68 | Model | 42.3 | 69.4 | Model | 24.9 | Normal | - |
+| 5. Ay | - | 0.9666 | Ongoru | 1.21 | 1.61 | Model | 55.7 | 67.9 | Model | 16.7 | Normal | - |
+| 6. Ay | - | 0.9666 | Ongoru | 1.27 | 1.55 | Model | 52.6 | 65.6 | Model | 18.4 | Normal | - |
 | 7. Ay | 0.1031 | 0.9666 | Model | - | - | Uygulanmaz | - | - | Uygulanmaz | 13.8 | Normal | - |
 | 8. Ay | 0.0708 | 0.1404 | Model | - | - | Uygulanmaz | - | - | Uygulanmaz | 10.5 | Normal | - |
 | 9. Ay | 0.0000 | 0.0200 | Model | - | - | Uygulanmaz | - | - | Uygulanmaz | 10.3 | Normal | - |
 | 10. Ay | 0.0764 | 0.1373 | Model | - | - | Uygulanmaz | - | - | Uygulanmaz | 11.7 | Normal | - |
 | 11. Ay | 0.3067 | 0.2174 | Model | - | - | Uygulanmaz | - | - | Uygulanmaz | 14.4 | Normal | - |
-| 12. Ay | 0.1333 | 0.2263 | Model | 1.17 | 1.38 | Model | 57.0 | 110.3 | Model | 13.8 | Normal | - |
+| 12. Ay | 0.1333 | 0.2263 | Model | 1.17 | 1.56 | Model | 57.0 | 65.4 | Model | 13.8 | Normal | - |
 
 > Not: Bu dosya `python3 backend/run_all.py` ile otomatik uretilir.

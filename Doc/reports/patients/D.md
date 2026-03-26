@@ -29,9 +29,9 @@
 
 | Metrik | Hasta (Median / IQR) | Referans (Median / IQR) | Son Olcum Zamani |
 |---|---|---|---|
-| KMR | 0.270 / 0.777 | 0.364 / 0.137 | 2. Ay |
-| KRE | 1.420 / 0.258 | 1.190 / 0.660 | 3. Ay |
-| GFR | 56.350 / 15.100 | 62.100 / 22.300 | 3. Ay |
+| KMR | 0.270 / 0.777 | 0.188 / 0.088 | 2. Ay |
+| KRE | 1.420 / 0.258 | 1.160 / 0.640 | 3. Ay |
+| GFR | 56.350 / 15.100 | 64.200 / 29.800 | 3. Ay |
 
 ## AI Performans (Hasta Bazli)
 

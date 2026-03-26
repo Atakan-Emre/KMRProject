@@ -1,22 +1,22 @@
 {
   "metadata": {
-    "created_at": "2026-03-06T20:12:44.139047",
+    "created_at": "2026-03-26T15:18:24.178739",
     "schema_version": "3.0"
   },
   "totals": {
-    "n_patients": 41,
-    "improved_proxy_count": 10,
-    "patients_with_anomalies": 27
+    "n_patients": 44,
+    "improved_proxy_count": 19,
+    "patients_with_anomalies": 33
   },
   "risk_distribution": {
-    "Normal": 14,
+    "Normal": 16,
     "Dikkat": 22,
-    "Kritik": 5,
+    "Kritik": 6,
     "Çok Kritik": 0
   },
   "averages": {
-    "risk_score": 38.3,
-    "kmr_last": 0.4431,
+    "risk_score": 38.1,
+    "kmr_last": 0.3519,
     "kre_last": 1.32,
     "gfr_last": 67.1
   }

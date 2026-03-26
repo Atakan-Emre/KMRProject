@@ -29,7 +29,7 @@
 
 | Metrik | Hasta (Median / IQR) | Referans (Median / IQR) | Son Olcum Zamani |
 |---|---|---|---|
-| KMR | 2.306 / 1.503 | 0.129 / 1.647 | 6. Gun |
+| KMR | 2.306 / 1.503 | 0.396 / 1.799 | 6. Gun |
 | KRE | - / - | - / - | - |
 | GFR | - / - | - / - | - |
 

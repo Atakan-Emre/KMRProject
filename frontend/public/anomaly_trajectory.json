@@ -1,9 +1,9 @@
 {
   "metadata": {
-    "created_at": "2026-03-06T20:12:44.191928",
+    "created_at": "2026-03-26T15:18:24.230112",
     "schema_version": "1.0",
     "type": "anomaly_trajectory",
-    "n_patients": 41
+    "n_patients": 44
   },
   "kmr": {
     "points": [
@@ -721,11 +721,11 @@
         "time_order": 1,
         "pseudo_time_days": 1,
         "value": 5.2143,
-        "ai_anomaly_score": 43.59,
+        "ai_anomaly_score": 33.04,
         "ai_anomaly_flag": false,
         "threshold_breach": true,
         "anomaly_flag": true,
-        "risk_score": 22.1
+        "risk_score": 20.5
       },
       {
         "patient_code": "I",
@@ -733,11 +733,11 @@
         "time_order": 2,
         "pseudo_time_days": 2,
         "value": 0.0488,
-        "ai_anomaly_score": 11.84,
+        "ai_anomaly_score": 13.75,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.0
+        "risk_score": 12.3
       },
       {
         "patient_code": "I",
@@ -745,11 +745,11 @@
         "time_order": 3,
         "pseudo_time_days": 3,
         "value": 0.3987,
-        "ai_anomaly_score": 8.09,
+        "ai_anomaly_score": 10.58,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.2
+        "risk_score": 18.6
       },
       {
         "patient_code": "I",
@@ -757,11 +757,11 @@
         "time_order": 4,
         "pseudo_time_days": 4,
         "value": 0.0,
-        "ai_anomaly_score": 12.37,
+        "ai_anomaly_score": 14.19,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.8
+        "risk_score": 13.1
       },
       {
         "patient_code": "I",
@@ -769,11 +769,11 @@
         "time_order": 5,
         "pseudo_time_days": 5,
         "value": 1.3909,
-        "ai_anomaly_score": 2.56,
+        "ai_anomaly_score": 1.59,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 25.2
+        "risk_score": 25.0
       },
       {
         "patient_code": "I",
@@ -781,11 +781,11 @@
         "time_order": 6,
         "pseudo_time_days": 6,
         "value": 0.0642,
-        "ai_anomaly_score": 11.68,
+        "ai_anomaly_score": 13.61,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.9
+        "risk_score": 23.4
       },
       {
         "patient_code": "I",
@@ -793,11 +793,11 @@
         "time_order": 7,
         "pseudo_time_days": 7,
         "value": 0.0,
-        "ai_anomaly_score": 12.37,
+        "ai_anomaly_score": 14.19,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 30.7
+        "risk_score": 32.8
       },
       {
         "patient_code": "I",
@@ -805,11 +805,23 @@
         "time_order": 8,
         "pseudo_time_days": 14,
         "value": 4.3271,
-        "ai_anomaly_score": 34.07,
+        "ai_anomaly_score": 25.01,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 66.0
+        "risk_score": 64.9
+      },
+      {
+        "patient_code": "I",
+        "time_key": "Month_5",
+        "time_order": 14,
+        "pseudo_time_days": 150,
+        "value": 5.7091,
+        "ai_anomaly_score": 37.53,
+        "ai_anomaly_flag": false,
+        "threshold_breach": true,
+        "anomaly_flag": true,
+        "risk_score": 52.4
       },
       {
         "patient_code": "I",
@@ -817,11 +829,11 @@
         "time_order": 18,
         "pseudo_time_days": 270,
         "value": 0.0,
-        "ai_anomaly_score": 12.37,
+        "ai_anomaly_score": 14.19,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.3
+        "risk_score": 21.2
       },
       {
         "patient_code": "I",
@@ -829,11 +841,11 @@
         "time_order": 20,
         "pseudo_time_days": 330,
         "value": 0.0821,
-        "ai_anomaly_score": 11.49,
+        "ai_anomaly_score": 13.45,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.9
+        "risk_score": 21.7
       },
       {
         "patient_code": "J",
@@ -1357,11 +1369,11 @@
         "time_order": 1,
         "pseudo_time_days": 1,
         "value": 7.5083,
-        "ai_anomaly_score": 38.47,
+        "ai_anomaly_score": 40.82,
         "ai_anomaly_flag": false,
         "threshold_breach": true,
         "anomaly_flag": true,
-        "risk_score": 23.1
+        "risk_score": 23.5
       },
       {
         "patient_code": "P",
@@ -1369,11 +1381,11 @@
         "time_order": 2,
         "pseudo_time_days": 2,
         "value": 7.7907,
-        "ai_anomaly_score": 40.42,
+        "ai_anomaly_score": 42.83,
         "ai_anomaly_flag": false,
         "threshold_breach": true,
         "anomaly_flag": true,
-        "risk_score": 23.8
+        "risk_score": 24.2
       },
       {
         "patient_code": "P",
@@ -1381,11 +1393,11 @@
         "time_order": 3,
         "pseudo_time_days": 3,
         "value": 1.6022,
-        "ai_anomaly_score": 2.26,
+        "ai_anomaly_score": 1.15,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.2
+        "risk_score": 17.0
       },
       {
         "patient_code": "P",
@@ -1393,11 +1405,11 @@
         "time_order": 4,
         "pseudo_time_days": 4,
         "value": 0.3428,
-        "ai_anomaly_score": 10.95,
+        "ai_anomaly_score": 10.1,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.3
+        "risk_score": 13.2
       },
       {
         "patient_code": "P",
@@ -1405,11 +1417,11 @@
         "time_order": 5,
         "pseudo_time_days": 5,
         "value": 1.0835,
-        "ai_anomaly_score": 5.84,
+        "ai_anomaly_score": 4.84,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 21.2
+        "risk_score": 21.0
       },
       {
         "patient_code": "P",
@@ -1417,11 +1429,11 @@
         "time_order": 6,
         "pseudo_time_days": 6,
         "value": 0.5929,
-        "ai_anomaly_score": 9.23,
+        "ai_anomaly_score": 8.32,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.5
+        "risk_score": 18.3
       },
       {
         "patient_code": "P",
@@ -1429,11 +1441,11 @@
         "time_order": 14,
         "pseudo_time_days": 150,
         "value": 0.2315,
-        "ai_anomaly_score": 11.72,
+        "ai_anomaly_score": 10.89,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.1
+        "risk_score": 15.0
       },
       {
         "patient_code": "P",
@@ -1441,7 +1453,7 @@
         "time_order": 16,
         "pseudo_time_days": 210,
         "value": 0.0878,
-        "ai_anomaly_score": 12.71,
+        "ai_anomaly_score": 11.91,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
@@ -1453,11 +1465,11 @@
         "time_order": 17,
         "pseudo_time_days": 240,
         "value": 0.0659,
-        "ai_anomaly_score": 12.86,
+        "ai_anomaly_score": 12.07,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.9
+        "risk_score": 16.8
       },
       {
         "patient_code": "P",
@@ -1465,11 +1477,23 @@
         "time_order": 19,
         "pseudo_time_days": 300,
         "value": 0.0,
-        "ai_anomaly_score": 13.32,
+        "ai_anomaly_score": 12.54,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
         "risk_score": 18.7
+      },
+      {
+        "patient_code": "P",
+        "time_key": "Month_11",
+        "time_order": 20,
+        "pseudo_time_days": 330,
+        "value": 0.0997,
+        "ai_anomaly_score": 11.83,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 19.2
       },
       {
         "patient_code": "R",
@@ -1477,11 +1501,11 @@
         "time_order": 1,
         "pseudo_time_days": 1,
         "value": 2.2974,
-        "ai_anomaly_score": 47.15,
-        "ai_anomaly_flag": false,
+        "ai_anomaly_score": 54.94,
+        "ai_anomaly_flag": true,
         "threshold_breach": false,
-        "anomaly_flag": false,
-        "risk_score": 17.3
+        "anomaly_flag": true,
+        "risk_score": 18.4
       },
       {
         "patient_code": "R",
@@ -1489,11 +1513,11 @@
         "time_order": 2,
         "pseudo_time_days": 2,
         "value": 1.2402,
-        "ai_anomaly_score": 18.78,
+        "ai_anomaly_score": 23.35,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.5
+        "risk_score": 13.2
       },
       {
         "patient_code": "R",
@@ -1501,11 +1525,11 @@
         "time_order": 3,
         "pseudo_time_days": 3,
         "value": 0.21,
-        "ai_anomaly_score": 8.85,
+        "ai_anomaly_score": 7.45,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 11.7
+        "risk_score": 11.5
       },
       {
         "patient_code": "R",
@@ -1513,11 +1537,11 @@
         "time_order": 4,
         "pseudo_time_days": 4,
         "value": 0.0592,
-        "ai_anomaly_score": 12.9,
+        "ai_anomaly_score": 11.95,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.5
+        "risk_score": 13.4
       },
       {
         "patient_code": "R",
@@ -1525,11 +1549,11 @@
         "time_order": 5,
         "pseudo_time_days": 5,
         "value": 0.0447,
-        "ai_anomaly_score": 13.29,
+        "ai_anomaly_score": 12.39,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.3
+        "risk_score": 14.1
       },
       {
         "patient_code": "R",
@@ -1537,11 +1561,11 @@
         "time_order": 6,
         "pseudo_time_days": 6,
         "value": 0.8673,
-        "ai_anomaly_score": 8.78,
+        "ai_anomaly_score": 12.2,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 26.8
+        "risk_score": 27.8
       },
       {
         "patient_code": "R",
@@ -1549,11 +1573,11 @@
         "time_order": 8,
         "pseudo_time_days": 14,
         "value": 0.0763,
-        "ai_anomaly_score": 12.44,
+        "ai_anomaly_score": 11.44,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.9
+        "risk_score": 21.2
       },
       {
         "patient_code": "R",
@@ -1561,11 +1585,11 @@
         "time_order": 14,
         "pseudo_time_days": 150,
         "value": 0.0469,
-        "ai_anomaly_score": 13.23,
+        "ai_anomaly_score": 12.32,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.1
+        "risk_score": 17.2
       },
       {
         "patient_code": "R",
@@ -1573,11 +1597,47 @@
         "time_order": 15,
         "pseudo_time_days": 180,
         "value": 0.0177,
-        "ai_anomaly_score": 14.01,
+        "ai_anomaly_score": 13.19,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 15.5
+      },
+      {
+        "patient_code": "R",
+        "time_key": "Month_9",
+        "time_order": 18,
+        "pseudo_time_days": 270,
+        "value": 0.0705,
+        "ai_anomaly_score": 11.62,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
         "risk_score": 14.1
+      },
+      {
+        "patient_code": "R",
+        "time_key": "Month_10",
+        "time_order": 19,
+        "pseudo_time_days": 300,
+        "value": 0.0626,
+        "ai_anomaly_score": 11.85,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 7.3
+      },
+      {
+        "patient_code": "R",
+        "time_key": "Month_12",
+        "time_order": 21,
+        "pseudo_time_days": 365,
+        "value": 0.517,
+        "ai_anomaly_score": 1.73,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 19.5
       },
       {
         "patient_code": "S",
@@ -1649,7 +1709,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 30.2
+        "risk_score": 29.7
       },
       {
         "patient_code": "S",
@@ -1661,7 +1721,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 29.3
+        "risk_score": 28.0
       },
       {
         "patient_code": "T",
@@ -1669,11 +1729,11 @@
         "time_order": 1,
         "pseudo_time_days": 1,
         "value": 2.7086,
-        "ai_anomaly_score": 26.23,
+        "ai_anomaly_score": 29.35,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.9
+        "risk_score": 15.4
       },
       {
         "patient_code": "T",
@@ -1681,11 +1741,11 @@
         "time_order": 2,
         "pseudo_time_days": 2,
         "value": 2.8587,
-        "ai_anomaly_score": 28.9,
+        "ai_anomaly_score": 32.03,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.0
+        "risk_score": 16.4
       },
       {
         "patient_code": "T",
@@ -1693,11 +1753,11 @@
         "time_order": 3,
         "pseudo_time_days": 3,
         "value": 0.186,
-        "ai_anomaly_score": 18.67,
+        "ai_anomaly_score": 15.74,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.6
+        "risk_score": 11.8
       },
       {
         "patient_code": "T",
@@ -1705,11 +1765,11 @@
         "time_order": 4,
         "pseudo_time_days": 4,
         "value": 0.8185,
-        "ai_anomaly_score": 7.41,
+        "ai_anomaly_score": 4.44,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.2
+        "risk_score": 18.7
       },
       {
         "patient_code": "T",
@@ -1717,11 +1777,11 @@
         "time_order": 13,
         "pseudo_time_days": 120,
         "value": 0.7042,
-        "ai_anomaly_score": 9.44,
+        "ai_anomaly_score": 6.48,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 23.3
+        "risk_score": 22.4
       },
       {
         "patient_code": "T",
@@ -1729,11 +1789,23 @@
         "time_order": 14,
         "pseudo_time_days": 150,
         "value": 0.1331,
-        "ai_anomaly_score": 19.61,
+        "ai_anomaly_score": 16.69,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 24.2
+        "risk_score": 22.8
+      },
+      {
+        "patient_code": "T",
+        "time_key": "Month_12",
+        "time_order": 21,
+        "pseudo_time_days": 365,
+        "value": 0.0587,
+        "ai_anomaly_score": 18.02,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 18.8
       },
       {
         "patient_code": "U",
@@ -1741,11 +1813,11 @@
         "time_order": 1,
         "pseudo_time_days": 1,
         "value": 0.8156,
-        "ai_anomaly_score": 17.91,
+        "ai_anomaly_score": 23.59,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 7.8
+        "risk_score": 8.6
       },
       {
         "patient_code": "U",
@@ -1753,11 +1825,11 @@
         "time_order": 2,
         "pseudo_time_days": 2,
         "value": 1.3992,
-        "ai_anomaly_score": 44.45,
-        "ai_anomaly_flag": false,
+        "ai_anomaly_score": 51.6,
+        "ai_anomaly_flag": true,
         "threshold_breach": false,
-        "anomaly_flag": false,
-        "risk_score": 16.6
+        "anomaly_flag": true,
+        "risk_score": 17.7
       },
       {
         "patient_code": "U",
@@ -1765,11 +1837,11 @@
         "time_order": 3,
         "pseudo_time_days": 3,
         "value": 0.6304,
-        "ai_anomaly_score": 9.48,
+        "ai_anomaly_score": 14.69,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.6
+        "risk_score": 14.4
       },
       {
         "patient_code": "U",
@@ -1777,11 +1849,11 @@
         "time_order": 4,
         "pseudo_time_days": 4,
         "value": 0.2667,
-        "ai_anomaly_score": 7.06,
+        "ai_anomaly_score": 2.76,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 11.4
+        "risk_score": 10.8
       },
       {
         "patient_code": "U",
@@ -1789,11 +1861,11 @@
         "time_order": 5,
         "pseudo_time_days": 5,
         "value": 0.4875,
-        "ai_anomaly_score": 2.99,
+        "ai_anomaly_score": 7.84,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.9
+        "risk_score": 16.7
       },
       {
         "patient_code": "U",
@@ -1801,11 +1873,11 @@
         "time_order": 15,
         "pseudo_time_days": 180,
         "value": 0.0297,
-        "ai_anomaly_score": 17.84,
+        "ai_anomaly_score": 14.14,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.3
+        "risk_score": 17.7
       },
       {
         "patient_code": "U",
@@ -1813,11 +1885,11 @@
         "time_order": 16,
         "pseudo_time_days": 210,
         "value": 0.09,
-        "ai_anomaly_score": 15.09,
+        "ai_anomaly_score": 11.24,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 11.7
+        "risk_score": 12.0
       },
       {
         "patient_code": "U",
@@ -1825,11 +1897,11 @@
         "time_order": 17,
         "pseudo_time_days": 240,
         "value": 0.0561,
-        "ai_anomaly_score": 16.64,
+        "ai_anomaly_score": 12.87,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 11.0
+        "risk_score": 11.2
       },
       {
         "patient_code": "U",
@@ -1837,11 +1909,47 @@
         "time_order": 18,
         "pseudo_time_days": 270,
         "value": 0.0217,
-        "ai_anomaly_score": 18.2,
+        "ai_anomaly_score": 14.52,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.2
+        "risk_score": 11.7
+      },
+      {
+        "patient_code": "U",
+        "time_key": "Month_10",
+        "time_order": 19,
+        "pseudo_time_days": 300,
+        "value": 0.0334,
+        "ai_anomaly_score": 13.96,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 10.8
+      },
+      {
+        "patient_code": "U",
+        "time_key": "Month_11",
+        "time_order": 20,
+        "pseudo_time_days": 330,
+        "value": 0.0355,
+        "ai_anomaly_score": 13.86,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 12.1
+      },
+      {
+        "patient_code": "U",
+        "time_key": "Month_12",
+        "time_order": 21,
+        "pseudo_time_days": 365,
+        "value": 0.0253,
+        "ai_anomaly_score": 14.35,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 16.3
       },
       {
         "patient_code": "V",
@@ -1849,11 +1957,11 @@
         "time_order": 1,
         "pseudo_time_days": 1,
         "value": 1.9487,
-        "ai_anomaly_score": 25.41,
+        "ai_anomaly_score": 30.71,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.2
+        "risk_score": 14.0
       },
       {
         "patient_code": "V",
@@ -1861,11 +1969,11 @@
         "time_order": 2,
         "pseudo_time_days": 2,
         "value": 1.9261,
-        "ai_anomaly_score": 24.87,
+        "ai_anomaly_score": 30.14,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.1
+        "risk_score": 13.9
       },
       {
         "patient_code": "V",
@@ -1873,19 +1981,7 @@
         "time_order": 4,
         "pseudo_time_days": 4,
         "value": 1.6126,
-        "ai_anomaly_score": 17.35,
-        "ai_anomaly_flag": false,
-        "threshold_breach": false,
-        "anomaly_flag": false,
-        "risk_score": 17.6
-      },
-      {
-        "patient_code": "V",
-        "time_key": "Day_7",
-        "time_order": 7,
-        "pseudo_time_days": 7,
-        "value": 0.0731,
-        "ai_anomaly_score": 19.57,
+        "ai_anomaly_score": 22.14,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
@@ -1893,15 +1989,27 @@
       },
       {
         "patient_code": "V",
+        "time_key": "Day_7",
+        "time_order": 7,
+        "pseudo_time_days": 7,
+        "value": 0.0731,
+        "ai_anomaly_score": 17.14,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 18.0
+      },
+      {
+        "patient_code": "V",
         "time_key": "Month_3",
         "time_order": 12,
         "pseudo_time_days": 90,
         "value": 0.5222,
-        "ai_anomaly_score": 8.8,
+        "ai_anomaly_score": 5.68,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.9
+        "risk_score": 20.6
       },
       {
         "patient_code": "V",
@@ -1909,11 +2017,11 @@
         "time_order": 13,
         "pseudo_time_days": 120,
         "value": 0.0124,
-        "ai_anomaly_score": 21.03,
+        "ai_anomaly_score": 18.69,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 23.9
+        "risk_score": 20.4
       },
       {
         "patient_code": "V",
@@ -1921,11 +2029,35 @@
         "time_order": 16,
         "pseudo_time_days": 210,
         "value": 0.1291,
-        "ai_anomaly_score": 18.23,
+        "ai_anomaly_score": 15.71,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 23.3
+        "risk_score": 19.9
+      },
+      {
+        "patient_code": "V",
+        "time_key": "Month_10",
+        "time_order": 19,
+        "pseudo_time_days": 300,
+        "value": 0.1831,
+        "ai_anomaly_score": 14.34,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 21.9
+      },
+      {
+        "patient_code": "V",
+        "time_key": "Month_12",
+        "time_order": 21,
+        "pseudo_time_days": 365,
+        "value": 0.2974,
+        "ai_anomaly_score": 11.42,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 25.5
       },
       {
         "patient_code": "Y",
@@ -1933,11 +2065,11 @@
         "time_order": 1,
         "pseudo_time_days": 1,
         "value": 0.6049,
-        "ai_anomaly_score": 5.63,
+        "ai_anomaly_score": 1.78,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 5.1
+        "risk_score": 4.5
       },
       {
         "patient_code": "Y",
@@ -1945,11 +2077,11 @@
         "time_order": 2,
         "pseudo_time_days": 2,
         "value": 0.3053,
-        "ai_anomaly_score": 17.14,
+        "ai_anomaly_score": 9.67,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 8.2
+        "risk_score": 7.1
       },
       {
         "patient_code": "Y",
@@ -1957,11 +2089,11 @@
         "time_order": 3,
         "pseudo_time_days": 3,
         "value": 0.3741,
-        "ai_anomaly_score": 14.5,
+        "ai_anomaly_score": 7.04,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.2
+        "risk_score": 13.1
       },
       {
         "patient_code": "Y",
@@ -1969,11 +2101,11 @@
         "time_order": 5,
         "pseudo_time_days": 5,
         "value": 0.9545,
-        "ai_anomaly_score": 7.79,
+        "ai_anomaly_score": 15.13,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.4
+        "risk_score": 20.5
       },
       {
         "patient_code": "Y",
@@ -1981,11 +2113,11 @@
         "time_order": 6,
         "pseudo_time_days": 6,
         "value": 1.687,
-        "ai_anomaly_score": 35.92,
+        "ai_anomaly_score": 43.12,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 33.0
+        "risk_score": 34.1
       },
       {
         "patient_code": "Y",
@@ -1993,11 +2125,11 @@
         "time_order": 8,
         "pseudo_time_days": 14,
         "value": 1.2636,
-        "ai_anomaly_score": 19.66,
+        "ai_anomaly_score": 26.94,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 34.7
+        "risk_score": 36.1
       },
       {
         "patient_code": "Y",
@@ -2005,11 +2137,11 @@
         "time_order": 9,
         "pseudo_time_days": 21,
         "value": 1.2259,
-        "ai_anomaly_score": 18.21,
+        "ai_anomaly_score": 25.5,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 30.3
+        "risk_score": 31.2
       },
       {
         "patient_code": "Y",
@@ -2017,11 +2149,11 @@
         "time_order": 13,
         "pseudo_time_days": 120,
         "value": 0.1078,
-        "ai_anomaly_score": 24.73,
+        "ai_anomaly_score": 17.22,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.8
+        "risk_score": 18.4
       },
       {
         "patient_code": "Y",
@@ -2029,11 +2161,59 @@
         "time_order": 15,
         "pseudo_time_days": 180,
         "value": 0.2418,
-        "ai_anomaly_score": 19.58,
+        "ai_anomaly_score": 12.1,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.6
+        "risk_score": 18.3
+      },
+      {
+        "patient_code": "Y",
+        "time_key": "Month_8",
+        "time_order": 17,
+        "pseudo_time_days": 240,
+        "value": 0.0732,
+        "ai_anomaly_score": 18.53,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 19.0
+      },
+      {
+        "patient_code": "Y",
+        "time_key": "Month_9",
+        "time_order": 18,
+        "pseudo_time_days": 270,
+        "value": 0.207,
+        "ai_anomaly_score": 13.43,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 21.4
+      },
+      {
+        "patient_code": "Y",
+        "time_key": "Month_11",
+        "time_order": 20,
+        "pseudo_time_days": 330,
+        "value": 0.0074,
+        "ai_anomaly_score": 21.05,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 19.1
+      },
+      {
+        "patient_code": "Y",
+        "time_key": "Month_12",
+        "time_order": 21,
+        "pseudo_time_days": 365,
+        "value": 0.2069,
+        "ai_anomaly_score": 13.43,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 20.3
       },
       {
         "patient_code": "Z",
@@ -2153,7 +2333,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 23.8
+        "risk_score": 24.1
       },
       {
         "patient_code": "AA",
@@ -2165,7 +2345,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.6
+        "risk_score": 17.3
       },
       {
         "patient_code": "AA",
@@ -2177,7 +2357,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 22.4
+        "risk_score": 22.1
       },
       {
         "patient_code": "AA",
@@ -2189,7 +2369,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 21.6
+        "risk_score": 21.4
       },
       {
         "patient_code": "AA",
@@ -2201,7 +2381,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 22.7
+        "risk_score": 22.6
       },
       {
         "patient_code": "AB",
@@ -2273,7 +2453,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.5
+        "risk_score": 18.3
       },
       {
         "patient_code": "AB",
@@ -2285,7 +2465,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 35.3
+        "risk_score": 34.2
       },
       {
         "patient_code": "AB",
@@ -2297,7 +2477,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.4
+        "risk_score": 19.6
       },
       {
         "patient_code": "AB",
@@ -2309,7 +2489,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.6
+        "risk_score": 20.5
       },
       {
         "patient_code": "AC",
@@ -2393,7 +2573,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.4
+        "risk_score": 12.3
       },
       {
         "patient_code": "AC",
@@ -2405,7 +2585,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.6
+        "risk_score": 15.7
       },
       {
         "patient_code": "AC",
@@ -2417,7 +2597,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 11.8
+        "risk_score": 11.7
       },
       {
         "patient_code": "AC",
@@ -2429,7 +2609,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.9
+        "risk_score": 16.2
       },
       {
         "patient_code": "AD",
@@ -2437,11 +2617,11 @@
         "time_order": 1,
         "pseudo_time_days": 1,
         "value": 3.5975,
-        "ai_anomaly_score": 10.88,
+        "ai_anomaly_score": 12.1,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.3
+        "risk_score": 14.5
       },
       {
         "patient_code": "AD",
@@ -2449,11 +2629,11 @@
         "time_order": 2,
         "pseudo_time_days": 2,
         "value": 8.2733,
-        "ai_anomaly_score": 46.63,
+        "ai_anomaly_score": 48.37,
         "ai_anomaly_flag": false,
         "threshold_breach": true,
         "anomaly_flag": true,
-        "risk_score": 28.9
+        "risk_score": 29.1
       },
       {
         "patient_code": "AD",
@@ -2461,11 +2641,11 @@
         "time_order": 3,
         "pseudo_time_days": 3,
         "value": 5.3601,
-        "ai_anomaly_score": 24.36,
+        "ai_anomaly_score": 25.77,
         "ai_anomaly_flag": false,
         "threshold_breach": true,
         "anomaly_flag": true,
-        "risk_score": 34.2
+        "risk_score": 34.4
       },
       {
         "patient_code": "AD",
@@ -2473,11 +2653,11 @@
         "time_order": 4,
         "pseudo_time_days": 4,
         "value": 5.6678,
-        "ai_anomaly_score": 26.71,
+        "ai_anomaly_score": 28.16,
         "ai_anomaly_flag": false,
         "threshold_breach": true,
         "anomaly_flag": true,
-        "risk_score": 34.8
+        "risk_score": 35.0
       },
       {
         "patient_code": "AD",
@@ -2485,11 +2665,11 @@
         "time_order": 5,
         "pseudo_time_days": 5,
         "value": 4.2566,
-        "ai_anomaly_score": 15.92,
+        "ai_anomaly_score": 17.21,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 27.8
+        "risk_score": 27.9
       },
       {
         "patient_code": "AD",
@@ -2497,11 +2677,11 @@
         "time_order": 6,
         "pseudo_time_days": 6,
         "value": 0.6807,
-        "ai_anomaly_score": 11.42,
+        "ai_anomaly_score": 10.52,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.9
+        "risk_score": 14.0
       },
       {
         "patient_code": "AD",
@@ -2509,11 +2689,11 @@
         "time_order": 7,
         "pseudo_time_days": 7,
         "value": 0.3501,
-        "ai_anomaly_score": 13.95,
+        "ai_anomaly_score": 13.09,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.5
+        "risk_score": 18.1
       },
       {
         "patient_code": "AD",
@@ -2521,11 +2701,11 @@
         "time_order": 12,
         "pseudo_time_days": 90,
         "value": 0.1084,
-        "ai_anomaly_score": 15.8,
+        "ai_anomaly_score": 14.96,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.2
+        "risk_score": 17.3
       },
       {
         "patient_code": "AD",
@@ -2533,11 +2713,11 @@
         "time_order": 13,
         "pseudo_time_days": 120,
         "value": 0.3403,
-        "ai_anomaly_score": 14.02,
+        "ai_anomaly_score": 13.16,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 23.5
+        "risk_score": 23.4
       },
       {
         "patient_code": "AD",
@@ -2545,11 +2725,11 @@
         "time_order": 14,
         "pseudo_time_days": 150,
         "value": 0.7543,
-        "ai_anomaly_score": 10.86,
+        "ai_anomaly_score": 9.95,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 22.1
+        "risk_score": 21.5
       },
       {
         "patient_code": "AD",
@@ -2557,11 +2737,11 @@
         "time_order": 15,
         "pseudo_time_days": 180,
         "value": 0.3754,
-        "ai_anomaly_score": 13.75,
+        "ai_anomaly_score": 12.89,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.7
+        "risk_score": 15.5
       },
       {
         "patient_code": "AD",
@@ -2569,11 +2749,11 @@
         "time_order": 16,
         "pseudo_time_days": 210,
         "value": 0.0865,
-        "ai_anomaly_score": 15.96,
+        "ai_anomaly_score": 15.13,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 10.3
+        "risk_score": 8.5
       },
       {
         "patient_code": "AD",
@@ -2581,11 +2761,11 @@
         "time_order": 17,
         "pseudo_time_days": 240,
         "value": 0.3345,
-        "ai_anomaly_score": 14.07,
+        "ai_anomaly_score": 13.21,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.3
+        "risk_score": 12.9
       },
       {
         "patient_code": "AD",
@@ -2593,11 +2773,23 @@
         "time_order": 20,
         "pseudo_time_days": 330,
         "value": 0.2535,
-        "ai_anomaly_score": 14.69,
+        "ai_anomaly_score": 13.84,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.8
+        "risk_score": 11.3
+      },
+      {
+        "patient_code": "AD",
+        "time_key": "Month_12",
+        "time_order": 21,
+        "pseudo_time_days": 365,
+        "value": 0.1217,
+        "ai_anomaly_score": 14.86,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 9.7
       },
       {
         "patient_code": "AE",
@@ -2605,11 +2797,11 @@
         "time_order": 2,
         "pseudo_time_days": 2,
         "value": 3.4914,
-        "ai_anomaly_score": 22.34,
+        "ai_anomaly_score": 25.35,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.8
+        "risk_score": 16.3
       },
       {
         "patient_code": "AE",
@@ -2617,11 +2809,11 @@
         "time_order": 3,
         "pseudo_time_days": 3,
         "value": 6.7364,
-        "ai_anomaly_score": 56.0,
+        "ai_anomaly_score": 60.74,
         "ai_anomaly_flag": true,
         "threshold_breach": true,
         "anomaly_flag": true,
-        "risk_score": 35.9
+        "risk_score": 36.6
       },
       {
         "patient_code": "AE",
@@ -2629,11 +2821,11 @@
         "time_order": 4,
         "pseudo_time_days": 4,
         "value": 2.5257,
-        "ai_anomaly_score": 12.32,
+        "ai_anomaly_score": 14.82,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 23.5
+        "risk_score": 23.8
       },
       {
         "patient_code": "AE",
@@ -2641,11 +2833,11 @@
         "time_order": 5,
         "pseudo_time_days": 5,
         "value": 0.8706,
-        "ai_anomaly_score": 4.84,
+        "ai_anomaly_score": 3.23,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.0
+        "risk_score": 14.8
       },
       {
         "patient_code": "AE",
@@ -2653,11 +2845,11 @@
         "time_order": 6,
         "pseudo_time_days": 6,
         "value": 0.9636,
-        "ai_anomaly_score": 3.88,
+        "ai_anomaly_score": 2.21,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.4
+        "risk_score": 19.1
       },
       {
         "patient_code": "AE",
@@ -2665,11 +2857,11 @@
         "time_order": 8,
         "pseudo_time_days": 14,
         "value": 0.4956,
-        "ai_anomaly_score": 8.73,
+        "ai_anomaly_score": 7.32,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 22.2
+        "risk_score": 21.7
       },
       {
         "patient_code": "AE",
@@ -2677,11 +2869,11 @@
         "time_order": 11,
         "pseudo_time_days": 60,
         "value": 0.2436,
-        "ai_anomaly_score": 11.35,
+        "ai_anomaly_score": 10.06,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.7
+        "risk_score": 18.6
       },
       {
         "patient_code": "AE",
@@ -2689,11 +2881,11 @@
         "time_order": 12,
         "pseudo_time_days": 90,
         "value": 0.0648,
-        "ai_anomaly_score": 13.2,
+        "ai_anomaly_score": 12.01,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.7
+        "risk_score": 15.5
       },
       {
         "patient_code": "AE",
@@ -2701,11 +2893,11 @@
         "time_order": 13,
         "pseudo_time_days": 120,
         "value": 0.0966,
-        "ai_anomaly_score": 12.87,
+        "ai_anomaly_score": 11.67,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.4
+        "risk_score": 18.9
       },
       {
         "patient_code": "AE",
@@ -2713,11 +2905,11 @@
         "time_order": 14,
         "pseudo_time_days": 150,
         "value": 0.2032,
-        "ai_anomaly_score": 11.77,
+        "ai_anomaly_score": 10.51,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.2
+        "risk_score": 19.9
       },
       {
         "patient_code": "AE",
@@ -2725,7 +2917,7 @@
         "time_order": 16,
         "pseudo_time_days": 210,
         "value": 0.2848,
-        "ai_anomaly_score": 10.92,
+        "ai_anomaly_score": 9.62,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
@@ -2737,11 +2929,35 @@
         "time_order": 17,
         "pseudo_time_days": 240,
         "value": 0.074,
-        "ai_anomaly_score": 13.11,
+        "ai_anomaly_score": 11.91,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
         "risk_score": 6.9
+      },
+      {
+        "patient_code": "AE",
+        "time_key": "Month_10",
+        "time_order": 19,
+        "pseudo_time_days": 300,
+        "value": 0.0496,
+        "ai_anomaly_score": 12.18,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 8.6
+      },
+      {
+        "patient_code": "AE",
+        "time_key": "Month_12",
+        "time_order": 21,
+        "pseudo_time_days": 365,
+        "value": 0.2313,
+        "ai_anomaly_score": 10.2,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 11.0
       },
       {
         "patient_code": "AF",
@@ -2749,11 +2965,11 @@
         "time_order": 7,
         "pseudo_time_days": 7,
         "value": 0.0491,
-        "ai_anomaly_score": 17.19,
+        "ai_anomaly_score": 15.13,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 8.8
+        "risk_score": 8.6
       },
       {
         "patient_code": "AF",
@@ -2761,11 +2977,11 @@
         "time_order": 8,
         "pseudo_time_days": 14,
         "value": 0.0274,
-        "ai_anomaly_score": 20.47,
+        "ai_anomaly_score": 18.42,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.5
+        "risk_score": 12.3
       },
       {
         "patient_code": "AF",
@@ -2773,11 +2989,11 @@
         "time_order": 11,
         "pseudo_time_days": 60,
         "value": 0.2269,
-        "ai_anomaly_score": 9.75,
+        "ai_anomaly_score": 11.85,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.5
+        "risk_score": 16.7
       },
       {
         "patient_code": "AF",
@@ -2785,11 +3001,11 @@
         "time_order": 13,
         "pseudo_time_days": 120,
         "value": 0.2128,
-        "ai_anomaly_score": 7.62,
+        "ai_anomaly_score": 9.72,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.1
+        "risk_score": 13.3
       },
       {
         "patient_code": "AF",
@@ -2797,11 +3013,11 @@
         "time_order": 14,
         "pseudo_time_days": 150,
         "value": 0.4904,
-        "ai_anomaly_score": 49.69,
-        "ai_anomaly_flag": false,
+        "ai_anomaly_score": 51.84,
+        "ai_anomaly_flag": true,
         "threshold_breach": false,
-        "anomaly_flag": false,
-        "risk_score": 22.1
+        "anomaly_flag": true,
+        "risk_score": 22.4
       },
       {
         "patient_code": "AF",
@@ -2809,11 +3025,11 @@
         "time_order": 15,
         "pseudo_time_days": 180,
         "value": 0.1313,
-        "ai_anomaly_score": 4.74,
+        "ai_anomaly_score": 2.66,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.2
+        "risk_score": 11.9
       },
       {
         "patient_code": "AF",
@@ -2821,11 +3037,11 @@
         "time_order": 17,
         "pseudo_time_days": 240,
         "value": 0.1358,
-        "ai_anomaly_score": 4.05,
+        "ai_anomaly_score": 1.97,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.6
+        "risk_score": 16.7
       },
       {
         "patient_code": "AF",
@@ -2833,11 +3049,11 @@
         "time_order": 18,
         "pseudo_time_days": 270,
         "value": 0.0789,
-        "ai_anomaly_score": 12.68,
+        "ai_anomaly_score": 10.61,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.3
+        "risk_score": 16.0
       },
       {
         "patient_code": "AF",
@@ -2845,11 +3061,23 @@
         "time_order": 20,
         "pseudo_time_days": 330,
         "value": 0.1101,
-        "ai_anomaly_score": 7.94,
+        "ai_anomaly_score": 5.87,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.0
+        "risk_score": 18.3
+      },
+      {
+        "patient_code": "AF",
+        "time_key": "Month_12",
+        "time_order": 21,
+        "pseudo_time_days": 365,
+        "value": 0.0253,
+        "ai_anomaly_score": 18.75,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 16.8
       },
       {
         "patient_code": "AG",
@@ -2857,11 +3085,11 @@
         "time_order": 1,
         "pseudo_time_days": 1,
         "value": 7.5999,
-        "ai_anomaly_score": 62.24,
+        "ai_anomaly_score": 68.17,
         "ai_anomaly_flag": true,
         "threshold_breach": true,
         "anomaly_flag": true,
-        "risk_score": 26.7
+        "risk_score": 27.6
       },
       {
         "patient_code": "AG",
@@ -2869,11 +3097,11 @@
         "time_order": 6,
         "pseudo_time_days": 6,
         "value": 1.4291,
-        "ai_anomaly_score": 4.52,
+        "ai_anomaly_score": 6.17,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.3
+        "risk_score": 18.6
       },
       {
         "patient_code": "AG",
@@ -2881,11 +3109,11 @@
         "time_order": 7,
         "pseudo_time_days": 7,
         "value": 0.4484,
-        "ai_anomaly_score": 4.66,
+        "ai_anomaly_score": 3.68,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 24.0
+        "risk_score": 23.8
       },
       {
         "patient_code": "AG",
@@ -2893,11 +3121,11 @@
         "time_order": 8,
         "pseudo_time_days": 14,
         "value": 0.0787,
-        "ai_anomaly_score": 8.12,
+        "ai_anomaly_score": 7.4,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.3
+        "risk_score": 19.2
       },
       {
         "patient_code": "AG",
@@ -2905,7 +3133,7 @@
         "time_order": 10,
         "pseudo_time_days": 30,
         "value": 0.0676,
-        "ai_anomaly_score": 8.22,
+        "ai_anomaly_score": 7.51,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
@@ -2917,11 +3145,11 @@
         "time_order": 13,
         "pseudo_time_days": 120,
         "value": 0.1039,
-        "ai_anomaly_score": 7.88,
+        "ai_anomaly_score": 7.14,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 22.8
+        "risk_score": 23.2
       },
       {
         "patient_code": "AG",
@@ -2929,11 +3157,11 @@
         "time_order": 14,
         "pseudo_time_days": 150,
         "value": 0.2058,
-        "ai_anomaly_score": 6.93,
+        "ai_anomaly_score": 6.12,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 25.7
+        "risk_score": 24.9
       },
       {
         "patient_code": "AG",
@@ -2941,11 +3169,11 @@
         "time_order": 15,
         "pseudo_time_days": 180,
         "value": 0.1491,
-        "ai_anomaly_score": 7.46,
+        "ai_anomaly_score": 6.69,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.5
+        "risk_score": 14.8
       },
       {
         "patient_code": "AG",
@@ -2953,11 +3181,11 @@
         "time_order": 16,
         "pseudo_time_days": 210,
         "value": 0.1824,
-        "ai_anomaly_score": 7.15,
+        "ai_anomaly_score": 6.36,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.5
+        "risk_score": 14.4
       },
       {
         "patient_code": "AG",
@@ -2965,11 +3193,11 @@
         "time_order": 17,
         "pseudo_time_days": 240,
         "value": 0.1204,
-        "ai_anomaly_score": 7.73,
+        "ai_anomaly_score": 6.98,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.0
+        "risk_score": 13.2
       },
       {
         "patient_code": "AG",
@@ -2977,11 +3205,35 @@
         "time_order": 18,
         "pseudo_time_days": 270,
         "value": 0.0244,
-        "ai_anomaly_score": 8.62,
+        "ai_anomaly_score": 7.94,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.5
+        "risk_score": 14.6
+      },
+      {
+        "patient_code": "AG",
+        "time_key": "Month_10",
+        "time_order": 19,
+        "pseudo_time_days": 300,
+        "value": 0.1042,
+        "ai_anomaly_score": 7.14,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 16.4
+      },
+      {
+        "patient_code": "AG",
+        "time_key": "Month_12",
+        "time_order": 21,
+        "pseudo_time_days": 365,
+        "value": 0.0819,
+        "ai_anomaly_score": 7.37,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 15.2
       },
       {
         "patient_code": "AH",
@@ -2989,11 +3241,11 @@
         "time_order": 1,
         "pseudo_time_days": 1,
         "value": 7.1234,
-        "ai_anomaly_score": 42.57,
+        "ai_anomaly_score": 47.44,
         "ai_anomaly_flag": false,
         "threshold_breach": true,
         "anomaly_flag": true,
-        "risk_score": 23.4
+        "risk_score": 24.2
       },
       {
         "patient_code": "AH",
@@ -3001,11 +3253,11 @@
         "time_order": 2,
         "pseudo_time_days": 2,
         "value": 3.5853,
-        "ai_anomaly_score": 12.33,
+        "ai_anomaly_score": 16.03,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.8
+        "risk_score": 18.4
       },
       {
         "patient_code": "AH",
@@ -3013,11 +3265,11 @@
         "time_order": 3,
         "pseudo_time_days": 3,
         "value": 1.5725,
-        "ai_anomaly_score": 4.87,
+        "ai_anomaly_score": 1.84,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.9
+        "risk_score": 17.5
       },
       {
         "patient_code": "AH",
@@ -3025,11 +3277,11 @@
         "time_order": 4,
         "pseudo_time_days": 4,
         "value": 4.8553,
-        "ai_anomaly_score": 23.18,
+        "ai_anomaly_score": 27.31,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 33.8
+        "risk_score": 34.5
       },
       {
         "patient_code": "AH",
@@ -3037,11 +3289,11 @@
         "time_order": 5,
         "pseudo_time_days": 5,
         "value": 0.5231,
-        "ai_anomaly_score": 13.84,
+        "ai_anomaly_score": 11.15,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.8
+        "risk_score": 15.4
       },
       {
         "patient_code": "AH",
@@ -3049,11 +3301,11 @@
         "time_order": 10,
         "pseudo_time_days": 30,
         "value": 0.4021,
-        "ai_anomaly_score": 14.88,
+        "ai_anomaly_score": 12.23,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.8
+        "risk_score": 15.6
       },
       {
         "patient_code": "AH",
@@ -3061,11 +3313,11 @@
         "time_order": 12,
         "pseudo_time_days": 90,
         "value": 0.4693,
-        "ai_anomaly_score": 14.3,
+        "ai_anomaly_score": 11.63,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.2
+        "risk_score": 18.4
       },
       {
         "patient_code": "AH",
@@ -3073,11 +3325,11 @@
         "time_order": 15,
         "pseudo_time_days": 180,
         "value": 0.2668,
-        "ai_anomaly_score": 16.03,
+        "ai_anomaly_score": 13.43,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.1
+        "risk_score": 12.6
       },
       {
         "patient_code": "AH",
@@ -3085,11 +3337,35 @@
         "time_order": 16,
         "pseudo_time_days": 210,
         "value": 0.4879,
-        "ai_anomaly_score": 14.14,
+        "ai_anomaly_score": 11.46,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 11.0
+        "risk_score": 10.5
+      },
+      {
+        "patient_code": "AH",
+        "time_key": "Month_10",
+        "time_order": 19,
+        "pseudo_time_days": 300,
+        "value": 0.1252,
+        "ai_anomaly_score": 14.68,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 7.7
+      },
+      {
+        "patient_code": "AH",
+        "time_key": "Month_11",
+        "time_order": 20,
+        "pseudo_time_days": 330,
+        "value": 0.1602,
+        "ai_anomaly_score": 14.37,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 11.3
       },
       {
         "patient_code": "AI",
@@ -3097,11 +3373,11 @@
         "time_order": 1,
         "pseudo_time_days": 1,
         "value": 2.5296,
-        "ai_anomaly_score": 49.15,
-        "ai_anomaly_flag": false,
+        "ai_anomaly_score": 58.75,
+        "ai_anomaly_flag": true,
         "threshold_breach": false,
-        "anomaly_flag": false,
-        "risk_score": 18.0
+        "anomaly_flag": true,
+        "risk_score": 19.5
       },
       {
         "patient_code": "AI",
@@ -3109,11 +3385,11 @@
         "time_order": 3,
         "pseudo_time_days": 3,
         "value": 1.6818,
-        "ai_anomaly_score": 27.54,
+        "ai_anomaly_score": 34.51,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.4
+        "risk_score": 19.4
       },
       {
         "patient_code": "AI",
@@ -3121,11 +3397,11 @@
         "time_order": 6,
         "pseudo_time_days": 6,
         "value": 0.3956,
-        "ai_anomaly_score": 5.24,
+        "ai_anomaly_score": 2.28,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.1
+        "risk_score": 11.7
       },
       {
         "patient_code": "AI",
@@ -3133,11 +3409,11 @@
         "time_order": 7,
         "pseudo_time_days": 7,
         "value": 0.4121,
-        "ai_anomaly_score": 4.82,
+        "ai_anomaly_score": 1.81,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 24.6
+        "risk_score": 24.2
       },
       {
         "patient_code": "AI",
@@ -3145,19 +3421,7 @@
         "time_order": 12,
         "pseudo_time_days": 90,
         "value": 0.1625,
-        "ai_anomaly_score": 11.19,
-        "ai_anomaly_flag": false,
-        "threshold_breach": false,
-        "anomaly_flag": false,
-        "risk_score": 18.9
-      },
-      {
-        "patient_code": "AI",
-        "time_key": "Month_4",
-        "time_order": 13,
-        "pseudo_time_days": 120,
-        "value": 0.1002,
-        "ai_anomaly_score": 12.77,
+        "ai_anomaly_score": 8.94,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
@@ -3165,23 +3429,11 @@
       },
       {
         "patient_code": "AI",
-        "time_key": "Month_5",
-        "time_order": 14,
-        "pseudo_time_days": 150,
-        "value": 0.0569,
-        "ai_anomaly_score": 13.88,
-        "ai_anomaly_flag": false,
-        "threshold_breach": false,
-        "anomaly_flag": false,
-        "risk_score": 18.2
-      },
-      {
-        "patient_code": "AI",
-        "time_key": "Month_6",
-        "time_order": 15,
-        "pseudo_time_days": 180,
-        "value": 0.1616,
-        "ai_anomaly_score": 11.21,
+        "time_key": "Month_4",
+        "time_order": 13,
+        "pseudo_time_days": 120,
+        "value": 0.1002,
+        "ai_anomaly_score": 10.73,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
@@ -3189,15 +3441,39 @@
       },
       {
         "patient_code": "AI",
+        "time_key": "Month_5",
+        "time_order": 14,
+        "pseudo_time_days": 150,
+        "value": 0.0569,
+        "ai_anomaly_score": 11.96,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 16.8
+      },
+      {
+        "patient_code": "AI",
+        "time_key": "Month_6",
+        "time_order": 15,
+        "pseudo_time_days": 180,
+        "value": 0.1616,
+        "ai_anomaly_score": 8.97,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 18.4
+      },
+      {
+        "patient_code": "AI",
         "time_key": "Month_7",
         "time_order": 16,
         "pseudo_time_days": 210,
         "value": 0.1536,
-        "ai_anomaly_score": 11.41,
+        "ai_anomaly_score": 9.2,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.3
+        "risk_score": 12.4
       },
       {
         "patient_code": "AI",
@@ -3205,11 +3481,59 @@
         "time_order": 17,
         "pseudo_time_days": 240,
         "value": 0.3594,
-        "ai_anomaly_score": 6.17,
+        "ai_anomaly_score": 3.31,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.7
+        "risk_score": 18.6
+      },
+      {
+        "patient_code": "AI",
+        "time_key": "Month_9",
+        "time_order": 18,
+        "pseudo_time_days": 270,
+        "value": 0.092,
+        "ai_anomaly_score": 10.96,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 15.2
+      },
+      {
+        "patient_code": "AI",
+        "time_key": "Month_10",
+        "time_order": 19,
+        "pseudo_time_days": 300,
+        "value": 0.0393,
+        "ai_anomaly_score": 12.47,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 17.3
+      },
+      {
+        "patient_code": "AI",
+        "time_key": "Month_11",
+        "time_order": 20,
+        "pseudo_time_days": 330,
+        "value": 0.4746,
+        "ai_anomaly_score": 0.02,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 20.7
+      },
+      {
+        "patient_code": "AI",
+        "time_key": "Month_12",
+        "time_order": 21,
+        "pseudo_time_days": 365,
+        "value": 0.0343,
+        "ai_anomaly_score": 12.61,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 17.9
       },
       {
         "patient_code": "AJ",
@@ -3217,11 +3541,11 @@
         "time_order": 1,
         "pseudo_time_days": 1,
         "value": 4.0013,
-        "ai_anomaly_score": 43.04,
+        "ai_anomaly_score": 49.16,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.9
+        "risk_score": 20.9
       },
       {
         "patient_code": "AJ",
@@ -3229,11 +3553,11 @@
         "time_order": 2,
         "pseudo_time_days": 2,
         "value": 1.3799,
-        "ai_anomaly_score": 0.53,
+        "ai_anomaly_score": 4.99,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.2
+        "risk_score": 12.9
       },
       {
         "patient_code": "AJ",
@@ -3241,11 +3565,11 @@
         "time_order": 3,
         "pseudo_time_days": 3,
         "value": 2.2237,
-        "ai_anomaly_score": 13.5,
+        "ai_anomaly_score": 19.21,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 24.9
+        "risk_score": 25.7
       },
       {
         "patient_code": "AJ",
@@ -3253,11 +3577,11 @@
         "time_order": 5,
         "pseudo_time_days": 5,
         "value": 1.6633,
-        "ai_anomaly_score": 4.18,
+        "ai_anomaly_score": 9.77,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.2
+        "risk_score": 20.0
       },
       {
         "patient_code": "AJ",
@@ -3265,11 +3589,11 @@
         "time_order": 6,
         "pseudo_time_days": 6,
         "value": 2.0325,
-        "ai_anomaly_score": 10.32,
+        "ai_anomaly_score": 15.99,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 24.4
+        "risk_score": 25.2
       },
       {
         "patient_code": "AJ",
@@ -3277,11 +3601,11 @@
         "time_order": 7,
         "pseudo_time_days": 7,
         "value": 1.0821,
-        "ai_anomaly_score": 5.48,
+        "ai_anomaly_score": 0.03,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 23.3
+        "risk_score": 23.7
       },
       {
         "patient_code": "AJ",
@@ -3289,11 +3613,11 @@
         "time_order": 10,
         "pseudo_time_days": 30,
         "value": 0.12,
-        "ai_anomaly_score": 21.47,
+        "ai_anomaly_score": 16.24,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.9
+        "risk_score": 14.1
       },
       {
         "patient_code": "AJ",
@@ -3301,11 +3625,11 @@
         "time_order": 12,
         "pseudo_time_days": 90,
         "value": 0.1431,
-        "ai_anomaly_score": 21.08,
+        "ai_anomaly_score": 15.85,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.8
+        "risk_score": 16.6
       },
       {
         "patient_code": "AJ",
@@ -3313,55 +3637,43 @@
         "time_order": 16,
         "pseudo_time_days": 210,
         "value": 0.0586,
-        "ai_anomaly_score": 22.49,
+        "ai_anomaly_score": 17.27,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.4
+        "risk_score": 18.2
       },
       {
-        "patient_code": "AK",
-        "time_key": "Day_1",
-        "time_order": 1,
-        "pseudo_time_days": 1,
-        "value": 1.3199,
-        "ai_anomaly_score": 25.49,
+        "patient_code": "AJ",
+        "time_key": "Month_9",
+        "time_order": 18,
+        "pseudo_time_days": 270,
+        "value": 0.0745,
+        "ai_anomaly_score": 17.01,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 10.8
+        "risk_score": 20.2
       },
       {
-        "patient_code": "AK",
-        "time_key": "Day_2",
-        "time_order": 2,
-        "pseudo_time_days": 2,
-        "value": 2.1905,
-        "ai_anomaly_score": 52.61,
-        "ai_anomaly_flag": true,
-        "threshold_breach": false,
-        "anomaly_flag": true,
-        "risk_score": 20.4
-      },
-      {
-        "patient_code": "AK",
-        "time_key": "Day_3",
-        "time_order": 3,
-        "pseudo_time_days": 3,
-        "value": 1.0135,
-        "ai_anomaly_score": 15.95,
+        "patient_code": "AJ",
+        "time_key": "Month_10",
+        "time_order": 19,
+        "pseudo_time_days": 300,
+        "value": 0.1539,
+        "ai_anomaly_score": 15.67,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.5
+        "risk_score": 18.4
       },
       {
-        "patient_code": "AK",
-        "time_key": "Day_7",
-        "time_order": 7,
-        "pseudo_time_days": 7,
-        "value": 0.5019,
-        "ai_anomaly_score": 0.01,
+        "patient_code": "AJ",
+        "time_key": "Month_11",
+        "time_order": 20,
+        "pseudo_time_days": 330,
+        "value": 0.0721,
+        "ai_anomaly_score": 17.05,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
@@ -3369,47 +3681,35 @@
       },
       {
         "patient_code": "AK",
-        "time_key": "Week_2",
-        "time_order": 8,
-        "pseudo_time_days": 14,
-        "value": 0.1622,
-        "ai_anomaly_score": 10.57,
+        "time_key": "Day_1",
+        "time_order": 1,
+        "pseudo_time_days": 1,
+        "value": 1.3199,
+        "ai_anomaly_score": 30.2,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 10.6
+        "risk_score": 11.5
       },
       {
         "patient_code": "AK",
-        "time_key": "Month_1",
-        "time_order": 10,
-        "pseudo_time_days": 30,
-        "value": 0.0832,
-        "ai_anomaly_score": 13.03,
-        "ai_anomaly_flag": false,
+        "time_key": "Day_2",
+        "time_order": 2,
+        "pseudo_time_days": 2,
+        "value": 2.1905,
+        "ai_anomaly_score": 58.98,
+        "ai_anomaly_flag": true,
         "threshold_breach": false,
-        "anomaly_flag": false,
-        "risk_score": 13.9
+        "anomaly_flag": true,
+        "risk_score": 21.3
       },
       {
         "patient_code": "AK",
-        "time_key": "Month_2",
-        "time_order": 11,
-        "pseudo_time_days": 60,
-        "value": 0.1338,
-        "ai_anomaly_score": 11.46,
-        "ai_anomaly_flag": false,
-        "threshold_breach": false,
-        "anomaly_flag": false,
-        "risk_score": 15.9
-      },
-      {
-        "patient_code": "AK",
-        "time_key": "Month_3",
-        "time_order": 12,
-        "pseudo_time_days": 90,
-        "value": 0.1472,
-        "ai_anomaly_score": 11.04,
+        "time_key": "Day_3",
+        "time_order": 3,
+        "pseudo_time_days": 3,
+        "value": 1.0135,
+        "ai_anomaly_score": 20.07,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
@@ -3417,11 +3717,23 @@
       },
       {
         "patient_code": "AK",
-        "time_key": "Month_4",
-        "time_order": 13,
-        "pseudo_time_days": 120,
-        "value": 0.0959,
-        "ai_anomaly_score": 12.64,
+        "time_key": "Day_7",
+        "time_order": 7,
+        "pseudo_time_days": 7,
+        "value": 0.5019,
+        "ai_anomaly_score": 3.16,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 13.7
+      },
+      {
+        "patient_code": "AK",
+        "time_key": "Week_2",
+        "time_order": 8,
+        "pseudo_time_days": 14,
+        "value": 0.1622,
+        "ai_anomaly_score": 8.08,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
@@ -3429,15 +3741,63 @@
       },
       {
         "patient_code": "AK",
+        "time_key": "Month_1",
+        "time_order": 10,
+        "pseudo_time_days": 30,
+        "value": 0.0832,
+        "ai_anomaly_score": 10.69,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 13.5
+      },
+      {
+        "patient_code": "AK",
+        "time_key": "Month_2",
+        "time_order": 11,
+        "pseudo_time_days": 60,
+        "value": 0.1338,
+        "ai_anomaly_score": 9.01,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 15.8
+      },
+      {
+        "patient_code": "AK",
+        "time_key": "Month_3",
+        "time_order": 12,
+        "pseudo_time_days": 90,
+        "value": 0.1472,
+        "ai_anomaly_score": 8.57,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 16.7
+      },
+      {
+        "patient_code": "AK",
+        "time_key": "Month_4",
+        "time_order": 13,
+        "pseudo_time_days": 120,
+        "value": 0.0959,
+        "ai_anomaly_score": 10.27,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 9.9
+      },
+      {
+        "patient_code": "AK",
         "time_key": "Month_5",
         "time_order": 14,
         "pseudo_time_days": 150,
         "value": 0.0209,
-        "ai_anomaly_score": 14.97,
+        "ai_anomaly_score": 12.75,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 11.4
+        "risk_score": 11.3
       },
       {
         "patient_code": "AK",
@@ -3445,11 +3805,11 @@
         "time_order": 15,
         "pseudo_time_days": 180,
         "value": 0.208,
-        "ai_anomaly_score": 9.15,
+        "ai_anomaly_score": 6.56,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.3
+        "risk_score": 14.7
       },
       {
         "patient_code": "AK",
@@ -3457,11 +3817,47 @@
         "time_order": 16,
         "pseudo_time_days": 210,
         "value": 0.142,
-        "ai_anomaly_score": 11.2,
+        "ai_anomaly_score": 8.74,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.4
+        "risk_score": 14.2
+      },
+      {
+        "patient_code": "AK",
+        "time_key": "Month_8",
+        "time_order": 17,
+        "pseudo_time_days": 240,
+        "value": 0.0181,
+        "ai_anomaly_score": 12.84,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 15.2
+      },
+      {
+        "patient_code": "AK",
+        "time_key": "Month_9",
+        "time_order": 18,
+        "pseudo_time_days": 270,
+        "value": 0.0436,
+        "ai_anomaly_score": 11.99,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 19.6
+      },
+      {
+        "patient_code": "AK",
+        "time_key": "Month_10",
+        "time_order": 19,
+        "pseudo_time_days": 300,
+        "value": 0.016,
+        "ai_anomaly_score": 12.91,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 19.3
       },
       {
         "patient_code": "AL",
@@ -3469,11 +3865,11 @@
         "time_order": 2,
         "pseudo_time_days": 2,
         "value": 4.5791,
-        "ai_anomaly_score": 48.5,
-        "ai_anomaly_flag": false,
+        "ai_anomaly_score": 55.9,
+        "ai_anomaly_flag": true,
         "threshold_breach": false,
-        "anomaly_flag": false,
-        "risk_score": 21.9
+        "anomaly_flag": true,
+        "risk_score": 23.0
       },
       {
         "patient_code": "AL",
@@ -3481,11 +3877,11 @@
         "time_order": 5,
         "pseudo_time_days": 5,
         "value": 0.4731,
-        "ai_anomaly_score": 5.94,
+        "ai_anomaly_score": 3.8,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.3
+        "risk_score": 14.0
       },
       {
         "patient_code": "AL",
@@ -3493,11 +3889,11 @@
         "time_order": 7,
         "pseudo_time_days": 7,
         "value": 0.6799,
-        "ai_anomaly_score": 3.2,
+        "ai_anomaly_score": 0.8,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 26.4
+        "risk_score": 26.1
       },
       {
         "patient_code": "AL",
@@ -3505,11 +3901,11 @@
         "time_order": 11,
         "pseudo_time_days": 60,
         "value": 0.225,
-        "ai_anomaly_score": 9.23,
+        "ai_anomaly_score": 7.41,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.3
+        "risk_score": 16.1
       },
       {
         "patient_code": "AL",
@@ -3517,11 +3913,11 @@
         "time_order": 12,
         "pseudo_time_days": 90,
         "value": 0.0296,
-        "ai_anomaly_score": 11.82,
+        "ai_anomaly_score": 10.25,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.4
+        "risk_score": 17.2
       },
       {
         "patient_code": "AL",
@@ -3529,11 +3925,11 @@
         "time_order": 14,
         "pseudo_time_days": 150,
         "value": 0.0687,
-        "ai_anomaly_score": 11.3,
+        "ai_anomaly_score": 9.68,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.8
+        "risk_score": 19.5
       },
       {
         "patient_code": "AL",
@@ -3541,11 +3937,35 @@
         "time_order": 16,
         "pseudo_time_days": 210,
         "value": 0.3914,
-        "ai_anomaly_score": 7.02,
+        "ai_anomaly_score": 4.99,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 22.6
+        "risk_score": 23.3
+      },
+      {
+        "patient_code": "AL",
+        "time_key": "Month_8",
+        "time_order": 17,
+        "pseudo_time_days": 240,
+        "value": 0.0318,
+        "ai_anomaly_score": 10.22,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 18.4
+      },
+      {
+        "patient_code": "AL",
+        "time_key": "Month_9",
+        "time_order": 18,
+        "pseudo_time_days": 270,
+        "value": 0.1325,
+        "ai_anomaly_score": 8.75,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 20.8
       },
       {
         "patient_code": "AN",
@@ -3553,11 +3973,11 @@
         "time_order": 1,
         "pseudo_time_days": 1,
         "value": 6.066,
-        "ai_anomaly_score": 48.8,
-        "ai_anomaly_flag": false,
+        "ai_anomaly_score": 53.91,
+        "ai_anomaly_flag": true,
         "threshold_breach": true,
         "anomaly_flag": true,
-        "risk_score": 23.5
+        "risk_score": 24.3
       },
       {
         "patient_code": "AN",
@@ -3565,11 +3985,11 @@
         "time_order": 2,
         "pseudo_time_days": 2,
         "value": 4.0436,
-        "ai_anomaly_score": 27.53,
+        "ai_anomaly_score": 31.44,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.7
+        "risk_score": 20.3
       },
       {
         "patient_code": "AN",
@@ -3577,11 +3997,11 @@
         "time_order": 3,
         "pseudo_time_days": 3,
         "value": 1.1056,
-        "ai_anomaly_score": 3.37,
+        "ai_anomaly_score": 1.19,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.9
+        "risk_score": 14.6
       },
       {
         "patient_code": "AN",
@@ -3589,11 +4009,11 @@
         "time_order": 4,
         "pseudo_time_days": 4,
         "value": 0.0103,
-        "ai_anomaly_score": 14.89,
+        "ai_anomaly_score": 13.36,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 10.9
+        "risk_score": 10.6
       },
       {
         "patient_code": "AN",
@@ -3601,11 +4021,11 @@
         "time_order": 5,
         "pseudo_time_days": 5,
         "value": 0.9058,
-        "ai_anomaly_score": 5.47,
+        "ai_anomaly_score": 3.41,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 21.1
+        "risk_score": 20.8
       },
       {
         "patient_code": "AN",
@@ -3613,11 +4033,11 @@
         "time_order": 7,
         "pseudo_time_days": 7,
         "value": 0.9669,
-        "ai_anomaly_score": 4.83,
+        "ai_anomaly_score": 2.73,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 33.6
+        "risk_score": 33.1
       },
       {
         "patient_code": "AN",
@@ -3625,11 +4045,11 @@
         "time_order": 8,
         "pseudo_time_days": 14,
         "value": 0.2495,
-        "ai_anomaly_score": 12.38,
+        "ai_anomaly_score": 10.7,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.7
+        "risk_score": 13.8
       },
       {
         "patient_code": "AN",
@@ -3637,11 +4057,11 @@
         "time_order": 11,
         "pseudo_time_days": 60,
         "value": 0.4711,
-        "ai_anomaly_score": 10.05,
+        "ai_anomaly_score": 8.24,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.7
+        "risk_score": 19.5
       },
       {
         "patient_code": "AN",
@@ -3649,11 +4069,11 @@
         "time_order": 12,
         "pseudo_time_days": 90,
         "value": 0.2093,
-        "ai_anomaly_score": 12.8,
+        "ai_anomaly_score": 11.15,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.3
+        "risk_score": 14.7
       },
       {
         "patient_code": "AN",
@@ -3661,11 +4081,35 @@
         "time_order": 14,
         "pseudo_time_days": 150,
         "value": 0.2347,
-        "ai_anomaly_score": 12.53,
+        "ai_anomaly_score": 10.87,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.4
+        "risk_score": 18.4
+      },
+      {
+        "patient_code": "AN",
+        "time_key": "Month_6",
+        "time_order": 15,
+        "pseudo_time_days": 180,
+        "value": 0.1757,
+        "ai_anomaly_score": 11.52,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 14.6
+      },
+      {
+        "patient_code": "AN",
+        "time_key": "Month_7",
+        "time_order": 16,
+        "pseudo_time_days": 210,
+        "value": 0.1155,
+        "ai_anomaly_score": 12.19,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 16.5
       },
       {
         "patient_code": "AO",
@@ -3673,11 +4117,11 @@
         "time_order": 1,
         "pseudo_time_days": 1,
         "value": 1.3765,
-        "ai_anomaly_score": 44.74,
-        "ai_anomaly_flag": false,
+        "ai_anomaly_score": 53.81,
+        "ai_anomaly_flag": true,
         "threshold_breach": false,
-        "anomaly_flag": false,
-        "risk_score": 13.9
+        "anomaly_flag": true,
+        "risk_score": 15.3
       },
       {
         "patient_code": "AO",
@@ -3685,19 +4129,7 @@
         "time_order": 2,
         "pseudo_time_days": 2,
         "value": 0.8183,
-        "ai_anomaly_score": 19.5,
-        "ai_anomaly_flag": false,
-        "threshold_breach": false,
-        "anomaly_flag": false,
-        "risk_score": 10.5
-      },
-      {
-        "patient_code": "AO",
-        "time_key": "Day_3",
-        "time_order": 3,
-        "pseudo_time_days": 3,
-        "value": 0.1574,
-        "ai_anomaly_score": 10.37,
+        "ai_anomaly_score": 25.32,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
@@ -3705,15 +4137,27 @@
       },
       {
         "patient_code": "AO",
+        "time_key": "Day_3",
+        "time_order": 3,
+        "pseudo_time_days": 3,
+        "value": 0.1574,
+        "ai_anomaly_score": 8.39,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 11.1
+      },
+      {
+        "patient_code": "AO",
         "time_key": "Week_2",
         "time_order": 8,
         "pseudo_time_days": 14,
         "value": 0.1562,
-        "ai_anomaly_score": 10.42,
+        "ai_anomaly_score": 8.45,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 11.3
+        "risk_score": 11.1
       },
       {
         "patient_code": "AO",
@@ -3721,11 +4165,11 @@
         "time_order": 9,
         "pseudo_time_days": 21,
         "value": 0.3571,
-        "ai_anomaly_score": 1.34,
+        "ai_anomaly_score": 1.8,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.3
+        "risk_score": 16.4
       },
       {
         "patient_code": "AO",
@@ -3733,7 +4177,7 @@
         "time_order": 10,
         "pseudo_time_days": 30,
         "value": 0.1144,
-        "ai_anomaly_score": 12.32,
+        "ai_anomaly_score": 10.59,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
@@ -3745,11 +4189,11 @@
         "time_order": 11,
         "pseudo_time_days": 60,
         "value": 0.0255,
-        "ai_anomaly_score": 16.33,
+        "ai_anomaly_score": 15.12,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.7
+        "risk_score": 14.4
       },
       {
         "patient_code": "AO",
@@ -3757,11 +4201,47 @@
         "time_order": 12,
         "pseudo_time_days": 90,
         "value": 0.0889,
-        "ai_anomaly_score": 13.46,
+        "ai_anomaly_score": 11.88,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.6
+        "risk_score": 13.1
+      },
+      {
+        "patient_code": "AO",
+        "time_key": "Month_5",
+        "time_order": 14,
+        "pseudo_time_days": 150,
+        "value": 0.1284,
+        "ai_anomaly_score": 9.87,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 16.5
+      },
+      {
+        "patient_code": "AO",
+        "time_key": "Month_6",
+        "time_order": 15,
+        "pseudo_time_days": 180,
+        "value": 0.1728,
+        "ai_anomaly_score": 7.6,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 14.5
+      },
+      {
+        "patient_code": "AO",
+        "time_key": "Month_9",
+        "time_order": 18,
+        "pseudo_time_days": 270,
+        "value": 0.1451,
+        "ai_anomaly_score": 9.02,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 13.2
       },
       {
         "patient_code": "AP",
@@ -3769,7 +4249,7 @@
         "time_order": 3,
         "pseudo_time_days": 3,
         "value": 1.7201,
-        "ai_anomaly_score": 7.62,
+        "ai_anomaly_score": 7.51,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
@@ -3781,11 +4261,11 @@
         "time_order": 5,
         "pseudo_time_days": 5,
         "value": 0.3378,
-        "ai_anomaly_score": 12.95,
+        "ai_anomaly_score": 14.41,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.4
+        "risk_score": 12.7
       },
       {
         "patient_code": "AP",
@@ -3793,11 +4273,11 @@
         "time_order": 6,
         "pseudo_time_days": 6,
         "value": 0.3301,
-        "ai_anomaly_score": 13.07,
+        "ai_anomaly_score": 14.54,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.5
+        "risk_score": 15.7
       },
       {
         "patient_code": "AP",
@@ -3805,11 +4285,11 @@
         "time_order": 7,
         "pseudo_time_days": 7,
         "value": 0.2887,
-        "ai_anomaly_score": 13.68,
+        "ai_anomaly_score": 15.19,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 24.2
+        "risk_score": 24.4
       },
       {
         "patient_code": "AP",
@@ -3817,11 +4297,11 @@
         "time_order": 8,
         "pseudo_time_days": 14,
         "value": 0.3489,
-        "ai_anomaly_score": 12.79,
+        "ai_anomaly_score": 14.24,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 25.0
+        "risk_score": 25.1
       },
       {
         "patient_code": "AP",
@@ -3829,11 +4309,11 @@
         "time_order": 13,
         "pseudo_time_days": 120,
         "value": 1.1785,
-        "ai_anomaly_score": 0.44,
+        "ai_anomaly_score": 1.08,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 32.0
+        "risk_score": 42.2
       },
       {
         "patient_code": "AP",
@@ -3841,11 +4321,23 @@
         "time_order": 14,
         "pseudo_time_days": 150,
         "value": 4.2522,
-        "ai_anomaly_score": 45.31,
+        "ai_anomaly_score": 47.66,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 63.5
+        "risk_score": 61.0
+      },
+      {
+        "patient_code": "AP",
+        "time_key": "Month_9",
+        "time_order": 18,
+        "pseudo_time_days": 270,
+        "value": 1.5175,
+        "ai_anomaly_score": 4.29,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 23.5
       },
       {
         "patient_code": "AR",
@@ -3925,11 +4417,11 @@
         "time_order": 1,
         "pseudo_time_days": 1,
         "value": 4.0976,
-        "ai_anomaly_score": 50.31,
+        "ai_anomaly_score": 62.35,
         "ai_anomaly_flag": true,
         "threshold_breach": false,
         "anomaly_flag": true,
-        "risk_score": 21.2
+        "risk_score": 23.0
       },
       {
         "patient_code": "AS",
@@ -3937,11 +4429,11 @@
         "time_order": 2,
         "pseudo_time_days": 2,
         "value": 1.3695,
-        "ai_anomaly_score": 7.67,
+        "ai_anomaly_score": 12.29,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.3
+        "risk_score": 14.0
       },
       {
         "patient_code": "AS",
@@ -3949,11 +4441,11 @@
         "time_order": 3,
         "pseudo_time_days": 3,
         "value": 0.137,
-        "ai_anomaly_score": 11.59,
+        "ai_anomaly_score": 10.33,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.2
+        "risk_score": 12.0
       },
       {
         "patient_code": "AS",
@@ -3961,11 +4453,11 @@
         "time_order": 4,
         "pseudo_time_days": 4,
         "value": 0.6115,
-        "ai_anomaly_score": 4.17,
+        "ai_anomaly_score": 1.62,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.2
+        "risk_score": 19.9
       },
       {
         "patient_code": "AS",
@@ -3973,11 +4465,11 @@
         "time_order": 11,
         "pseudo_time_days": 60,
         "value": 0.1502,
-        "ai_anomaly_score": 11.38,
+        "ai_anomaly_score": 10.09,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.6
+        "risk_score": 13.5
       },
       {
         "patient_code": "AS",
@@ -3985,11 +4477,11 @@
         "time_order": 12,
         "pseudo_time_days": 90,
         "value": 0.1096,
-        "ai_anomaly_score": 12.02,
+        "ai_anomaly_score": 10.83,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.0
+        "risk_score": 15.4
       },
       {
         "patient_code": "AS",
@@ -3997,11 +4489,11 @@
         "time_order": 13,
         "pseudo_time_days": 120,
         "value": 0.1597,
-        "ai_anomaly_score": 11.23,
+        "ai_anomaly_score": 9.91,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.1
+        "risk_score": 16.6
       },
       {
         "patient_code": "AS",
@@ -4009,11 +4501,59 @@
         "time_order": 14,
         "pseudo_time_days": 150,
         "value": 0.3929,
-        "ai_anomaly_score": 7.59,
+        "ai_anomaly_score": 5.63,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.5
+        "risk_score": 18.2
+      },
+      {
+        "patient_code": "AS",
+        "time_key": "Month_6",
+        "time_order": 15,
+        "pseudo_time_days": 180,
+        "value": 0.0889,
+        "ai_anomaly_score": 11.21,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 13.0
+      },
+      {
+        "patient_code": "AS",
+        "time_key": "Month_7",
+        "time_order": 16,
+        "pseudo_time_days": 210,
+        "value": 0.1711,
+        "ai_anomaly_score": 9.7,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 19.8
+      },
+      {
+        "patient_code": "AS",
+        "time_key": "Month_8",
+        "time_order": 17,
+        "pseudo_time_days": 240,
+        "value": 0.8768,
+        "ai_anomaly_score": 3.25,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 24.5
+      },
+      {
+        "patient_code": "AS",
+        "time_key": "Month_9",
+        "time_order": 18,
+        "pseudo_time_days": 270,
+        "value": 0.2331,
+        "ai_anomaly_score": 8.56,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 18.5
       },
       {
         "patient_code": "AT",
@@ -4021,11 +4561,11 @@
         "time_order": 1,
         "pseudo_time_days": 1,
         "value": 3.6975,
-        "ai_anomaly_score": 56.54,
+        "ai_anomaly_score": 64.68,
         "ai_anomaly_flag": true,
         "threshold_breach": false,
         "anomaly_flag": true,
-        "risk_score": 21.4
+        "risk_score": 22.6
       },
       {
         "patient_code": "AT",
@@ -4033,11 +4573,11 @@
         "time_order": 2,
         "pseudo_time_days": 2,
         "value": 0.9869,
-        "ai_anomaly_score": 3.49,
+        "ai_anomaly_score": 5.98,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.0
+        "risk_score": 12.4
       },
       {
         "patient_code": "AT",
@@ -4045,11 +4585,11 @@
         "time_order": 3,
         "pseudo_time_days": 3,
         "value": 0.6524,
-        "ai_anomaly_score": 3.06,
+        "ai_anomaly_score": 1.26,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.2
+        "risk_score": 14.9
       },
       {
         "patient_code": "AT",
@@ -4057,11 +4597,11 @@
         "time_order": 4,
         "pseudo_time_days": 4,
         "value": 0.4902,
-        "ai_anomaly_score": 6.23,
+        "ai_anomaly_score": 4.77,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.8
+        "risk_score": 16.6
       },
       {
         "patient_code": "AT",
@@ -4069,11 +4609,11 @@
         "time_order": 5,
         "pseudo_time_days": 5,
         "value": 1.1759,
-        "ai_anomaly_score": 7.19,
+        "ai_anomaly_score": 10.07,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 23.2
+        "risk_score": 23.6
       },
       {
         "patient_code": "AT",
@@ -4081,7 +4621,7 @@
         "time_order": 6,
         "pseudo_time_days": 6,
         "value": 0.2488,
-        "ai_anomaly_score": 10.96,
+        "ai_anomaly_score": 10.0,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
@@ -4093,11 +4633,11 @@
         "time_order": 7,
         "pseudo_time_days": 7,
         "value": 0.3757,
-        "ai_anomaly_score": 8.47,
+        "ai_anomaly_score": 7.25,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.8
+        "risk_score": 17.2
       },
       {
         "patient_code": "AT",
@@ -4105,23 +4645,23 @@
         "time_order": 8,
         "pseudo_time_days": 14,
         "value": 0.2517,
-        "ai_anomaly_score": 10.9,
+        "ai_anomaly_score": 9.94,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.2
+        "risk_score": 15.0
       },
       {
         "patient_code": "AT",
         "time_key": "Month_1",
         "time_order": 10,
         "pseudo_time_days": 30,
-        "value": 0.0812,
-        "ai_anomaly_score": 14.24,
+        "value": 0.2767,
+        "ai_anomaly_score": 9.4,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.3
+        "risk_score": 16.8
       },
       {
         "patient_code": "AT",
@@ -4129,79 +4669,43 @@
         "time_order": 11,
         "pseudo_time_days": 60,
         "value": 0.1264,
-        "ai_anomaly_score": 13.35,
+        "ai_anomaly_score": 12.65,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.7
+        "risk_score": 14.0
       },
       {
-        "patient_code": "AU",
-        "time_key": "Day_1",
-        "time_order": 1,
-        "pseudo_time_days": 1,
-        "value": 7.952,
-        "ai_anomaly_score": 39.65,
-        "ai_anomaly_flag": false,
-        "threshold_breach": true,
-        "anomaly_flag": true,
-        "risk_score": 23.6
-      },
-      {
-        "patient_code": "AU",
-        "time_key": "Day_2",
-        "time_order": 2,
-        "pseudo_time_days": 2,
-        "value": 7.8654,
-        "ai_anomaly_score": 39.01,
-        "ai_anomaly_flag": false,
-        "threshold_breach": true,
-        "anomaly_flag": true,
-        "risk_score": 23.5
-      },
-      {
-        "patient_code": "AU",
-        "time_key": "Day_3",
-        "time_order": 3,
-        "pseudo_time_days": 3,
-        "value": 3.2688,
-        "ai_anomaly_score": 4.77,
+        "patient_code": "AT",
+        "time_key": "Month_6",
+        "time_order": 15,
+        "pseudo_time_days": 180,
+        "value": 0.0426,
+        "ai_anomaly_score": 14.47,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 21.7
+        "risk_score": 16.1
       },
       {
-        "patient_code": "AU",
-        "time_key": "Day_4",
-        "time_order": 4,
-        "pseudo_time_days": 4,
-        "value": 2.3638,
-        "ai_anomaly_score": 1.97,
+        "patient_code": "AT",
+        "time_key": "Month_7",
+        "time_order": 16,
+        "pseudo_time_days": 210,
+        "value": 0.1544,
+        "ai_anomaly_score": 12.04,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.1
+        "risk_score": 18.9
       },
       {
-        "patient_code": "AU",
-        "time_key": "Day_5",
-        "time_order": 5,
-        "pseudo_time_days": 5,
-        "value": 2.0143,
-        "ai_anomaly_score": 4.57,
-        "ai_anomaly_flag": false,
-        "threshold_breach": false,
-        "anomaly_flag": false,
-        "risk_score": 20.5
-      },
-      {
-        "patient_code": "AU",
-        "time_key": "Day_6",
-        "time_order": 6,
-        "pseudo_time_days": 6,
-        "value": 2.5226,
-        "ai_anomaly_score": 0.78,
+        "patient_code": "AT",
+        "time_key": "Month_8",
+        "time_order": 17,
+        "pseudo_time_days": 240,
+        "value": 0.7589,
+        "ai_anomaly_score": 1.04,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
@@ -4209,15 +4713,87 @@
       },
       {
         "patient_code": "AU",
+        "time_key": "Day_1",
+        "time_order": 1,
+        "pseudo_time_days": 1,
+        "value": 7.952,
+        "ai_anomaly_score": 43.46,
+        "ai_anomaly_flag": false,
+        "threshold_breach": true,
+        "anomaly_flag": true,
+        "risk_score": 24.2
+      },
+      {
+        "patient_code": "AU",
+        "time_key": "Day_2",
+        "time_order": 2,
+        "pseudo_time_days": 2,
+        "value": 7.8654,
+        "ai_anomaly_score": 42.8,
+        "ai_anomaly_flag": false,
+        "threshold_breach": true,
+        "anomaly_flag": true,
+        "risk_score": 24.1
+      },
+      {
+        "patient_code": "AU",
+        "time_key": "Day_3",
+        "time_order": 3,
+        "pseudo_time_days": 3,
+        "value": 3.2688,
+        "ai_anomaly_score": 7.76,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 22.2
+      },
+      {
+        "patient_code": "AU",
+        "time_key": "Day_4",
+        "time_order": 4,
+        "pseudo_time_days": 4,
+        "value": 2.3638,
+        "ai_anomaly_score": 0.86,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 19.9
+      },
+      {
+        "patient_code": "AU",
+        "time_key": "Day_5",
+        "time_order": 5,
+        "pseudo_time_days": 5,
+        "value": 2.0143,
+        "ai_anomaly_score": 1.8,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 20.1
+      },
+      {
+        "patient_code": "AU",
+        "time_key": "Day_6",
+        "time_order": 6,
+        "pseudo_time_days": 6,
+        "value": 2.5226,
+        "ai_anomaly_score": 2.07,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 25.6
+      },
+      {
+        "patient_code": "AU",
         "time_key": "Day_7",
         "time_order": 7,
         "pseudo_time_days": 7,
         "value": 1.7632,
-        "ai_anomaly_score": 6.44,
+        "ai_anomaly_score": 3.72,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.3
+        "risk_score": 18.0
       },
       {
         "patient_code": "AU",
@@ -4225,11 +4801,11 @@
         "time_order": 8,
         "pseudo_time_days": 14,
         "value": 0.1658,
-        "ai_anomaly_score": 18.34,
+        "ai_anomaly_score": 15.89,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.6
+        "risk_score": 14.8
       },
       {
         "patient_code": "AU",
@@ -4237,11 +4813,11 @@
         "time_order": 9,
         "pseudo_time_days": 21,
         "value": 0.4567,
-        "ai_anomaly_score": 16.17,
+        "ai_anomaly_score": 13.67,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.2
+        "risk_score": 19.9
       },
       {
         "patient_code": "AU",
@@ -4249,11 +4825,11 @@
         "time_order": 10,
         "pseudo_time_days": 30,
         "value": 0.2799,
-        "ai_anomaly_score": 17.49,
+        "ai_anomaly_score": 15.02,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.6
+        "risk_score": 16.1
       },
       {
         "patient_code": "AU",
@@ -4261,11 +4837,35 @@
         "time_order": 11,
         "pseudo_time_days": 60,
         "value": 0.2529,
-        "ai_anomaly_score": 17.69,
+        "ai_anomaly_score": 15.23,
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.9
+        "risk_score": 17.0
+      },
+      {
+        "patient_code": "AU",
+        "time_key": "Month_6",
+        "time_order": 15,
+        "pseudo_time_days": 180,
+        "value": 0.1949,
+        "ai_anomaly_score": 15.67,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 13.4
+      },
+      {
+        "patient_code": "AU",
+        "time_key": "Month_7",
+        "time_order": 16,
+        "pseudo_time_days": 210,
+        "value": 0.158,
+        "ai_anomaly_score": 15.95,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 15.2
       },
       {
         "patient_code": "AV",
@@ -4409,7 +5009,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 22.1
+        "risk_score": 21.8
       },
       {
         "patient_code": "AY",
@@ -4421,7 +5021,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.4
+        "risk_score": 19.3
       },
       {
         "patient_code": "AY",
@@ -4433,7 +5033,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.3
+        "risk_score": 18.2
       },
       {
         "patient_code": "AY",
@@ -4445,7 +5045,295 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.4
+        "risk_score": 18.5
+      },
+      {
+        "patient_code": "BA",
+        "time_key": "Day_1",
+        "time_order": 1,
+        "pseudo_time_days": 1,
+        "value": 2.9731,
+        "ai_anomaly_score": 43.93,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 18.1
+      },
+      {
+        "patient_code": "BA",
+        "time_key": "Day_2",
+        "time_order": 2,
+        "pseudo_time_days": 2,
+        "value": 1.4248,
+        "ai_anomaly_score": 11.78,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 12.7
+      },
+      {
+        "patient_code": "BA",
+        "time_key": "Day_3",
+        "time_order": 3,
+        "pseudo_time_days": 3,
+        "value": 0.6365,
+        "ai_anomaly_score": 4.59,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 13.9
+      },
+      {
+        "patient_code": "BA",
+        "time_key": "Day_4",
+        "time_order": 4,
+        "pseudo_time_days": 4,
+        "value": 0.554,
+        "ai_anomaly_score": 6.3,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 15.3
+      },
+      {
+        "patient_code": "BA",
+        "time_key": "Month_2",
+        "time_order": 11,
+        "pseudo_time_days": 60,
+        "value": 0.126,
+        "ai_anomaly_score": 15.19,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 14.6
+      },
+      {
+        "patient_code": "BA",
+        "time_key": "Month_3",
+        "time_order": 12,
+        "pseudo_time_days": 90,
+        "value": 0.1699,
+        "ai_anomaly_score": 14.28,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 17.6
+      },
+      {
+        "patient_code": "BA",
+        "time_key": "Month_4",
+        "time_order": 13,
+        "pseudo_time_days": 120,
+        "value": 0.118,
+        "ai_anomaly_score": 15.36,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 13.4
+      },
+      {
+        "patient_code": "BB",
+        "time_key": "Day_1",
+        "time_order": 1,
+        "pseudo_time_days": 1,
+        "value": 6.3729,
+        "ai_anomaly_score": 19.76,
+        "ai_anomaly_flag": false,
+        "threshold_breach": true,
+        "anomaly_flag": true,
+        "risk_score": 19.4
+      },
+      {
+        "patient_code": "BB",
+        "time_key": "Day_2",
+        "time_order": 2,
+        "pseudo_time_days": 2,
+        "value": 4.0166,
+        "ai_anomaly_score": 5.28,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 16.6
+      },
+      {
+        "patient_code": "BB",
+        "time_key": "Day_3",
+        "time_order": 3,
+        "pseudo_time_days": 3,
+        "value": 2.7392,
+        "ai_anomaly_score": 2.57,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 20.1
+      },
+      {
+        "patient_code": "BB",
+        "time_key": "Day_5",
+        "time_order": 5,
+        "pseudo_time_days": 5,
+        "value": 2.3912,
+        "ai_anomaly_score": 4.7,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 20.7
+      },
+      {
+        "patient_code": "BB",
+        "time_key": "Day_6",
+        "time_order": 6,
+        "pseudo_time_days": 6,
+        "value": 0.868,
+        "ai_anomaly_score": 14.06,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 16.4
+      },
+      {
+        "patient_code": "BB",
+        "time_key": "Day_7",
+        "time_order": 7,
+        "pseudo_time_days": 7,
+        "value": 10.6523,
+        "ai_anomaly_score": 46.05,
+        "ai_anomaly_flag": false,
+        "threshold_breach": true,
+        "anomaly_flag": true,
+        "risk_score": 65.3
+      },
+      {
+        "patient_code": "BB",
+        "time_key": "Week_2",
+        "time_order": 8,
+        "pseudo_time_days": 14,
+        "value": 0.6958,
+        "ai_anomaly_score": 15.12,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 28.1
+      },
+      {
+        "patient_code": "BB",
+        "time_key": "Week_3",
+        "time_order": 9,
+        "pseudo_time_days": 21,
+        "value": 0.6227,
+        "ai_anomaly_score": 15.57,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 27.8
+      },
+      {
+        "patient_code": "BB",
+        "time_key": "Month_1",
+        "time_order": 10,
+        "pseudo_time_days": 30,
+        "value": 0.0529,
+        "ai_anomaly_score": 19.07,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 22.5
+      },
+      {
+        "patient_code": "BC",
+        "time_key": "Day_1",
+        "time_order": 1,
+        "pseudo_time_days": 1,
+        "value": 1.9852,
+        "ai_anomaly_score": 35.24,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 14.9
+      },
+      {
+        "patient_code": "BC",
+        "time_key": "Day_2",
+        "time_order": 2,
+        "pseudo_time_days": 2,
+        "value": 1.6879,
+        "ai_anomaly_score": 26.95,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 13.3
+      },
+      {
+        "patient_code": "BC",
+        "time_key": "Day_3",
+        "time_order": 3,
+        "pseudo_time_days": 3,
+        "value": 1.0969,
+        "ai_anomaly_score": 10.46,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 14.8
+      },
+      {
+        "patient_code": "BC",
+        "time_key": "Day_4",
+        "time_order": 4,
+        "pseudo_time_days": 4,
+        "value": 0.3408,
+        "ai_anomaly_score": 10.63,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 12.1
+      },
+      {
+        "patient_code": "BC",
+        "time_key": "Day_5",
+        "time_order": 5,
+        "pseudo_time_days": 5,
+        "value": 0.2876,
+        "ai_anomaly_score": 12.11,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 13.3
+      },
+      {
+        "patient_code": "BC",
+        "time_key": "Week_2",
+        "time_order": 8,
+        "pseudo_time_days": 14,
+        "value": 0.2904,
+        "ai_anomaly_score": 12.03,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 18.5
+      },
+      {
+        "patient_code": "BC",
+        "time_key": "Week_3",
+        "time_order": 9,
+        "pseudo_time_days": 21,
+        "value": 0.0661,
+        "ai_anomaly_score": 18.29,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 18.0
+      },
+      {
+        "patient_code": "BC",
+        "time_key": "Month_1",
+        "time_order": 10,
+        "pseudo_time_days": 30,
+        "value": 0.0198,
+        "ai_anomaly_score": 19.58,
+        "ai_anomaly_flag": false,
+        "threshold_breach": false,
+        "anomaly_flag": false,
+        "risk_score": 17.4
       }
     ],
     "summary_by_time": [
@@ -4453,274 +5341,274 @@
         "time_order": 1,
         "time_key": "Day_1",
         "pseudo_time_days": 1,
-        "n_measurements": 36,
-        "n_anomalies": 20,
-        "n_ai_anomalies": 6,
-        "n_threshold_breaches": 17,
-        "anomaly_rate": 0.5556,
-        "median_value": 4.8706,
-        "p25_value": 2.6639,
-        "p75_value": 7.6117
+        "n_measurements": 39,
+        "n_anomalies": 24,
+        "n_ai_anomalies": 10,
+        "n_threshold_breaches": 18,
+        "anomaly_rate": 0.6154,
+        "median_value": 4.7837,
+        "p25_value": 2.6191,
+        "p75_value": 7.5697
       },
       {
         "time_order": 2,
         "time_key": "Day_2",
         "pseudo_time_days": 2,
-        "n_measurements": 36,
-        "n_anomalies": 11,
-        "n_ai_anomalies": 2,
+        "n_measurements": 39,
+        "n_anomalies": 13,
+        "n_ai_anomalies": 4,
         "n_threshold_breaches": 10,
-        "anomaly_rate": 0.3056,
-        "median_value": 3.175,
-        "p25_value": 1.3741,
-        "p75_value": 5.9515
+        "anomaly_rate": 0.3333,
+        "median_value": 2.8587,
+        "p25_value": 1.3778,
+        "p75_value": 5.2498
       },
       {
         "time_order": 3,
         "time_key": "Day_3",
         "pseudo_time_days": 3,
-        "n_measurements": 34,
+        "n_measurements": 37,
         "n_anomalies": 5,
         "n_ai_anomalies": 1,
         "n_threshold_breaches": 5,
-        "anomaly_rate": 0.1471,
-        "median_value": 1.5874,
-        "p25_value": 0.6014,
-        "p75_value": 3.1286
+        "anomaly_rate": 0.1351,
+        "median_value": 1.5725,
+        "p25_value": 0.6304,
+        "p75_value": 2.7392
       },
       {
         "time_order": 4,
         "time_key": "Day_4",
         "pseudo_time_days": 4,
-        "n_measurements": 29,
+        "n_measurements": 31,
         "n_anomalies": 5,
         "n_ai_anomalies": 0,
         "n_threshold_breaches": 5,
-        "anomaly_rate": 0.1724,
-        "median_value": 1.4319,
-        "p25_value": 0.2891,
-        "p75_value": 2.9578
+        "anomaly_rate": 0.1613,
+        "median_value": 1.1939,
+        "p25_value": 0.315,
+        "p75_value": 2.9074
       },
       {
         "time_order": 5,
         "time_key": "Day_5",
         "pseudo_time_days": 5,
-        "n_measurements": 29,
+        "n_measurements": 31,
         "n_anomalies": 1,
         "n_ai_anomalies": 0,
         "n_threshold_breaches": 1,
-        "anomaly_rate": 0.0345,
+        "anomaly_rate": 0.0323,
         "median_value": 0.5644,
-        "p25_value": 0.3378,
-        "p75_value": 1.3909
+        "p25_value": 0.3127,
+        "p75_value": 1.5271
       },
       {
         "time_order": 6,
         "time_key": "Day_6",
         "pseudo_time_days": 6,
-        "n_measurements": 25,
+        "n_measurements": 26,
         "n_anomalies": 0,
         "n_ai_anomalies": 0,
         "n_threshold_breaches": 0,
         "anomaly_rate": 0.0,
-        "median_value": 0.6807,
-        "p25_value": 0.2488,
-        "p75_value": 1.6379
+        "median_value": 0.774,
+        "p25_value": 0.254,
+        "p75_value": 1.5857
       },
       {
         "time_order": 7,
         "time_key": "Day_7",
         "pseudo_time_days": 7,
-        "n_measurements": 22,
-        "n_anomalies": 1,
+        "n_measurements": 23,
+        "n_anomalies": 2,
         "n_ai_anomalies": 1,
-        "n_threshold_breaches": 1,
-        "anomaly_rate": 0.0455,
-        "median_value": 0.3598,
-        "p25_value": 0.0971,
-        "p75_value": 0.6354
+        "n_threshold_breaches": 2,
+        "anomaly_rate": 0.087,
+        "median_value": 0.3694,
+        "p25_value": 0.1211,
+        "p75_value": 0.8234
       },
       {
         "time_order": 8,
         "time_key": "Week_2",
         "pseudo_time_days": 14,
-        "n_measurements": 19,
+        "n_measurements": 21,
         "n_anomalies": 0,
         "n_ai_anomalies": 0,
         "n_threshold_breaches": 0,
         "anomaly_rate": 0.0,
-        "median_value": 0.1658,
-        "p25_value": 0.0864,
-        "p75_value": 0.3192
+        "median_value": 0.1825,
+        "p25_value": 0.0942,
+        "p75_value": 0.3399
       },
       {
         "time_order": 9,
         "time_key": "Week_3",
         "pseudo_time_days": 21,
-        "n_measurements": 5,
-        "n_anomalies": 0,
-        "n_ai_anomalies": 0,
-        "n_threshold_breaches": 0,
-        "anomaly_rate": 0.0,
-        "median_value": 0.3571,
-        "p25_value": 0.2026,
-        "p75_value": 0.4567
-      },
-      {
-        "time_order": 10,
-        "time_key": "Month_1",
-        "pseudo_time_days": 30,
-        "n_measurements": 13,
-        "n_anomalies": 1,
-        "n_ai_anomalies": 0,
-        "n_threshold_breaches": 1,
-        "anomaly_rate": 0.0769,
-        "median_value": 0.12,
-        "p25_value": 0.0832,
-        "p75_value": 0.3293
-      },
-      {
-        "time_order": 11,
-        "time_key": "Month_2",
-        "pseudo_time_days": 60,
-        "n_measurements": 13,
-        "n_anomalies": 0,
-        "n_ai_anomalies": 0,
-        "n_threshold_breaches": 0,
-        "anomaly_rate": 0.0,
-        "median_value": 0.225,
-        "p25_value": 0.1338,
-        "p75_value": 0.2529
-      },
-      {
-        "time_order": 12,
-        "time_key": "Month_3",
-        "pseudo_time_days": 90,
-        "n_measurements": 15,
-        "n_anomalies": 0,
-        "n_ai_anomalies": 0,
-        "n_threshold_breaches": 0,
-        "anomaly_rate": 0.0,
-        "median_value": 0.1472,
-        "p25_value": 0.109,
-        "p75_value": 0.2525
-      },
-      {
-        "time_order": 13,
-        "time_key": "Month_4",
-        "pseudo_time_days": 120,
-        "n_measurements": 13,
-        "n_anomalies": 0,
-        "n_ai_anomalies": 0,
-        "n_threshold_breaches": 0,
-        "anomaly_rate": 0.0,
-        "median_value": 0.1078,
-        "p25_value": 0.0966,
-        "p75_value": 0.3403
-      },
-      {
-        "time_order": 14,
-        "time_key": "Month_5",
-        "pseudo_time_days": 150,
-        "n_measurements": 16,
-        "n_anomalies": 0,
-        "n_ai_anomalies": 0,
-        "n_threshold_breaches": 0,
-        "anomaly_rate": 0.0,
-        "median_value": 0.2331,
-        "p25_value": 0.117,
-        "p75_value": 0.5564
-      },
-      {
-        "time_order": 15,
-        "time_key": "Month_6",
-        "pseudo_time_days": 180,
-        "n_measurements": 12,
-        "n_anomalies": 0,
-        "n_ai_anomalies": 0,
-        "n_threshold_breaches": 0,
-        "anomaly_rate": 0.0,
-        "median_value": 0.1848,
-        "p25_value": 0.1337,
-        "p75_value": 0.2939
-      },
-      {
-        "time_order": 16,
-        "time_key": "Month_7",
-        "pseudo_time_days": 210,
-        "n_measurements": 15,
-        "n_anomalies": 0,
-        "n_ai_anomalies": 0,
-        "n_threshold_breaches": 0,
-        "anomaly_rate": 0.0,
-        "median_value": 0.142,
-        "p25_value": 0.0889,
-        "p75_value": 0.3381
-      },
-      {
-        "time_order": 17,
-        "time_key": "Month_8",
-        "pseudo_time_days": 240,
-        "n_measurements": 13,
-        "n_anomalies": 0,
-        "n_ai_anomalies": 0,
-        "n_threshold_breaches": 0,
-        "anomaly_rate": 0.0,
-        "median_value": 0.1006,
-        "p25_value": 0.0659,
-        "p75_value": 0.2442
-      },
-      {
-        "time_order": 18,
-        "time_key": "Month_9",
-        "pseudo_time_days": 270,
-        "n_measurements": 6,
-        "n_anomalies": 0,
-        "n_ai_anomalies": 0,
-        "n_threshold_breaches": 0,
-        "anomaly_rate": 0.0,
-        "median_value": 0.0231,
-        "p25_value": 0.0054,
-        "p75_value": 0.0653
-      },
-      {
-        "time_order": 19,
-        "time_key": "Month_10",
-        "pseudo_time_days": 300,
-        "n_measurements": 6,
-        "n_anomalies": 0,
-        "n_ai_anomalies": 0,
-        "n_threshold_breaches": 0,
-        "anomaly_rate": 0.0,
-        "median_value": 0.1734,
-        "p25_value": 0.0847,
-        "p75_value": 0.2377
-      },
-      {
-        "time_order": 20,
-        "time_key": "Month_11",
-        "pseudo_time_days": 330,
-        "n_measurements": 6,
-        "n_anomalies": 0,
-        "n_ai_anomalies": 0,
-        "n_threshold_breaches": 0,
-        "anomaly_rate": 0.0,
-        "median_value": 0.1607,
-        "p25_value": 0.0891,
-        "p75_value": 0.2429
-      },
-      {
-        "time_order": 21,
-        "time_key": "Month_12",
-        "pseudo_time_days": 365,
         "n_measurements": 7,
         "n_anomalies": 0,
         "n_ai_anomalies": 0,
         "n_threshold_breaches": 0,
         "anomaly_rate": 0.0,
-        "median_value": 0.1382,
-        "p25_value": 0.1149,
-        "p75_value": 0.4066
+        "median_value": 0.3571,
+        "p25_value": 0.1467,
+        "p75_value": 0.5397
+      },
+      {
+        "time_order": 10,
+        "time_key": "Month_1",
+        "pseudo_time_days": 30,
+        "n_measurements": 15,
+        "n_anomalies": 1,
+        "n_ai_anomalies": 0,
+        "n_threshold_breaches": 1,
+        "anomaly_rate": 0.0667,
+        "median_value": 0.12,
+        "p25_value": 0.0754,
+        "p75_value": 0.3046
+      },
+      {
+        "time_order": 11,
+        "time_key": "Month_2",
+        "pseudo_time_days": 60,
+        "n_measurements": 14,
+        "n_anomalies": 0,
+        "n_ai_anomalies": 0,
+        "n_threshold_breaches": 0,
+        "anomaly_rate": 0.0,
+        "median_value": 0.2011,
+        "p25_value": 0.1283,
+        "p75_value": 0.2506
+      },
+      {
+        "time_order": 12,
+        "time_key": "Month_3",
+        "pseudo_time_days": 90,
+        "n_measurements": 16,
+        "n_anomalies": 0,
+        "n_ai_anomalies": 0,
+        "n_threshold_breaches": 0,
+        "anomaly_rate": 0.0,
+        "median_value": 0.1498,
+        "p25_value": 0.1093,
+        "p75_value": 0.2309
+      },
+      {
+        "time_order": 13,
+        "time_key": "Month_4",
+        "pseudo_time_days": 120,
+        "n_measurements": 14,
+        "n_anomalies": 0,
+        "n_ai_anomalies": 0,
+        "n_threshold_breaches": 0,
+        "anomaly_rate": 0.0,
+        "median_value": 0.1129,
+        "p25_value": 0.0975,
+        "p75_value": 0.3084
+      },
+      {
+        "time_order": 14,
+        "time_key": "Month_5",
+        "pseudo_time_days": 150,
+        "n_measurements": 18,
+        "n_anomalies": 2,
+        "n_ai_anomalies": 1,
+        "n_threshold_breaches": 1,
+        "anomaly_rate": 0.1111,
+        "median_value": 0.2331,
+        "p25_value": 0.1296,
+        "p75_value": 0.6883
+      },
+      {
+        "time_order": 15,
+        "time_key": "Month_6",
+        "pseudo_time_days": 180,
+        "n_measurements": 17,
+        "n_anomalies": 0,
+        "n_ai_anomalies": 0,
+        "n_threshold_breaches": 0,
+        "anomaly_rate": 0.0,
+        "median_value": 0.1728,
+        "p25_value": 0.1313,
+        "p75_value": 0.2418
+      },
+      {
+        "time_order": 16,
+        "time_key": "Month_7",
+        "pseudo_time_days": 210,
+        "n_measurements": 19,
+        "n_anomalies": 0,
+        "n_ai_anomalies": 0,
+        "n_threshold_breaches": 0,
+        "anomaly_rate": 0.0,
+        "median_value": 0.1536,
+        "p25_value": 0.0965,
+        "p75_value": 0.2336
+      },
+      {
+        "time_order": 17,
+        "time_key": "Month_8",
+        "pseudo_time_days": 240,
+        "n_measurements": 18,
+        "n_anomalies": 0,
+        "n_ai_anomalies": 0,
+        "n_threshold_breaches": 0,
+        "anomaly_rate": 0.0,
+        "median_value": 0.0873,
+        "p25_value": 0.0617,
+        "p75_value": 0.3119
+      },
+      {
+        "time_order": 18,
+        "time_key": "Month_9",
+        "pseudo_time_days": 270,
+        "n_measurements": 15,
+        "n_anomalies": 0,
+        "n_ai_anomalies": 0,
+        "n_threshold_breaches": 0,
+        "anomaly_rate": 0.0,
+        "median_value": 0.0789,
+        "p25_value": 0.034,
+        "p75_value": 0.1411
+      },
+      {
+        "time_order": 19,
+        "time_key": "Month_10",
+        "pseudo_time_days": 300,
+        "n_measurements": 15,
+        "n_anomalies": 0,
+        "n_ai_anomalies": 0,
+        "n_threshold_breaches": 0,
+        "anomaly_rate": 0.0,
+        "median_value": 0.1042,
+        "p25_value": 0.0445,
+        "p75_value": 0.1685
+      },
+      {
+        "time_order": 20,
+        "time_key": "Month_11",
+        "pseudo_time_days": 330,
+        "n_measurements": 12,
+        "n_anomalies": 0,
+        "n_ai_anomalies": 0,
+        "n_threshold_breaches": 0,
+        "anomaly_rate": 0.0,
+        "median_value": 0.1049,
+        "p25_value": 0.0629,
+        "p75_value": 0.2218
+      },
+      {
+        "time_order": 21,
+        "time_key": "Month_12",
+        "pseudo_time_days": 365,
+        "n_measurements": 17,
+        "n_anomalies": 0,
+        "n_ai_anomalies": 0,
+        "n_threshold_breaches": 0,
+        "anomaly_rate": 0.0,
+        "median_value": 0.1333,
+        "p25_value": 0.0587,
+        "p75_value": 0.2974
       }
     ]
   },
@@ -5288,7 +6176,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 30.7
+        "risk_score": 32.8
       },
       {
         "patient_code": "I",
@@ -5300,7 +6188,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": true,
         "anomaly_flag": true,
-        "risk_score": 66.0
+        "risk_score": 64.9
       },
       {
         "patient_code": "I",
@@ -5372,7 +6260,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.3
+        "risk_score": 52.4
       },
       {
         "patient_code": "I",
@@ -6092,7 +6980,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.1
+        "risk_score": 15.0
       },
       {
         "patient_code": "P",
@@ -6140,7 +7028,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.9
+        "risk_score": 21.2
       },
       {
         "patient_code": "R",
@@ -6212,7 +7100,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.1
+        "risk_score": 17.2
       },
       {
         "patient_code": "R",
@@ -6224,7 +7112,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.1
+        "risk_score": 15.5
       },
       {
         "patient_code": "R",
@@ -6236,7 +7124,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 11.1
+        "risk_score": 19.5
       },
       {
         "patient_code": "S",
@@ -6332,7 +7220,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 29.3
+        "risk_score": 28.0
       },
       {
         "patient_code": "S",
@@ -6440,7 +7328,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 23.3
+        "risk_score": 22.4
       },
       {
         "patient_code": "T",
@@ -6452,7 +7340,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 24.2
+        "risk_score": 22.8
       },
       {
         "patient_code": "T",
@@ -6476,7 +7364,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 25.9
+        "risk_score": 18.8
       },
       {
         "patient_code": "U",
@@ -6584,7 +7472,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.3
+        "risk_score": 17.7
       },
       {
         "patient_code": "U",
@@ -6596,7 +7484,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 23.9
+        "risk_score": 16.3
       },
       {
         "patient_code": "V",
@@ -6608,7 +7496,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.3
+        "risk_score": 18.0
       },
       {
         "patient_code": "V",
@@ -6668,7 +7556,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.9
+        "risk_score": 20.6
       },
       {
         "patient_code": "V",
@@ -6680,7 +7568,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 23.9
+        "risk_score": 20.4
       },
       {
         "patient_code": "V",
@@ -6716,7 +7604,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 28.2
+        "risk_score": 25.5
       },
       {
         "patient_code": "Y",
@@ -6740,7 +7628,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 34.7
+        "risk_score": 36.1
       },
       {
         "patient_code": "Y",
@@ -6752,7 +7640,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 30.3
+        "risk_score": 31.2
       },
       {
         "patient_code": "Y",
@@ -6800,7 +7688,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.8
+        "risk_score": 18.4
       },
       {
         "patient_code": "Y",
@@ -6824,7 +7712,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.6
+        "risk_score": 18.3
       },
       {
         "patient_code": "Z",
@@ -6956,7 +7844,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.6
+        "risk_score": 17.3
       },
       {
         "patient_code": "AA",
@@ -6968,7 +7856,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 22.4
+        "risk_score": 22.1
       },
       {
         "patient_code": "AA",
@@ -7040,7 +7928,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 21.6
+        "risk_score": 21.4
       },
       {
         "patient_code": "AA",
@@ -7052,7 +7940,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 22.7
+        "risk_score": 22.6
       },
       {
         "patient_code": "AA",
@@ -7076,7 +7964,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 35.3
+        "risk_score": 34.2
       },
       {
         "patient_code": "AB",
@@ -7112,7 +8000,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.4
+        "risk_score": 19.6
       },
       {
         "patient_code": "AB",
@@ -7256,7 +8144,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.4
+        "risk_score": 12.3
       },
       {
         "patient_code": "AC",
@@ -7304,7 +8192,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.9
+        "risk_score": 16.2
       },
       {
         "patient_code": "AD",
@@ -7316,7 +8204,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.5
+        "risk_score": 18.1
       },
       {
         "patient_code": "AD",
@@ -7376,7 +8264,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.2
+        "risk_score": 17.3
       },
       {
         "patient_code": "AD",
@@ -7388,7 +8276,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 23.5
+        "risk_score": 23.4
       },
       {
         "patient_code": "AD",
@@ -7400,7 +8288,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 22.1
+        "risk_score": 21.5
       },
       {
         "patient_code": "AD",
@@ -7412,7 +8300,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.7
+        "risk_score": 15.5
       },
       {
         "patient_code": "AE",
@@ -7436,7 +8324,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 22.2
+        "risk_score": 21.7
       },
       {
         "patient_code": "AE",
@@ -7472,7 +8360,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.7
+        "risk_score": 18.6
       },
       {
         "patient_code": "AE",
@@ -7484,7 +8372,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.7
+        "risk_score": 15.5
       },
       {
         "patient_code": "AE",
@@ -7496,7 +8384,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.4
+        "risk_score": 18.9
       },
       {
         "patient_code": "AE",
@@ -7508,7 +8396,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.2
+        "risk_score": 19.9
       },
       {
         "patient_code": "AE",
@@ -7532,7 +8420,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 8.8
+        "risk_score": 8.6
       },
       {
         "patient_code": "AF",
@@ -7544,7 +8432,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.5
+        "risk_score": 12.3
       },
       {
         "patient_code": "AF",
@@ -7580,7 +8468,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.5
+        "risk_score": 16.7
       },
       {
         "patient_code": "AF",
@@ -7604,7 +8492,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.1
+        "risk_score": 13.3
       },
       {
         "patient_code": "AF",
@@ -7616,7 +8504,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 22.1
+        "risk_score": 22.4
       },
       {
         "patient_code": "AF",
@@ -7628,7 +8516,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.2
+        "risk_score": 11.9
       },
       {
         "patient_code": "AG",
@@ -7640,7 +8528,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 24.0
+        "risk_score": 23.8
       },
       {
         "patient_code": "AG",
@@ -7652,7 +8540,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.3
+        "risk_score": 19.2
       },
       {
         "patient_code": "AG",
@@ -7712,7 +8600,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 22.8
+        "risk_score": 23.2
       },
       {
         "patient_code": "AG",
@@ -7724,7 +8612,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 25.7
+        "risk_score": 24.9
       },
       {
         "patient_code": "AG",
@@ -7736,7 +8624,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.5
+        "risk_score": 14.8
       },
       {
         "patient_code": "AH",
@@ -7784,7 +8672,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.8
+        "risk_score": 15.6
       },
       {
         "patient_code": "AH",
@@ -7808,7 +8696,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.2
+        "risk_score": 18.4
       },
       {
         "patient_code": "AH",
@@ -7844,7 +8732,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.1
+        "risk_score": 12.6
       },
       {
         "patient_code": "AI",
@@ -7856,7 +8744,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 24.6
+        "risk_score": 24.2
       },
       {
         "patient_code": "AI",
@@ -7916,7 +8804,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.9
+        "risk_score": 18.6
       },
       {
         "patient_code": "AI",
@@ -7928,7 +8816,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.6
+        "risk_score": 17.9
       },
       {
         "patient_code": "AI",
@@ -7940,7 +8828,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.2
+        "risk_score": 16.8
       },
       {
         "patient_code": "AI",
@@ -7952,7 +8840,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.9
+        "risk_score": 18.4
       },
       {
         "patient_code": "AJ",
@@ -7964,7 +8852,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 23.3
+        "risk_score": 23.7
       },
       {
         "patient_code": "AJ",
@@ -8000,7 +8888,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.9
+        "risk_score": 14.1
       },
       {
         "patient_code": "AJ",
@@ -8024,7 +8912,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.8
+        "risk_score": 16.6
       },
       {
         "patient_code": "AJ",
@@ -8072,7 +8960,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.4
+        "risk_score": 13.7
       },
       {
         "patient_code": "AK",
@@ -8084,7 +8972,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 10.6
+        "risk_score": 10.4
       },
       {
         "patient_code": "AK",
@@ -8108,7 +8996,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.9
+        "risk_score": 13.5
       },
       {
         "patient_code": "AK",
@@ -8120,7 +9008,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.9
+        "risk_score": 15.8
       },
       {
         "patient_code": "AK",
@@ -8132,7 +9020,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.1
+        "risk_score": 16.7
       },
       {
         "patient_code": "AK",
@@ -8144,7 +9032,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 10.4
+        "risk_score": 9.9
       },
       {
         "patient_code": "AK",
@@ -8156,7 +9044,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 11.4
+        "risk_score": 11.3
       },
       {
         "patient_code": "AK",
@@ -8168,7 +9056,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.3
+        "risk_score": 14.7
       },
       {
         "patient_code": "AL",
@@ -8180,7 +9068,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 26.4
+        "risk_score": 26.1
       },
       {
         "patient_code": "AL",
@@ -8228,7 +9116,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.3
+        "risk_score": 16.1
       },
       {
         "patient_code": "AL",
@@ -8240,7 +9128,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.4
+        "risk_score": 17.2
       },
       {
         "patient_code": "AL",
@@ -8264,7 +9152,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.8
+        "risk_score": 19.5
       },
       {
         "patient_code": "AL",
@@ -8288,7 +9176,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 33.6
+        "risk_score": 33.1
       },
       {
         "patient_code": "AN",
@@ -8300,7 +9188,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.7
+        "risk_score": 13.8
       },
       {
         "patient_code": "AN",
@@ -8336,7 +9224,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.7
+        "risk_score": 19.5
       },
       {
         "patient_code": "AN",
@@ -8348,7 +9236,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.3
+        "risk_score": 14.7
       },
       {
         "patient_code": "AN",
@@ -8372,7 +9260,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.4
+        "risk_score": 18.4
       },
       {
         "patient_code": "AN",
@@ -8384,7 +9272,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.3
+        "risk_score": 14.6
       },
       {
         "patient_code": "AO",
@@ -8408,7 +9296,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 11.3
+        "risk_score": 11.1
       },
       {
         "patient_code": "AO",
@@ -8420,7 +9308,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.3
+        "risk_score": 16.4
       },
       {
         "patient_code": "AO",
@@ -8444,7 +9332,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.7
+        "risk_score": 14.4
       },
       {
         "patient_code": "AO",
@@ -8456,7 +9344,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.6
+        "risk_score": 13.1
       },
       {
         "patient_code": "AO",
@@ -8480,7 +9368,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.1
+        "risk_score": 16.5
       },
       {
         "patient_code": "AO",
@@ -8492,7 +9380,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 11.7
+        "risk_score": 14.5
       },
       {
         "patient_code": "AP",
@@ -8504,7 +9392,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 24.2
+        "risk_score": 24.4
       },
       {
         "patient_code": "AP",
@@ -8516,7 +9404,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 25.0
+        "risk_score": 25.1
       },
       {
         "patient_code": "AP",
@@ -8576,7 +9464,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 32.0
+        "risk_score": 42.2
       },
       {
         "patient_code": "AP",
@@ -8588,7 +9476,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 63.5
+        "risk_score": 61.0
       },
       {
         "patient_code": "AP",
@@ -8768,7 +9656,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.6
+        "risk_score": 13.5
       },
       {
         "patient_code": "AS",
@@ -8780,7 +9668,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.0
+        "risk_score": 15.4
       },
       {
         "patient_code": "AS",
@@ -8792,7 +9680,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.1
+        "risk_score": 16.6
       },
       {
         "patient_code": "AS",
@@ -8804,7 +9692,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.5
+        "risk_score": 18.2
       },
       {
         "patient_code": "AS",
@@ -8816,7 +9704,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 11.0
+        "risk_score": 13.0
       },
       {
         "patient_code": "AT",
@@ -8828,7 +9716,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.8
+        "risk_score": 17.2
       },
       {
         "patient_code": "AT",
@@ -8840,7 +9728,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.2
+        "risk_score": 15.0
       },
       {
         "patient_code": "AT",
@@ -8864,7 +9752,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.3
+        "risk_score": 16.8
       },
       {
         "patient_code": "AT",
@@ -8876,7 +9764,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.7
+        "risk_score": 14.0
       },
       {
         "patient_code": "AT",
@@ -8924,7 +9812,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.0
+        "risk_score": 16.1
       },
       {
         "patient_code": "AU",
@@ -8936,7 +9824,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.3
+        "risk_score": 18.0
       },
       {
         "patient_code": "AU",
@@ -8948,7 +9836,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.6
+        "risk_score": 14.8
       },
       {
         "patient_code": "AU",
@@ -8960,7 +9848,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.2
+        "risk_score": 19.9
       },
       {
         "patient_code": "AU",
@@ -8972,7 +9860,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.6
+        "risk_score": 16.1
       },
       {
         "patient_code": "AU",
@@ -8984,7 +9872,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.9
+        "risk_score": 17.0
       },
       {
         "patient_code": "AU",
@@ -9032,7 +9920,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.0
+        "risk_score": 13.4
       },
       {
         "patient_code": "AV",
@@ -9068,7 +9956,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.4
+        "risk_score": 19.3
       },
       {
         "patient_code": "AY",
@@ -9080,7 +9968,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.3
+        "risk_score": 18.2
       },
       {
         "patient_code": "AY",
@@ -9092,7 +9980,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.4
+        "risk_score": 18.5
       },
       {
         "patient_code": "AY",
@@ -9708,7 +10596,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": true,
         "anomaly_flag": true,
-        "risk_score": 30.7
+        "risk_score": 32.8
       },
       {
         "patient_code": "I",
@@ -9720,7 +10608,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": true,
         "anomaly_flag": true,
-        "risk_score": 66.0
+        "risk_score": 64.9
       },
       {
         "patient_code": "I",
@@ -9792,7 +10680,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.3
+        "risk_score": 52.4
       },
       {
         "patient_code": "I",
@@ -10392,7 +11280,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.1
+        "risk_score": 15.0
       },
       {
         "patient_code": "P",
@@ -10440,7 +11328,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.9
+        "risk_score": 21.2
       },
       {
         "patient_code": "R",
@@ -10512,7 +11400,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.1
+        "risk_score": 17.2
       },
       {
         "patient_code": "R",
@@ -10524,7 +11412,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.1
+        "risk_score": 15.5
       },
       {
         "patient_code": "R",
@@ -10536,7 +11424,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 11.1
+        "risk_score": 19.5
       },
       {
         "patient_code": "S",
@@ -10632,7 +11520,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 29.3
+        "risk_score": 28.0
       },
       {
         "patient_code": "S",
@@ -10740,7 +11628,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 23.3
+        "risk_score": 22.4
       },
       {
         "patient_code": "T",
@@ -10752,7 +11640,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 24.2
+        "risk_score": 22.8
       },
       {
         "patient_code": "T",
@@ -10776,7 +11664,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 25.9
+        "risk_score": 18.8
       },
       {
         "patient_code": "U",
@@ -10884,7 +11772,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.3
+        "risk_score": 17.7
       },
       {
         "patient_code": "U",
@@ -10896,7 +11784,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 23.9
+        "risk_score": 16.3
       },
       {
         "patient_code": "V",
@@ -10908,7 +11796,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.3
+        "risk_score": 18.0
       },
       {
         "patient_code": "V",
@@ -10968,7 +11856,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.9
+        "risk_score": 20.6
       },
       {
         "patient_code": "V",
@@ -10980,7 +11868,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 23.9
+        "risk_score": 20.4
       },
       {
         "patient_code": "V",
@@ -11016,7 +11904,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 28.2
+        "risk_score": 25.5
       },
       {
         "patient_code": "Y",
@@ -11040,7 +11928,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 34.7
+        "risk_score": 36.1
       },
       {
         "patient_code": "Y",
@@ -11052,7 +11940,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 30.3
+        "risk_score": 31.2
       },
       {
         "patient_code": "Y",
@@ -11100,7 +11988,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.8
+        "risk_score": 18.4
       },
       {
         "patient_code": "Y",
@@ -11124,7 +12012,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.6
+        "risk_score": 18.3
       },
       {
         "patient_code": "Z",
@@ -11256,7 +12144,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.6
+        "risk_score": 17.3
       },
       {
         "patient_code": "AA",
@@ -11268,7 +12156,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 22.4
+        "risk_score": 22.1
       },
       {
         "patient_code": "AA",
@@ -11340,7 +12228,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 21.6
+        "risk_score": 21.4
       },
       {
         "patient_code": "AA",
@@ -11352,7 +12240,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 22.7
+        "risk_score": 22.6
       },
       {
         "patient_code": "AB",
@@ -11364,7 +12252,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 35.3
+        "risk_score": 34.2
       },
       {
         "patient_code": "AB",
@@ -11400,7 +12288,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.4
+        "risk_score": 19.6
       },
       {
         "patient_code": "AB",
@@ -11448,7 +12336,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.5
+        "risk_score": 18.1
       },
       {
         "patient_code": "AD",
@@ -11508,7 +12396,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.2
+        "risk_score": 17.3
       },
       {
         "patient_code": "AD",
@@ -11520,7 +12408,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 23.5
+        "risk_score": 23.4
       },
       {
         "patient_code": "AD",
@@ -11532,7 +12420,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 22.1
+        "risk_score": 21.5
       },
       {
         "patient_code": "AD",
@@ -11544,7 +12432,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.7
+        "risk_score": 15.5
       },
       {
         "patient_code": "AE",
@@ -11568,7 +12456,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 22.2
+        "risk_score": 21.7
       },
       {
         "patient_code": "AE",
@@ -11604,7 +12492,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.7
+        "risk_score": 18.6
       },
       {
         "patient_code": "AE",
@@ -11616,7 +12504,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.7
+        "risk_score": 15.5
       },
       {
         "patient_code": "AE",
@@ -11628,7 +12516,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.4
+        "risk_score": 18.9
       },
       {
         "patient_code": "AE",
@@ -11640,7 +12528,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.2
+        "risk_score": 19.9
       },
       {
         "patient_code": "AE",
@@ -11664,7 +12552,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 8.8
+        "risk_score": 8.6
       },
       {
         "patient_code": "AF",
@@ -11676,7 +12564,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.5
+        "risk_score": 12.3
       },
       {
         "patient_code": "AF",
@@ -11712,7 +12600,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.5
+        "risk_score": 16.7
       },
       {
         "patient_code": "AF",
@@ -11736,7 +12624,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.1
+        "risk_score": 13.3
       },
       {
         "patient_code": "AF",
@@ -11748,7 +12636,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 22.1
+        "risk_score": 22.4
       },
       {
         "patient_code": "AF",
@@ -11760,7 +12648,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.2
+        "risk_score": 11.9
       },
       {
         "patient_code": "AG",
@@ -11772,7 +12660,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 24.0
+        "risk_score": 23.8
       },
       {
         "patient_code": "AG",
@@ -11784,7 +12672,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.3
+        "risk_score": 19.2
       },
       {
         "patient_code": "AG",
@@ -11844,7 +12732,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 22.8
+        "risk_score": 23.2
       },
       {
         "patient_code": "AG",
@@ -11856,7 +12744,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 25.7
+        "risk_score": 24.9
       },
       {
         "patient_code": "AG",
@@ -11868,7 +12756,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.5
+        "risk_score": 14.8
       },
       {
         "patient_code": "AI",
@@ -11880,7 +12768,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 24.6
+        "risk_score": 24.2
       },
       {
         "patient_code": "AI",
@@ -11940,7 +12828,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.9
+        "risk_score": 18.6
       },
       {
         "patient_code": "AI",
@@ -11952,7 +12840,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.6
+        "risk_score": 17.9
       },
       {
         "patient_code": "AI",
@@ -11964,7 +12852,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.2
+        "risk_score": 16.8
       },
       {
         "patient_code": "AI",
@@ -11976,7 +12864,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.9
+        "risk_score": 18.4
       },
       {
         "patient_code": "AJ",
@@ -11988,7 +12876,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 23.3
+        "risk_score": 23.7
       },
       {
         "patient_code": "AJ",
@@ -12024,7 +12912,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.9
+        "risk_score": 14.1
       },
       {
         "patient_code": "AJ",
@@ -12048,7 +12936,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.8
+        "risk_score": 16.6
       },
       {
         "patient_code": "AJ",
@@ -12096,7 +12984,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.4
+        "risk_score": 13.7
       },
       {
         "patient_code": "AK",
@@ -12108,7 +12996,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 10.6
+        "risk_score": 10.4
       },
       {
         "patient_code": "AK",
@@ -12132,7 +13020,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.9
+        "risk_score": 13.5
       },
       {
         "patient_code": "AK",
@@ -12144,7 +13032,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.9
+        "risk_score": 15.8
       },
       {
         "patient_code": "AK",
@@ -12156,7 +13044,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.1
+        "risk_score": 16.7
       },
       {
         "patient_code": "AK",
@@ -12168,7 +13056,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 10.4
+        "risk_score": 9.9
       },
       {
         "patient_code": "AK",
@@ -12180,7 +13068,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 11.4
+        "risk_score": 11.3
       },
       {
         "patient_code": "AK",
@@ -12192,7 +13080,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.3
+        "risk_score": 14.7
       },
       {
         "patient_code": "AL",
@@ -12204,7 +13092,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 26.4
+        "risk_score": 26.1
       },
       {
         "patient_code": "AL",
@@ -12252,7 +13140,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.3
+        "risk_score": 16.1
       },
       {
         "patient_code": "AL",
@@ -12264,7 +13152,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.4
+        "risk_score": 17.2
       },
       {
         "patient_code": "AL",
@@ -12288,7 +13176,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.8
+        "risk_score": 19.5
       },
       {
         "patient_code": "AL",
@@ -12312,7 +13200,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 33.6
+        "risk_score": 33.1
       },
       {
         "patient_code": "AN",
@@ -12324,7 +13212,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.7
+        "risk_score": 13.8
       },
       {
         "patient_code": "AN",
@@ -12360,7 +13248,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.7
+        "risk_score": 19.5
       },
       {
         "patient_code": "AN",
@@ -12372,7 +13260,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.3
+        "risk_score": 14.7
       },
       {
         "patient_code": "AN",
@@ -12396,7 +13284,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.4
+        "risk_score": 18.4
       },
       {
         "patient_code": "AN",
@@ -12408,7 +13296,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.3
+        "risk_score": 14.6
       },
       {
         "patient_code": "AO",
@@ -12432,7 +13320,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 11.3
+        "risk_score": 11.1
       },
       {
         "patient_code": "AO",
@@ -12444,7 +13332,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.3
+        "risk_score": 16.4
       },
       {
         "patient_code": "AO",
@@ -12468,7 +13356,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.7
+        "risk_score": 14.4
       },
       {
         "patient_code": "AO",
@@ -12480,7 +13368,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.6
+        "risk_score": 13.1
       },
       {
         "patient_code": "AO",
@@ -12504,7 +13392,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 12.1
+        "risk_score": 16.5
       },
       {
         "patient_code": "AO",
@@ -12516,7 +13404,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 11.7
+        "risk_score": 14.5
       },
       {
         "patient_code": "AP",
@@ -12528,7 +13416,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 24.2
+        "risk_score": 24.4
       },
       {
         "patient_code": "AP",
@@ -12540,7 +13428,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 25.0
+        "risk_score": 25.1
       },
       {
         "patient_code": "AP",
@@ -12600,7 +13488,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 32.0
+        "risk_score": 42.2
       },
       {
         "patient_code": "AP",
@@ -12612,7 +13500,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 63.5
+        "risk_score": 61.0
       },
       {
         "patient_code": "AP",
@@ -12684,7 +13572,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 13.6
+        "risk_score": 13.5
       },
       {
         "patient_code": "AS",
@@ -12696,7 +13584,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": true,
         "anomaly_flag": true,
-        "risk_score": 17.0
+        "risk_score": 15.4
       },
       {
         "patient_code": "AS",
@@ -12708,7 +13596,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.1
+        "risk_score": 16.6
       },
       {
         "patient_code": "AS",
@@ -12720,7 +13608,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": true,
         "anomaly_flag": true,
-        "risk_score": 20.5
+        "risk_score": 18.2
       },
       {
         "patient_code": "AS",
@@ -12732,7 +13620,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 11.0
+        "risk_score": 13.0
       },
       {
         "patient_code": "AT",
@@ -12744,7 +13632,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.8
+        "risk_score": 17.2
       },
       {
         "patient_code": "AT",
@@ -12756,7 +13644,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 15.2
+        "risk_score": 15.0
       },
       {
         "patient_code": "AT",
@@ -12780,7 +13668,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.3
+        "risk_score": 16.8
       },
       {
         "patient_code": "AT",
@@ -12792,7 +13680,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.7
+        "risk_score": 14.0
       },
       {
         "patient_code": "AT",
@@ -12840,7 +13728,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 19.0
+        "risk_score": 16.1
       },
       {
         "patient_code": "AU",
@@ -12852,7 +13740,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.3
+        "risk_score": 18.0
       },
       {
         "patient_code": "AU",
@@ -12864,7 +13752,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 14.6
+        "risk_score": 14.8
       },
       {
         "patient_code": "AU",
@@ -12876,7 +13764,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.2
+        "risk_score": 19.9
       },
       {
         "patient_code": "AU",
@@ -12888,7 +13776,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 16.6
+        "risk_score": 16.1
       },
       {
         "patient_code": "AU",
@@ -12900,7 +13788,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.9
+        "risk_score": 17.0
       },
       {
         "patient_code": "AU",
@@ -12948,7 +13836,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 17.0
+        "risk_score": 13.4
       },
       {
         "patient_code": "AY",
@@ -12972,7 +13860,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.4
+        "risk_score": 19.3
       },
       {
         "patient_code": "AY",
@@ -12984,7 +13872,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 18.3
+        "risk_score": 18.2
       },
       {
         "patient_code": "AY",
@@ -12996,7 +13884,7 @@
         "ai_anomaly_flag": false,
         "threshold_breach": false,
         "anomaly_flag": false,
-        "risk_score": 20.4
+        "risk_score": 18.5
       },
       {
         "patient_code": "AY",

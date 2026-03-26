@@ -29,8 +29,8 @@
 
 | Metrik | Hasta (Median / IQR) | Referans (Median / IQR) | Son Olcum Zamani |
 |---|---|---|---|
-| KMR | 11.631 / 13.809 | 0.446 / 0.307 | 3. Ay |
-| KRE | 0.720 / 0.360 | 1.020 / 0.560 | 12. Ay |
+| KMR | 11.631 / 13.809 | 0.145 / 0.276 | 3. Ay |
+| KRE | 0.720 / 0.360 | 1.050 / 0.610 | 12. Ay |
 | GFR | - / - | - / - | - |
 
 ## AI Performans (Hasta Bazli)
@@ -38,7 +38,7 @@
 | Metrik | Eval Nokta | MAE | RMSE | MAPE | Aralik Kapsama | Son Hata |
 |---|---:|---:|---:|---:|---:|---:|
 | KMR | 0 | - | - | - | %0.0 | - |
-| KRE | 5 | 0.122 | 0.144 | %15.68 | %80.0 | -0.120 |
+| KRE | 5 | 0.086 | 0.116 | %11.55 | %80.0 | -0.030 |
 | GFR | 0 | - | - | - | %0.0 | - |
 
 ## Zaman Serisi Detay Tablosu
@@ -56,15 +56,15 @@
 | 3. Hafta | - | 3.7950 | Yedek Ongoru | 0.48 | 0.48 | Olcum Kopyasi | - | - | Yetersiz Veri | 4.0 | Normal | - |
 | 1. Ay | 0.5960 | 7.5550 | EWMA Yedek | 0.61 | 0.61 | Olcum Kopyasi | - | - | Yetersiz Veri | 15.3 | Normal | - |
 | 2. Ay | - | 3.7950 | Yedek Ongoru | 0.88 | 0.88 | Olcum Kopyasi | - | - | Yetersiz Veri | 6.5 | Normal | - |
-| 3. Ay | 0.1525 | 3.7950 | EWMA Yedek | 0.79 | 0.89 | Model | - | - | Yetersiz Veri | 12.9 | Normal | - |
-| 4. Ay | - | 3.7950 | Yedek Ongoru | 0.65 | 0.90 | Model | - | - | Yetersiz Veri | 4.3 | Normal | - |
+| 3. Ay | 0.1525 | 3.7950 | EWMA Yedek | 0.79 | 0.86 | Model | - | - | Yetersiz Veri | 12.9 | Normal | - |
+| 4. Ay | - | 3.7950 | Yedek Ongoru | 0.65 | 0.88 | Model | - | - | Yetersiz Veri | 4.3 | Normal | - |
 | 5. Ay | - | 3.7950 | Yedek Ongoru | 0.90 | 0.89 | Model | - | - | Yetersiz Veri | 6.4 | Normal | - |
-| 6. Ay | - | 3.7950 | Yedek Ongoru | 0.98 | 0.85 | Model | - | - | Yetersiz Veri | 7.4 | Normal | - |
+| 6. Ay | - | 3.7950 | Yedek Ongoru | 0.98 | 0.89 | Model | - | - | Yetersiz Veri | 7.4 | Normal | - |
 | 7. Ay | - | 3.7950 | Yedek Ongoru | - | - | Uygulanmaz | - | - | Uygulanmaz | 0.0 | Normal | - |
 | 8. Ay | - | 3.7950 | Yedek Ongoru | - | - | Uygulanmaz | - | - | Uygulanmaz | 0.0 | Normal | - |
 | 9. Ay | - | 3.7950 | Yedek Ongoru | - | - | Uygulanmaz | - | - | Uygulanmaz | 0.0 | Normal | - |
 | 10. Ay | - | 3.7950 | Yedek Ongoru | - | - | Uygulanmaz | - | - | Uygulanmaz | 0.0 | Normal | - |
 | 11. Ay | - | 3.7950 | Yedek Ongoru | - | - | Uygulanmaz | - | - | Uygulanmaz | 0.0 | Normal | - |
-| 12. Ay | - | 3.7950 | Yedek Ongoru | 0.93 | 0.81 | Model | - | - | Yetersiz Veri | 6.8 | Normal | - |
+| 12. Ay | - | 3.7950 | Yedek Ongoru | 0.93 | 0.90 | Model | - | - | Yetersiz Veri | 6.8 | Normal | - |
 
 > Not: Bu dosya `python3 backend/run_all.py` ile otomatik uretilir.

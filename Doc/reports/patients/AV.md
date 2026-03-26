@@ -29,8 +29,8 @@
 
 | Metrik | Hasta (Median / IQR) | Referans (Median / IQR) | Son Olcum Zamani |
 |---|---|---|---|
-| KMR | 1.337 / 2.149 | 0.134 / 0.104 | 2. Hafta |
-| KRE | 2.610 / 0.000 | 1.620 / 1.780 | 7. Gun |
+| KMR | 1.337 / 2.149 | 0.159 / 0.332 | 2. Hafta |
+| KRE | 2.610 / 0.000 | 1.610 / 0.820 | 7. Gun |
 | GFR | - / - | - / - | - |
 
 ## AI Performans (Hasta Bazli)
